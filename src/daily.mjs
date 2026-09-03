@@ -18,11 +18,14 @@ function parseArgs(argv) {
 function historyEntry(run, jobs) {
   const themes = {};
   const professions = {};
+  const orgs = {};
   for (const j of jobs) {
     if (j.status !== 'open') continue;
     for (const t of j.themes || []) themes[t] = (themes[t] || 0) + 1;
     const p = j.profession || 'Unspecified';
     professions[p] = (professions[p] || 0) + 1;
+    const o = j.org || 'not_stated';
+    orgs[o] = (orgs[o] || 0) + 1;
   }
   return {
     date: run.date,
@@ -33,6 +36,7 @@ function historyEntry(run, jobs) {
     updated: run.updatedCount,
     themes,
     professions,
+    orgs,
   };
 }
 

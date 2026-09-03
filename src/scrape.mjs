@@ -1,7 +1,17 @@
 import crypto from 'node:crypto';
 import { CHECKPOINT_EVERY, CONCURRENCY, DETAIL_BUDGET, DETAIL_REFRESH_DAYS, PAGE_SIZE } from './config.mjs';
 import { fetchPositionDetails, fetchSearchPage, pool, rateStats } from './api.mjs';
-import { classifySeniority, detectProducts, detectThemes, extractOverview, stripBoilerplate, toPlainText } from './taxonomy.mjs';
+import {
+  classifySeniority,
+  detectInitiatives,
+  detectOrg,
+  detectProducts,
+  detectSolutionAreas,
+  detectThemes,
+  extractOverview,
+  stripBoilerplate,
+  toPlainText,
+} from './taxonomy.mjs';
 
 const first = (v) => (Array.isArray(v) ? v[0] ?? null : v ?? null);
 const hash = (s) => crypto.createHash('sha1').update(s || '').digest('hex').slice(0, 16);
@@ -9,7 +19,7 @@ const hash = (s) => crypto.createHash('sha1').update(s || '').digest('hex').slic
 /** Fields compared between runs to flag a posting as "updated". */
 const TRACKED_FIELDS = [
   'title', 'department', 'profession', 'discipline', 'roleType', 'employmentType',
-  'workSite', 'travel', 'seniority', 'locations', 'descriptionHash',
+  'workSite', 'travel', 'seniority', 'locations', 'org', 'descriptionHash',
 ];
 
 /**
@@ -112,6 +122,9 @@ export function buildRecord(summary, detail, previous) {
     url: detail?.publicUrl ?? `https://jobs.careers.microsoft.com/global/en/job/${summary.id}`,
     themes: detectThemes(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
+    org: detectOrg(strong, clean),
+    solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
+    initiatives: detectInitiatives(`${strong}\n${clean}`),
     overview: clean ? extractOverview(clean) : previous?.overview ?? '',
     descriptionHash: hash(plain),
     descriptionHtml,
@@ -137,6 +150,9 @@ export function reclassify(job) {
     seniority: classifySeniority(job.title || ''),
     themes: detectThemes(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
+    org: detectOrg(strong, clean),
+    solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
+    initiatives: detectInitiatives(`${strong}\n${clean}`),
     overview: clean ? extractOverview(clean) : job.overview ?? '',
   };
 }

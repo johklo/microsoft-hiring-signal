@@ -9,6 +9,7 @@
 import { parseLocation } from './taxonomy.mjs';
 
 const pct = (n, d) => (d ? +((n / d) * 100).toFixed(1) : 0);
+const nf0 = (n) => n.toLocaleString('en-US');
 const plural = (n, s, p) => `${n.toLocaleString('en-US')} ${n === 1 ? s : p}`;
 
 /** Which broad function a profession serves. */
@@ -159,6 +160,21 @@ export function buildBrief(jobs, stats, history) {
   const infraCount = open.filter((j) => (j.themes || []).some((t) => INFRA.has(t))).length;
   const infraBet = pct(infraCount, n);
 
+  // ---- organisation -------------------------------------------------------
+  const orgs = (stats.orgs || []).filter((o) => o.key !== 'not_stated');
+  const orgCoverage = stats.meta.orgCoverage ?? 0;
+  const topOrgs = orgs.slice(0, 5);
+  const orgSkew = recencySkew(open.filter((j) => j.org), (j) => [j.org], 20);
+  const orgLabel = (id) => orgs.find((o) => o.key === id)?.label ?? id;
+  const shortOrg = (s) => s.replace(/\s*\([^)]*\)/, '');
+  const solutionAreas = (stats.solutionAreas || []).slice(0, 4);
+  const initiatives = stats.initiatives || [];
+  const initiative = (id) => initiatives.find((i) => i.key === id);
+  const agentic = initiative('agentic');
+  const frontierFirm = initiative('frontier_firm');
+  const frontierScale = initiative('frontier_models');
+  const sovereign = initiative('sovereign');
+
   // ---- narrative ----------------------------------------------------------
   const headline =
     `Microsoft is advertising ${plural(n, 'open role', 'open roles')} across ` +
@@ -191,6 +207,13 @@ export function buildBrief(jobs, stats, history) {
       title: 'Where the momentum is',
       points: [
         `${plural(posted30, 'posting', 'postings')} (${pct(posted30, n)}% of the open book) were created in the last 30 days.`,
+        stats.timeline?.shift?.theme?.filter((s) => s.delta > 0).length
+          ? `Comparing the last three months of postings against the three before them, the clusters gaining share are ${stats.timeline.shift.theme
+              .filter((s) => s.delta > 0)
+              .slice(0, 3)
+              .map((s) => `${s.label} (${s.priorShare}% \u2192 ${s.recentShare}%)`)
+              .join(', ')}.`
+          : '',
         rising.length
           ? `Over-represented in recent postings: ${rising.map((t) => `${label(t.key)} (index ${t.index})`).join(', ')}. An index above 1.0 means the theme takes a larger share of new postings than of the total.`
           : 'No theme is materially over-represented in recent postings \u2014 hiring is broad-based.',
@@ -200,6 +223,49 @@ export function buildBrief(jobs, stats, history) {
         countrySkew.filter((c) => c.index >= 1.2).length
           ? `Geographies growing faster than their baseline: ${countrySkew.filter((c) => c.index >= 1.2).slice(0, 5).map((c) => `${c.key} (${c.index})`).join(', ')}.`
           : 'Recent postings follow the existing geographic footprint.',
+      ].filter(Boolean),
+    },
+    {
+      title: 'Which organisation is doing the hiring',
+      points: [
+        topOrgs.length
+          ? `${orgCoverage}% of adverts name their own business unit. The largest are ${topOrgs
+              .map((o) => `${shortOrg(o.label)} (${o.count})`)
+              .join(', ')}.`
+          : 'Few adverts name a business unit.',
+        topOrgs[0]
+          ? `${topOrgs[0].label} alone accounts for ${topOrgs[0].share}% of the whole open book. ${topOrgs[0].blurb}`
+          : '',
+        solutionAreas.length
+          ? `Where a commercial solution area is named, the ranking is ${solutionAreas
+              .map((s) => `${s.label} (${s.count})`)
+              .join(', ')}.`
+          : 'Few roles name a commercial solution area.',
+        orgSkew.filter((o) => o.index >= 1.2).length
+          ? `Growing faster than their own baseline: ${orgSkew
+              .filter((o) => o.index >= 1.2)
+              .slice(0, 3)
+              .map((o) => `${shortOrg(orgLabel(o.key))} (${o.index}\u00d7)`)
+              .join(', ')}.`
+          : 'No business unit is materially over-represented in recent postings.',
+      ].filter(Boolean),
+    },
+    {
+      title: 'The named bets',
+      points: [
+        agentic
+          ? `Agentic AI is referenced in ${plural(agentic.count, 'advert', 'adverts')} (${agentic.share}%) \u2014 by a wide margin the most-cited initiative, and a sign that agents are being staffed as a product direction rather than a research topic.`
+          : 'Agentic AI is not referenced at scale.',
+        frontierFirm || frontierScale
+          ? `The "Frontier" language splits in two. ${
+              frontierFirm ? `${frontierFirm.count} adverts` : 'No adverts'
+            } invoke the Frontier Firm transformation narrative \u2014 reorganising a company around AI agents \u2014 while ${
+              frontierScale ? `${frontierScale.count}` : 'no'
+            } concern frontier-scale model training and the supercomputers behind it. The first is a go-to-market story sold to customers; the second is an engineering one.`
+          : 'The "Frontier" narrative does not appear at scale in the current book.',
+        sovereign
+          ? `Sovereign and regulated cloud appears in ${plural(sovereign.count, 'advert', 'adverts')}, indicating continuing demand from government and data-residency-constrained customers.`
+          : 'Sovereign or regulated cloud is not a visible hiring driver.',
       ],
     },
     {
@@ -238,13 +304,21 @@ export function buildBrief(jobs, stats, history) {
     infraBet >= 25
       ? `With ${infraBet}% of hiring tied to AI, datacenter and silicon, the advertised plan is capital- and capability-led: Microsoft is staffing to expand the supply of AI compute, not just the demand for it.`
       : `AI, datacenter and silicon account for ${infraBet}% of hiring \u2014 significant but not dominant; the plan reads as broad-based rather than single-bet.`,
+    topOrgs[0] && /CO\+I|Cloud Operations/i.test(topOrgs[0].label)
+      ? `The single largest named organisation is the datacenter arm (${topOrgs[0].count} roles). When the biggest identifiable hiring block is the group that pours concrete and racks servers, the constraint being solved is physical capacity, not software headcount.`
+      : topOrgs[0]
+        ? `The single largest named organisation is ${shortOrg(topOrgs[0].label)} (${topOrgs[0].count} roles), which is where the company is concentrating its execution.`
+        : 'No single organisation dominates the named hiring.',
+    agentic && agentic.share >= 10
+      ? `Agents are the through-line: ${agentic.share}% of all adverts mention agentic AI, spanning engineering, consulting and sales. That breadth suggests it is being treated as a company-wide operating assumption rather than one product team's bet.`
+      : 'Agentic AI is present but not yet a company-wide through-line in the advertising.',
     gtm && build
       ? buildToSell >= 1.3
         ? 'Engineering is being added faster than field capacity, which usually precedes a product-expansion cycle rather than a revenue-harvest cycle.'
         : 'Field and customer-facing capacity is keeping pace with (or exceeding) engineering, which points to a monetisation and adoption push on products that already exist.'
       : 'Insufficient signal to compare build and go-to-market intent.',
     rising.length
-      ? `The clearest forward signal is ${label(rising[0].key)}: it takes ${rising[0].index}\u00d7 its baseline share of the last 30 days of postings.`
+      ? `The clearest forward signal among the strategic clusters is ${label(rising[0].key)}: it takes ${rising[0].index}\u00d7 its baseline share of the last 30 days of postings.`
       : 'No single theme dominates recent postings; near-term direction looks like continuation of the current mix.',
     countrySkew.filter((c) => c.index >= 1.2).length
       ? `Geographic expansion is skewing toward ${countrySkew.filter((c) => c.index >= 1.2).slice(0, 3).map((c) => c.key).join(', ')}, suggesting capacity or market development outside the established hubs.`
@@ -281,6 +355,11 @@ export function buildBrief(jobs, stats, history) {
       fullyRemoteShare: wsKnown ? pct(fullyRemote, wsKnown) : null,
       inOfficeHeavyShare: wsKnown ? pct(inOfficeHeavy, wsKnown) : null,
       usShare,
+      orgCoverage,
+      topOrg: topOrgs[0] ? { label: topOrgs[0].label, count: topOrgs[0].count, share: topOrgs[0].share } : null,
+      agenticShare: agentic?.share ?? 0,
+      frontierFirmCount: frontierFirm?.count ?? 0,
+      frontierScaleCount: frontierScale?.count ?? 0,
       netChange,
       observedAdds,
       observedRemovals,
@@ -290,9 +369,9 @@ export function buildBrief(jobs, stats, history) {
       { label: 'Open roles', value: n.toLocaleString('en-US'), sub: `${stats.meta.countries} countries` },
       { label: 'AI / DC / silicon share', value: `${infraBet}%`, sub: 'of all postings' },
       { label: 'Build : sell', value: buildToSell !== null ? `${buildToSell}:1` : 'n/a', sub: 'engineering vs field roles' },
+      { label: 'Largest business unit', value: topOrgs[0] ? `${topOrgs[0].share}%` : 'n/a', sub: topOrgs[0] ? shortOrg(topOrgs[0].label) : 'none named' },
       { label: 'Posted last 30d', value: posted30.toLocaleString('en-US'), sub: `${pct(posted30, n)}% of open book` },
-      { label: 'Leadership titles', value: `${pct(leadership, n)}%`, sub: 'Manager \u2192 VP' },
-      { label: 'Fully remote', value: wsKnown ? `${pct(fullyRemote, wsKnown)}%` : 'n/a', sub: 'of policy-stated roles' },
+      { label: 'Cite agentic AI', value: agentic ? `${agentic.share}%` : 'n/a', sub: agentic ? `${nf0(agentic.count)} adverts` : 'not referenced' },
     ],
     functionMix,
     rising: rising.map((t) => ({ label: label(t.key), index: t.index, total: t.total, recent: t.recent })),
@@ -303,8 +382,9 @@ export function buildBrief(jobs, stats, history) {
     caveats: [
       'Based only on publicly advertised roles on careers.microsoft.com; internal transfers and unadvertised hiring are not visible.',
       'A posting is not a hire \u2014 volumes indicate intent and capacity planning, not headcount actually added.',
+      'Business units are only counted when an advert names its own organisation, which about half do. The rest are reported as not stated rather than guessed, so unit totals are a floor, not a census.',
       'The momentum index compares each theme\u2019s share of the last 30 days of postings against its share of the whole open book. Roles that close quickly are slightly under-counted.',
-      'Theme tagging is keyword-based over title, profession, discipline and description; a posting can carry several themes.',
+      'Cluster tagging is keyword-based over title, profession, discipline and description, after standard legal and benefits boilerplate is removed. Clusters overlap, so their shares do not sum to 100%.',
     ],
   };
 }

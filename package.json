@@ -17,5 +17,8 @@
     "schedule:install": "node src/schedule.mjs install",
     "schedule:status": "node src/schedule.mjs status",
     "schedule:remove": "node src/schedule.mjs remove"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
   }
 }

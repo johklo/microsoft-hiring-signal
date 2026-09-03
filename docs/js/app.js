@@ -130,6 +130,73 @@ function renderTrend(node, series) {
   return { max, from: series[0].date, to: series[series.length - 1].date };
 }
 
+/** Small multiples: one row per series, bars scaled to a shared maximum. */
+function renderSpark(node, series, months) {
+  clear(node);
+  if (!series || !series.length || months.length < 2) {
+    node.appendChild(el('p', 'empty', 'Not enough dated postings to plot a monthly composition.'));
+    return;
+  }
+  // One shared scale across every row, so rows are comparable to each other.
+  const max = Math.max(...series.flatMap((s) => s.counts)) || 1;
+
+  const axis = el('div', 'spark__axis');
+  axis.appendChild(el('span', null, months[0]));
+  axis.appendChild(el('span', null, months[months.length - 1]));
+  node.appendChild(axis);
+
+  for (const s of series) {
+    const row = el('div', 'spark__row');
+    row.appendChild(el('div', 'rank__name', s.label));
+
+    const bars = el('div', 'spark__bars');
+    bars.setAttribute('role', 'img');
+    bars.setAttribute(
+      'aria-label',
+      `${s.label}: ${months.map((m, i) => `${m} ${s.counts[i]}`).join(', ')}`
+    );
+    s.counts.forEach((c) => {
+      const b = el('i');
+      b.style.height = `${Math.max(1, (c / max) * 100)}%`;
+      bars.appendChild(b);
+    });
+    row.appendChild(bars);
+    row.appendChild(el('div', 'rank__val', nf.format(s.total)));
+    node.appendChild(row);
+  }
+}
+
+/** Percentage-point change in share between two consecutive windows. */
+function renderShift(node, rows) {
+  clear(node);
+  if (!rows || !rows.length) {
+    node.appendChild(el('p', 'empty', 'Not enough months of postings to compare two windows yet.'));
+    return;
+  }
+  const max = Math.max(...rows.map((r) => Math.abs(r.delta))) || 1;
+
+  for (const r of rows) {
+    const row = el('div', 'shift__row');
+    const name = el('div', 'rank__name');
+    name.appendChild(document.createTextNode(r.label));
+    name.appendChild(el('span', 'rank__sub', `${r.priorShare}% \u2192 ${r.recentShare}% of postings`));
+    row.appendChild(name);
+
+    const track = el('div', 'shift__track');
+    const bar = el('i');
+    const w = (Math.abs(r.delta) / max) * 50;
+    bar.style.width = `${w}%`;
+    if (r.delta >= 0) bar.style.left = '50%';
+    else bar.style.left = `${50 - w}%`;
+    bar.dataset.dir = r.delta >= 0 ? 'up' : 'down';
+    track.appendChild(bar);
+    row.appendChild(track);
+
+    row.appendChild(el('div', 'shift__val', `${r.delta >= 0 ? '+' : ''}${r.delta}`));
+    node.appendChild(row);
+  }
+}
+
 function renderCrosstab(table, ct) {
   clear(table);
   if (!ct || !ct.rows.length) return;
@@ -210,7 +277,7 @@ function fillSelect(sel, values, allLabel) {
   for (const v of values) sel.appendChild(new Option(v.label, v.value));
 }
 
-function setupIndex(jobs, themeLabels) {
+function setupIndex(jobs, themeLabels, orgLabels) {
   const body = $('index-body');
   const countEl = $('index-count');
   const moreBtn = $('more');
@@ -224,6 +291,14 @@ function setupIndex(jobs, themeLabels) {
       .map((k) => ({ value: k, label: themeLabels.get(k) || k }))
       .sort((a, b) => a.label.localeCompare(b.label)),
     'All clusters'
+  );
+  fillSelect(
+    $('f-org'),
+    [...new Set(jobs.map((j) => j.org).filter(Boolean))]
+      .map((k) => ({ value: k, label: orgLabels.get(k) || k }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+      .concat([{ value: '__none', label: 'Not stated' }]),
+    'All business units'
   );
   fillSelect(
     $('f-profession'),
@@ -244,6 +319,7 @@ function setupIndex(jobs, themeLabels) {
   function current() {
     const q = $('f-q').value.trim().toLowerCase();
     const theme = $('f-theme').value;
+    const org = $('f-org').value;
     const prof = $('f-profession').value;
     const country = $('f-country').value;
     const sen = $('f-seniority').value;
@@ -251,11 +327,15 @@ function setupIndex(jobs, themeLabels) {
 
     let out = jobs.filter((j) => {
       if (theme && !j.themes.includes(theme)) return false;
+      if (org === '__none' && j.org) return false;
+      if (org && org !== '__none' && j.org !== org) return false;
       if (prof && j.profession !== prof) return false;
       if (country && !j.countries.includes(country)) return false;
       if (sen && j.seniority !== sen) return false;
       if (q) {
-        const hay = `${j.title} ${j.profession} ${j.discipline} ${j.location} ${j.overview} ${j.products.join(' ')}`;
+        const hay = `${j.title} ${j.profession} ${j.discipline} ${j.location} ${j.overview} ${j.products.join(' ')} ${
+          orgLabels.get(j.org) || ''
+        }`;
         if (!hay.toLowerCase().includes(q)) return false;
       }
       return true;
@@ -286,6 +366,12 @@ function setupIndex(jobs, themeLabels) {
       );
       tr.appendChild(tdTitle);
 
+      const tdOrg = el('td');
+      tdOrg.appendChild(
+        el('span', 'index__meta', j.org ? orgLabels.get(j.org) || j.org : 'Not stated')
+      );
+      tr.appendChild(tdOrg);
+
       const tdTheme = el('td');
       const tags = el('div', 'tags');
       for (const t of j.themes.slice(0, 3)) tags.appendChild(el('span', 'tag', themeLabels.get(t) || t));
@@ -305,7 +391,7 @@ function setupIndex(jobs, themeLabels) {
     moreBtn.textContent = shown >= rows.length ? 'All roles shown' : 'Show more roles';
   }
 
-  for (const id of ['f-q', 'f-theme', 'f-profession', 'f-country', 'f-seniority', 'f-sort']) {
+  for (const id of ['f-q', 'f-theme', 'f-org', 'f-profession', 'f-country', 'f-seniority', 'f-sort']) {
     $(id).addEventListener('input', () => {
       shown = PAGE;
       render();
@@ -402,6 +488,7 @@ async function boot() {
   const brief = stats.brief;
   const m = brief.metrics;
   const themeLabels = new Map(stats.themes.map((t) => [t.key, t.label]));
+  const orgLabels = new Map(stats.orgs.map((o) => [o.key, o.label]));
 
   // ---- hero
   document.title = `${nf.format(m.openRoles)} open roles — Microsoft hiring signal`;
@@ -458,6 +545,27 @@ async function boot() {
   );
   renderRank($('products'), stats.breakdowns.product.map((p) => ({ label: p.key, count: p.count })), { limit: 16 });
 
+  // ---- organisation
+  const notStated = stats.orgs.find((o) => o.key === 'not_stated');
+  const namedOrgs = stats.orgs.filter((o) => o.key !== 'not_stated');
+  renderRank(
+    $('orgs'),
+    namedOrgs.map((o) => ({ label: o.label, count: o.count, sub: o.blurb })),
+    { sub: true }
+  );
+  $('org-note').textContent =
+    `Read from the way each advert names its own organisation. ${stats.meta.orgCoverage}% of roles ` +
+    `(${nf.format(stats.meta.orgIdentified)}) name one; the remaining ` +
+    `${nf.format(notStated ? notStated.count : 0)} are reported as not stated rather than guessed, ` +
+    `so these totals are a floor, not a census.`;
+  renderRank($('solutionareas'), stats.solutionAreas.map((s) => ({ label: s.label, count: s.count })));
+  renderRank(
+    $('initiatives'),
+    stats.initiatives.map((i) => ({ label: i.label, count: i.count, sub: i.blurb })),
+    { sub: true }
+  );
+  renderCrosstab($('orgtab'), stats.crosstabs.orgBySeniority);
+
   // ---- shape
   const fm = $('functionmix');
   clear(fm);
@@ -489,6 +597,24 @@ async function boot() {
   }
   renderRank($('age'), stats.breakdowns.age.map((a) => ({ label: a.key, count: a.count })));
 
+  // ---- monthly composition
+  const tl = stats.timeline;
+  if (tl && tl.months.length) {
+    $('timeline-head').textContent = `Monthly composition — ${tl.months[0]} to ${tl.months[tl.months.length - 1]}`;
+    $('timeline-note').textContent =
+      `Postings grouped by the month they were created. Bars share one scale across rows, and the ` +
+      `final bar — shown in black — is the current month, which is still in progress. Because only ` +
+      `currently-open roles are visible, earlier months are progressively understated as roles close. ` +
+      `Read the shape and the share shift below, not the absolute level.`;
+    renderSpark($('tl-theme'), tl.byTheme, tl.months);
+    renderSpark($('tl-org'), tl.byOrg, tl.months);
+
+    const shift = [...(tl.shift.theme || []), ...(tl.shift.org || [])]
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0, 12);
+    renderShift($('shift'), shift);
+  }
+
   // ---- geography
   renderRank($('countries'), stats.breakdowns.country.map((c) => ({ label: c.key, count: c.count })), { limit: 14 });
   renderRank($('cities'), stats.breakdowns.city.map((c) => ({ label: c.key, count: c.count })), { limit: 14 });
@@ -496,7 +622,7 @@ async function boot() {
   renderRank($('travel'), stats.breakdowns.travel.map((w) => ({ label: w.key, count: w.count })), { limit: 8 });
 
   // ---- index + changes
-  setupIndex(jobs, themeLabels);
+  setupIndex(jobs, themeLabels, orgLabels);
   renderChanges($('changes'), stats.recentChanges);
 
   const caveats = $('caveats');

@@ -194,6 +194,174 @@ const PRODUCT_DEFS = [
 
 export const PRODUCT_TERMS = PRODUCT_DEFS.map(([t]) => t);
 
+/**
+ * Microsoft business units, as they actually name themselves in the adverts.
+ * Ordered most-specific first: a role inside Industry Solutions Delivery also
+ * says MCAPS, and the narrower unit is the more useful answer.
+ *
+ * Single-valued — a role sits in one organisation.
+ */
+export const ORG_UNITS = [
+  {
+    id: 'coi',
+    label: 'Cloud Operations + Innovation (CO+I)',
+    blurb: 'Builds and runs the datacenter estate that all of Microsoft Cloud sits on.',
+    re: /\bCO\s?[+&]\s?I\b|Cloud Operations\s*(?:\+|&|and)\s*Innovation/i,
+  },
+  {
+    id: 'schie',
+    label: 'Silicon, Cloud Hardware & Infrastructure Engineering (SCHIE)',
+    blurb: 'Designs the custom silicon, servers and hardware inside those datacenters.',
+    re: /\bSCHIE\b|Silicon,?\s*Cloud Hardware/i,
+  },
+  {
+    id: 'mai',
+    label: 'Microsoft AI (MAI)',
+    blurb: 'The consumer-facing AI organisation — Copilot, Bing and in-house models.',
+    re: /\bMicrosoft AI\b|\bMAI\b/,
+  },
+  {
+    id: 'coreai',
+    label: 'CoreAI — Platform & Tools',
+    blurb: 'The developer platform and AI tooling stack, including AI Foundry.',
+    re: /\bCoreAI\b|\bCore AI\b/i,
+  },
+  {
+    id: 'security',
+    label: 'Microsoft Security',
+    blurb: 'The security product division: Defender, Sentinel, Entra, Purview.',
+    re: /\bMicrosoft Security\b|\bSecurity Division\b/i,
+  },
+  {
+    id: 'isd',
+    label: 'Industry Solutions Delivery (ISD)',
+    blurb: 'Microsoft\u2019s own consulting arm — delivers and implements for customers.',
+    re: /\bISD\b|Industry Solutions Delivery|\bIndustry Solutions\b/i,
+  },
+  {
+    id: 'css',
+    label: 'Customer Service & Support (CSS)',
+    blurb: 'Front-line and escalation support for customers already on the platform.',
+    // Never a bare "CSS" — that is the stylesheet language on front-end adverts.
+    re: /Customer Service\s*(?:&|and)\s*Support|\bCSS\s+(?:organization|team)\b/i,
+  },
+  {
+    id: 'smec',
+    label: 'Small, Medium Enterprises & Channel (SME&C)',
+    blurb: 'Volume segment sold largely through partners.',
+    re: /\bSME&C\b|Small,?\s*Medium Enterprises?\s*(?:&|and)\s*Channel/i,
+  },
+  {
+    id: 'ces',
+    label: 'Customer Experience & Success (CE&S)',
+    blurb: 'Post-sale adoption, success and support across the customer base.',
+    re: /\bCE&S\b|Customer Experience\s*(?:&|and)\s*Success/i,
+  },
+  {
+    id: 'mcaps',
+    label: 'Customer & Partner Solutions (MCAPS)',
+    blurb: 'The global commercial field organisation — sales, partners, go-to-market.',
+    re: /\bMCAPS\b|Microsoft Customer and Partner Solutions/i,
+  },
+  {
+    id: 'cloudai',
+    label: 'Cloud + AI',
+    blurb: 'The Azure platform engineering organisation.',
+    re: /\bCloud\s*\+\s*AI\b|\bCloud and AI\b/i,
+  },
+  {
+    id: 'ed',
+    label: 'Experiences + Devices (E+D)',
+    blurb: 'Microsoft 365, Windows, Teams and first-party devices.',
+    re: /\bE\+D\b|Experiences\s*\+\s*Devices/i,
+  },
+  {
+    id: 'msr',
+    label: 'Microsoft Research (MSR)',
+    blurb: 'Long-horizon research, largely decoupled from shipping product.',
+    re: /\bMicrosoft Research\b|\bMSR\b/,
+  },
+  {
+    id: 'gaming',
+    label: 'Gaming',
+    blurb: 'Xbox, the studios and the games subscription business.',
+    re: /\bXbox\b|Game Studios|\bMicrosoft Gaming\b|\bGaming (?:organization|division|team)\b/i,
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    blurb: 'The professional network, run as its own business.',
+    re: /\bLinkedIn\b/i,
+  },
+];
+
+/**
+ * Commercial solution areas — how the field organises what it sells. These are
+ * the practice names a customer-facing role is hired against.
+ */
+export const SOLUTION_AREAS = [
+  { id: 'data_ai', label: 'Data & AI', re: /\bData\s*(?:&|and)\s*AI\b|\bAzure Data\b/i },
+  { id: 'infra', label: 'Azure Infrastructure', re: /\bAzure Infrastructure\b|\bCloud\s*(?:&|and)\s*AI Infrastructure\b|\bInfrastructure Solution Area\b/i },
+  { id: 'apps', label: 'Digital & App Innovation', re: /\bDigital\s*(?:&|and)\s*App(?:lication)? Innovation\b|\bApp Innovation\b/i },
+  { id: 'bizapps', label: 'Business Applications', re: /\bBusiness Applications\b|\bDynamics 365\b/i },
+  { id: 'modernwork', label: 'Modern Work', re: /\bModern Work\b/i },
+  { id: 'securitysa', label: 'Security', re: /\bSecurity Solution Area\b|\bcybersecurity solutions?\b|\bMicrosoft Security\b/i },
+];
+
+/**
+ * Named strategic initiatives. These are the narratives the company is
+ * currently hiring against, distinct from the product a role serves.
+ */
+export const INITIATIVES = [
+  {
+    id: 'frontier_firm',
+    label: 'Frontier Firm transformation',
+    blurb: 'Reorganising customers \u2014 and Microsoft itself \u2014 around AI agents.',
+    re: /\bFrontier Firm\b|\bfrontier transformation\b|\bFrontier Industry\b/i,
+  },
+  {
+    id: 'frontier_models',
+    label: 'Frontier-scale AI',
+    blurb: 'Training and serving frontier models and the supercomputers behind them.',
+    re: /\bfrontier (?:AI|model|models|scale|training)\b|\bfrontier[- ]class\b/i,
+  },
+  {
+    id: 'agentic',
+    label: 'Agentic AI',
+    blurb: 'Autonomous agents as the next interaction model.',
+    re: /\bagentic\b|\bAI agents?\b|\bagent framework\b/i,
+  },
+  {
+    id: 'sovereign',
+    label: 'Sovereign & regulated cloud',
+    blurb: 'Data-residency and government-grade cloud demand.',
+    re: /\bsovereign(?: cloud| ai)?\b|\bair[- ]gapped\b|\bgovernment cloud\b|\bFedRAMP\b|\bIL[45]\b/i,
+  },
+  {
+    id: 'security_future',
+    label: 'Secure Future Initiative',
+    blurb: 'The company-wide security engineering programme.',
+    re: /\bSecure Future Initiative\b|\bSFI\b/,
+  },
+];
+
+/** First matching unit wins; returns null when no organisation is named. */
+export function detectOrg(strongText = '', bodyText = '') {
+  const hay = `${strongText}\n${bodyText}`;
+  for (const u of ORG_UNITS) {
+    if (u.re.test(hay)) return u.id;
+  }
+  return null;
+}
+
+export function detectSolutionAreas(text = '') {
+  return SOLUTION_AREAS.filter((s) => s.re.test(text)).map((s) => s.id);
+}
+
+export function detectInitiatives(text = '') {
+  return INITIATIVES.filter((i) => i.re.test(text)).map((i) => i.id);
+}
+
 const WORD_BOUNDARY_SAFE = /[.*+?^${}()|[\]\\]/g;
 const escape = (s) => s.replace(WORD_BOUNDARY_SAFE, '\\$&');
 

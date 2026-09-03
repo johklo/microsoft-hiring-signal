@@ -26,11 +26,12 @@
         <div class="rail__index">
           <a class="rail__link" href="#s00"><span>00</span><span>Brief</span></a>
           <a class="rail__link" href="#s01"><span>01</span><span>Clusters</span></a>
-          <a class="rail__link" href="#s02"><span>02</span><span>Shape</span></a>
-          <a class="rail__link" href="#s03"><span>03</span><span>Momentum</span></a>
-          <a class="rail__link" href="#s04"><span>04</span><span>Geography</span></a>
-          <a class="rail__link" href="#s05"><span>05</span><span>Index</span></a>
-          <a class="rail__link" href="#s06"><span>06</span><span>Changes</span></a>
+          <a class="rail__link" href="#s02"><span>02</span><span>Org</span></a>
+          <a class="rail__link" href="#s03"><span>03</span><span>Shape</span></a>
+          <a class="rail__link" href="#s04"><span>04</span><span>Momentum</span></a>
+          <a class="rail__link" href="#s05"><span>05</span><span>Geography</span></a>
+          <a class="rail__link" href="#s06"><span>06</span><span>Index</span></a>
+          <a class="rail__link" href="#s07"><span>07</span><span>Changes</span></a>
         </div>
       </nav>
 
@@ -128,11 +129,47 @@
             </div>
           </section>
 
-          <!-- ============================================= 02 · shape -->
-          <section class="band" id="s02" aria-labelledby="shape-title">
+          <!-- ========================================= 02 · organisation -->
+          <section class="band" id="s02" aria-labelledby="org-title">
             <div class="numeral" aria-hidden="true">02</div>
             <div class="band__head">
-              <p class="band__index">02 — Shape</p>
+              <p class="band__index">02 — Organisation</p>
+              <h2 class="band__title" id="org-title">which part of the company is hiring</h2>
+              <p class="band__note" id="org-note">
+                Business units are read from the way each advert names its own organisation.
+              </p>
+            </div>
+
+            <div class="cols">
+              <div class="col-7">
+                <p class="subhead">Business unit</p>
+                <div class="rank rank--wide" id="orgs"></div>
+              </div>
+              <div class="col-5">
+                <p class="subhead">Commercial solution area</p>
+                <div class="rank rank--wide" id="solutionareas"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Named strategic initiative</p>
+                <div class="rank rank--wide" id="initiatives"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Business unit × seniority</p>
+                <div class="tablewrap">
+                  <table class="matrix" id="orgtab">
+                    <caption class="visually-hidden">Advertised roles by business unit and seniority</caption>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================= 03 · shape -->
+          <section class="band" id="s03" aria-labelledby="shape-title">
+            <div class="numeral" aria-hidden="true">03</div>
+            <div class="band__head">
+              <p class="band__index">03 — Shape</p>
               <h2 class="band__title" id="shape-title">how the org is being built</h2>
               <p class="band__note">
                 Function mix, seniority pyramid, and the individual-contributor to people-manager
@@ -171,11 +208,11 @@
             </div>
           </section>
 
-          <!-- ========================================== 03 · momentum -->
-          <section class="band" id="s03" aria-labelledby="momentum-title">
-            <div class="numeral" aria-hidden="true">03</div>
+          <!-- ========================================== 04 · momentum -->
+          <section class="band" id="s04" aria-labelledby="momentum-title">
+            <div class="numeral" aria-hidden="true">04</div>
             <div class="band__head">
-              <p class="band__index">03 — Momentum</p>
+              <p class="band__index">04 — Momentum</p>
               <h2 class="band__title" id="momentum-title">what is accelerating</h2>
               <p class="band__note">
                 Index = a cluster's share of the last 30 days of postings ÷ its share of the whole
@@ -205,13 +242,32 @@
                 <div class="rank" id="age"></div>
               </div>
             </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead" id="timeline-head">Monthly composition</p>
+                <p class="cell__note" id="timeline-note"></p>
+              </div>
+              <div class="col-6">
+                <p class="subhead">By strategic cluster</p>
+                <div class="spark" id="tl-theme"></div>
+              </div>
+              <div class="col-6">
+                <p class="subhead">By business unit</p>
+                <div class="spark" id="tl-org"></div>
+              </div>
+              <div class="col-12">
+                <p class="subhead">Share shift — last 3 months vs the 3 before</p>
+                <div id="shift"></div>
+              </div>
+            </div>
           </section>
 
-          <!-- ========================================= 04 · geography -->
-          <section class="band" id="s04" aria-labelledby="geo-title">
-            <div class="numeral" aria-hidden="true">04</div>
+          <!-- ========================================= 05 · geography -->
+          <section class="band" id="s05" aria-labelledby="geo-title">
+            <div class="numeral" aria-hidden="true">05</div>
             <div class="band__head">
-              <p class="band__index">04 — Geography</p>
+              <p class="band__index">05 — Geography</p>
               <h2 class="band__title" id="geo-title">where the roles sit</h2>
               <p class="band__note">
                 A role listing several locations is counted once per country, so country totals
@@ -236,11 +292,11 @@
             </div>
           </section>
 
-          <!-- ============================================= 05 · index -->
-          <section class="band" id="s05" aria-labelledby="index-title">
-            <div class="numeral" aria-hidden="true">05</div>
+          <!-- ============================================= 06 · index -->
+          <section class="band" id="s06" aria-labelledby="index-title">
+            <div class="numeral" aria-hidden="true">06</div>
             <div class="band__head">
-              <p class="band__index">05 — Index</p>
+              <p class="band__index">06 — Index</p>
               <h2 class="band__title" id="index-title">the roles themselves</h2>
               <p class="band__note">
                 Every advertised role, filterable. Each links to the live posting.
@@ -255,6 +311,10 @@
               <label class="field">
                 <span>Cluster</span>
                 <select id="f-theme"></select>
+              </label>
+              <label class="field">
+                <span>Business unit</span>
+                <select id="f-org"></select>
               </label>
               <label class="field">
                 <span>Profession</span>
@@ -285,6 +345,7 @@
                 <thead>
                   <tr>
                     <th scope="col">Role</th>
+                    <th scope="col">Business unit</th>
                     <th scope="col">Cluster</th>
                     <th scope="col">Locations</th>
                     <th scope="col">Posted</th>
@@ -298,11 +359,11 @@
             </p>
           </section>
 
-          <!-- =========================================== 06 · changes -->
-          <section class="band" id="s06" aria-labelledby="changes-title">
-            <div class="numeral" aria-hidden="true">06</div>
+          <!-- =========================================== 07 · changes -->
+          <section class="band" id="s07" aria-labelledby="changes-title">
+            <div class="numeral" aria-hidden="true">07</div>
             <div class="band__head">
-              <p class="band__index">06 — Changes</p>
+              <p class="band__index">07 — Changes</p>
               <h2 class="band__title" id="changes-title">what moved</h2>
               <p class="band__note">
                 Each daily batch diffs the live book against the last snapshot: openings added,

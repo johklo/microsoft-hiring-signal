@@ -1,4 +1,4 @@
-import { BUSINESS_THEMES, cityLabel, parseLocation } from './taxonomy.mjs';
+import { BUSINESS_THEMES, INITIATIVES, ORG_UNITS, SOLUTION_AREAS, cityLabel, parseLocation } from './taxonomy.mjs';
 
 const UNKNOWN = 'Unspecified';
 
@@ -16,6 +16,61 @@ function toList(map, limit) {
 }
 
 const dayKey = (ts) => (ts ? new Date(ts * 1000).toISOString().slice(0, 10) : null);
+const monthKey = (ts) => (ts ? new Date(ts * 1000).toISOString().slice(0, 7) : null);
+
+/**
+ * Counts per month for each requested key, as small-multiple series.
+ * Only currently-open roles are visible, so earlier months are progressively
+ * understated as roles close — stated on the page rather than smoothed over.
+ */
+function monthlySeries(jobs, months, keyFn, wanted, labelFor) {
+  const idx = new Map(months.map((m, i) => [m, i]));
+  const out = new Map();
+  for (const j of jobs) {
+    const mk = monthKey(j.creationTs);
+    if (!idx.has(mk)) continue;
+    for (const k of keyFn(j)) {
+      if (wanted && !wanted.has(k)) continue;
+      if (!out.has(k)) out.set(k, new Array(months.length).fill(0));
+      out.get(k)[idx.get(mk)]++;
+    }
+  }
+  return [...out.entries()]
+    .map(([key, counts]) => ({
+      key,
+      label: labelFor(key),
+      counts,
+      total: counts.reduce((a, b) => a + b, 0),
+    }))
+    .sort((a, b) => b.total - a.total);
+}
+
+/**
+ * Direction of travel: a key's share of the most recent `win` months against
+ * its share of the `win` months before that.
+ */
+function shareShift(series, months, win = 3) {
+  const n = months.length;
+  if (n < win * 2) return [];
+  const sum = (arr, from, to) => arr.slice(from, to).reduce((a, b) => a + b, 0);
+  const recentTotal = series.reduce((a, s) => a + sum(s.counts, n - win, n), 0);
+  const priorTotal = series.reduce((a, s) => a + sum(s.counts, n - win * 2, n - win), 0);
+  if (!recentTotal || !priorTotal) return [];
+
+  return series
+    .map((s) => {
+      const recent = (sum(s.counts, n - win, n) / recentTotal) * 100;
+      const prior = (sum(s.counts, n - win * 2, n - win) / priorTotal) * 100;
+      return {
+        key: s.key,
+        label: s.label,
+        recentShare: +recent.toFixed(1),
+        priorShare: +prior.toFixed(1),
+        delta: +(recent - prior).toFixed(1),
+      };
+    })
+    .sort((a, b) => b.delta - a.delta);
+}
 
 const STOPWORDS = new Set([
   'senior', 'principal', 'manager', 'director', 'lead', 'staff', 'intern', 'internship',
@@ -72,6 +127,9 @@ export function analyze(allJobs, runs, history) {
   const byCity = new Map();
   const byTheme = new Map();
   const byProduct = new Map();
+  const byOrg = new Map();
+  const bySolutionArea = new Map();
+  const byInitiative = new Map();
   const postedByDay = new Map();
   const ageBuckets = new Map();
   const themeCombo = new Map();
@@ -116,6 +174,10 @@ export function analyze(allJobs, runs, history) {
     }
     for (const p of j.products || []) tally(byProduct, p);
 
+    tally(byOrg, j.org || 'not_stated');
+    for (const s of j.solutionAreas || []) tally(bySolutionArea, s);
+    for (const i of j.initiatives || []) tally(byInitiative, i);
+
     const d = dayKey(j.creationTs);
     if (d) tally(postedByDay, d);
 
@@ -134,6 +196,22 @@ export function analyze(allJobs, runs, history) {
   }
 
   const themeMeta = Object.fromEntries(BUSINESS_THEMES.map((t) => [t.id, { label: t.label, blurb: t.blurb }]));
+  const orgMeta = Object.fromEntries(ORG_UNITS.map((o) => [o.id, { label: o.label, blurb: o.blurb }]));
+  const saMeta = Object.fromEntries(SOLUTION_AREAS.map((s) => [s.id, { label: s.label }]));
+  const initMeta = Object.fromEntries(INITIATIVES.map((i) => [i.id, { label: i.label, blurb: i.blurb }]));
+
+  const decorate = (map, meta, fallback) =>
+    toList(map).map((x) => ({
+      key: x.key,
+      label: meta[x.key]?.label ?? fallback ?? x.key,
+      blurb: meta[x.key]?.blurb ?? '',
+      count: x.count,
+      share: +((x.count / Math.max(1, jobs.length)) * 100).toFixed(1),
+    }));
+
+  const orgList = decorate(byOrg, orgMeta, 'Not stated');
+  const solutionAreaList = decorate(bySolutionArea, saMeta);
+  const initiativeList = decorate(byInitiative, initMeta);
 
   const themeList = toList(byTheme).map((x) => ({
     key: x.key,
@@ -147,6 +225,34 @@ export function analyze(allJobs, runs, history) {
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([date, count]) => ({ date, count }))
     .slice(-180);
+
+  // ---- monthly composition -------------------------------------------------
+  const monthTotals = new Map();
+  for (const j of jobs) {
+    const mk = monthKey(j.creationTs);
+    if (mk) tally(monthTotals, mk);
+  }
+  const months = [...monthTotals.keys()].sort().slice(-12);
+  const topThemeKeys = new Set(themeList.slice(0, 8).map((t) => t.key));
+  const topOrgKeys = new Set(orgList.filter((o) => o.key !== 'not_stated').slice(0, 8).map((o) => o.key));
+  const topProfKeys = new Set(toList(byProfession, 8).map((p) => p.key));
+
+  const themeMonthly = monthlySeries(jobs, months, (j) => j.themes || [], topThemeKeys, (k) => themeMeta[k]?.label ?? k);
+  const orgMonthly = monthlySeries(jobs, months, (j) => (j.org ? [j.org] : []), topOrgKeys, (k) => orgMeta[k]?.label ?? k);
+  const profMonthly = monthlySeries(jobs, months, (j) => [j.profession || UNKNOWN], topProfKeys, (k) => k);
+
+  const timeline = {
+    months,
+    totals: months.map((m) => monthTotals.get(m) || 0),
+    byTheme: themeMonthly,
+    byOrg: orgMonthly,
+    byProfession: profMonthly,
+    shift: {
+      windowMonths: 3,
+      theme: shareShift(themeMonthly, months),
+      org: shareShift(orgMonthly, months),
+    },
+  };
 
   const closedWithDuration = closed.filter((c) => typeof c.daysOpen === 'number');
   const medianDaysOpen = closedWithDuration.length
@@ -172,6 +278,8 @@ export function analyze(allJobs, runs, history) {
       multiLocation,
       remoteEligible,
       untaggedByTheme: untagged,
+      orgIdentified: jobs.length - (byOrg.get('not_stated') || 0),
+      orgCoverage: +(((jobs.length - (byOrg.get('not_stated') || 0)) / Math.max(1, jobs.length)) * 100).toFixed(1),
       avgDaysOpen: ageCount ? +(ageSum / ageCount).toFixed(1) : null,
       medianDaysToClose: medianDaysOpen,
       runCount: runs.length,
@@ -195,6 +303,9 @@ export function analyze(allJobs, runs, history) {
       titleKeywords: titleKeywords(jobs, 40),
     },
     themes: themeList,
+    orgs: orgList,
+    solutionAreas: solutionAreaList,
+    initiatives: initiativeList,
     themePairs: toList(themeCombo, 15).map((x) => {
       const [a, b] = x.key.split('|');
       return { a: themeMeta[a]?.label ?? a, b: themeMeta[b]?.label ?? b, count: x.count };
@@ -204,8 +315,16 @@ export function analyze(allJobs, runs, history) {
         'Individual Contributor', 'People Manager', UNKNOWN,
       ]),
       professionBySeniority: crossTab(jobs, (j) => j.profession, (j) => j.seniority, 12, SENIORITY_ORDER),
+      orgBySeniority: crossTab(
+        jobs.filter((j) => j.org),
+        (j) => orgMeta[j.org]?.label ?? j.org,
+        (j) => j.seniority,
+        12,
+        SENIORITY_ORDER
+      ),
     },
     trend,
+    timeline,
     history,
     runs: runs.slice(0, 30).map((r) => ({
       date: r.date,
@@ -253,6 +372,9 @@ export function buildJobsLite(allJobs) {
         creationTs: j.creationTs,
         themes: j.themes || [],
         products: j.products || [],
+        org: j.org || null,
+        solutionAreas: j.solutionAreas || [],
+        initiatives: j.initiatives || [],
         overview: (j.overview || '').slice(0, 320),
         url: j.url,
       };

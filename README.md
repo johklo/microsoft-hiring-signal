@@ -58,14 +58,28 @@ Postings that disappear from the site are **not deleted** — they are marked `c
 
 | Section | What it answers |
 | --- | --- |
-| **00 · Brief** | The one-page executive summary: headline figure, six KPIs, four evidence sections, and a numbered outlook reading the hiring as strategy. |
+| **00 · Brief** | The one-page executive summary: headline figure, six KPIs, six evidence sections, and a numbered outlook reading the hiring as strategy. |
 | **The plate** | Share of all postings touching the AI / datacenter / silicon build-out. |
 | **01 · Clusters** | Which strategic bet each role serves, plus named products and platforms. |
-| **02 · Shape** | Build vs sell vs capacity vs run, the seniority pyramid, and profession × role type. |
-| **03 · Momentum** | Which clusters are over- or under-represented in the last 30 days, and the posting trend. |
-| **04 · Geography** | Countries, cities, work-site policy and travel requirements. |
-| **05 · Index** | Every role, filterable by cluster, profession, country, seniority and free text. |
-| **06 · Changes** | What each daily batch opened, closed and edited. |
+| **02 · Organisation** | Which business unit is hiring (CO+I, ISD, MAI, SCHIE, Microsoft Security…), the commercial solution area (Data & AI, Business Applications, Modern Work…), the named strategic initiatives (Agentic AI, Frontier Firm, sovereign cloud), and business unit × seniority. |
+| **03 · Shape** | Build vs sell vs capacity vs run, the seniority pyramid, and profession × role type. |
+| **04 · Momentum** | What is over- and under-represented in the last 30 days, the daily posting trend, monthly composition by cluster and business unit, and the share shift between the last three months and the three before. |
+| **05 · Geography** | Countries, cities, work-site policy and travel requirements. |
+| **06 · Index** | Every role, filterable by cluster, business unit, profession, country, seniority and free text. |
+| **07 · Changes** | What each daily batch opened, closed and edited. |
+
+### The four dimensions
+
+Each role is placed on four independent axes, so the same posting can be read several ways:
+
+1. **Strategic cluster** — which bet the work serves (AI Platform, Datacenter Buildout, Go-to-Market…). Multi-valued.
+2. **Business unit** — which part of the company is hiring. Single-valued, and only when the advert
+   names its own organisation; about half do, and the rest are reported as *not stated* rather than
+   guessed, so unit totals are a floor rather than a census.
+3. **Solution area** — the commercial practice a customer-facing role is sold against.
+4. **Initiative** — the named narrative it is hired against, such as Agentic AI or the Frontier Firm
+   transformation. Worth separating: *Frontier Firm* is a go-to-market story sold to customers,
+   while *frontier-scale AI* is an engineering one about model training. They are counted apart.
 
 ### How "business purpose" is derived
 
@@ -80,6 +94,21 @@ several. `src/insight.mjs` then turns those distributions into the written brief
 
 The momentum **index** is a cluster's share of the last 30 days of postings divided by its share of
 the whole open book. Above `1.00` means the cluster is over-represented in recent hiring.
+
+### Time
+
+Three separate time views, because they answer different questions:
+
+- **Daily trend** — postings created per day, over the last 180 days.
+- **Monthly composition** — small multiples showing how each cluster and business unit has moved
+  month by month. Drawn in a single ink rather than as a stacked colour chart, so the theme holds.
+- **Share shift** — each cluster's and unit's share of the last three months of postings against its
+  share of the three months before, in percentage points. This is the clearest read on direction.
+
+All three are computed from each posting's creation date. Only currently-open roles are visible, so
+earlier months are progressively understated as roles close, and the current month is partial. The
+page says so next to the chart; read the shape and the share shift rather than the absolute level.
+Once several daily batches have run, `data/history.json` also accumulates a true observed series.
 
 ### What it cannot tell you
 
