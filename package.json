@@ -1,0 +1,21 @@
+{
+  "name": "microsoft-hiring-signal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reads every role advertised on careers.microsoft.com as a business-strategy signal, and publishes it as a static site.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "batch": "node src/daily.mjs",
+    "batch:full": "node src/daily.mjs --full",
+    "rebuild": "node src/rebuild.mjs",
+    "serve": "node src/server.mjs",
+    "fonts": "node src/vendor-fonts.mjs",
+    "schedule:install": "node src/schedule.mjs install",
+    "schedule:status": "node src/schedule.mjs status",
+    "schedule:remove": "node src/schedule.mjs remove"
+  }
+}

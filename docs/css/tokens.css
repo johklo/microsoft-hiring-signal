@@ -1,0 +1,64 @@
+/* Hallmark · theme: Grid · genre: editorial
+ * axes — paper band: light (99%) · display: grotesk-heavy lowercase (Archivo 800)
+ *        accent hue: ultramarine (technical / institutional)
+ * One signal ink per page. No serif, no mono body, no second family.
+ */
+
+:root {
+  /* ---- sheet ------------------------------------------------------------ */
+  --color-paper: oklch(99% 0.003 255);
+  --color-paper-2: oklch(97.2% 0.003 255);
+  --color-paper-3: oklch(94.5% 0.004 255);
+  --color-ink: oklch(16% 0.010 255);
+  --color-muted: oklch(48% 0.012 255);
+  --color-rule: oklch(88% 0.004 255);
+  --color-rule-strong: oklch(16% 0.010 255);
+
+  /* ---- the one signal ink ----------------------------------------------- */
+  --color-accent: oklch(45% 0.19 264);
+  --color-accent-soft: oklch(45% 0.19 264 / 0.12);
+  --color-accent-ink: var(--color-paper);
+  --color-focus: var(--color-accent);
+
+  /* Direction-of-travel pair. Derived from the ink so the page keeps one hue
+     family; the negative is the ink desaturated, never a second accent. */
+  --color-pos: oklch(45% 0.19 264);
+  --color-neg: oklch(58% 0.02 255);
+
+  /* ---- type ------------------------------------------------------------- */
+  --font-display: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  --display-weight: 800;
+  --tracking-display: -0.045em;
+  --tracking-label: 0.09em;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+
+  /* ---- space (4pt scale) ------------------------------------------------ */
+  --space-3xs: 4px;
+  --space-2xs: 8px;
+  --space-xs: 12px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 40px;
+  --space-xl: 64px;
+  --space-2xl: 96px;
+  --space-3xl: 128px;
+
+  --page-gutter: clamp(16px, 4vw, 48px);
+  --shell: 1280px;
+  --rail: 168px;
+
+  --rule-hair: 1px;
+  --rule-bold: 2px;
+  --radius-card: 0;
+  --shadow-card: none;
+
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --dur: 0.18s;
+}

@@ -1,0 +1,8 @@
+# Raw crawl cache and logs stay local; only the built site under docs/ is published.
+# Leading slashes anchor to the repo root so docs/data/ is NOT ignored.
+node_modules/
+/data/
+/scripts/
+/shots/
+/.hallmark/
+*.log

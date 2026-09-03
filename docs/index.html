@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Hiring Signal — what Microsoft is advertising for</title>
+    <meta
+      name="description"
+      content="A local read of every role advertised on careers.microsoft.com: what the work is for, where it is going, and what it implies about direction."
+    />
+    <link rel="stylesheet" href="./css/fonts.css" />
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/app.css" />
+  </head>
+  <body>
+    <div class="sheet">
+      <div class="rails" aria-hidden="true"></div>
+
+      <!-- N3 · Side-rail, numbered -->
+      <nav class="rail" aria-label="Sections">
+        <div>
+          <span class="rail__mark" aria-hidden="true"></span>
+          <p class="rail__word">hiring<br />signal</p>
+        </div>
+        <p class="rail__meta" id="rail-meta">—</p>
+        <div class="rail__index">
+          <a class="rail__link" href="#s00"><span>00</span><span>Brief</span></a>
+          <a class="rail__link" href="#s01"><span>01</span><span>Clusters</span></a>
+          <a class="rail__link" href="#s02"><span>02</span><span>Shape</span></a>
+          <a class="rail__link" href="#s03"><span>03</span><span>Momentum</span></a>
+          <a class="rail__link" href="#s04"><span>04</span><span>Geography</span></a>
+          <a class="rail__link" href="#s05"><span>05</span><span>Index</span></a>
+          <a class="rail__link" href="#s06"><span>06</span><span>Changes</span></a>
+        </div>
+      </nav>
+
+      <div class="page">
+        <main class="shell" id="main">
+          <!-- ============================================ 00 · the brief -->
+          <section class="band band--open hero" id="s00">
+            <p class="hero__kicker">
+              <span id="k-source">careers.microsoft.com</span>
+              <span id="k-date">—</span>
+              <span id="k-scope">—</span>
+            </p>
+
+            <h1>
+              <span class="visually-hidden" id="a11y-headline">Open roles advertised</span>
+              <span class="hero__figure" id="hero-figure" aria-hidden="true">—</span>
+              <span class="hero__lead" id="hero-lead"
+                >open roles<span class="period" aria-hidden="true"></span
+              ></span>
+            </h1>
+
+            <div class="hero__body">
+              <div class="hero__standfirst">
+                <p id="hero-standfirst">Loading the latest batch…</p>
+              </div>
+              <div class="hero__aside">
+                <p class="label">Reading</p>
+                <p class="prose" style="font-size: var(--text-sm)">
+                  A job advert is a company spending money on intent. Read together, the open book
+                  shows which bets are being staffed, which are being wound down, and where capacity
+                  is being built.
+                </p>
+              </div>
+            </div>
+
+            <div class="kpis" id="kpis"></div>
+          </section>
+        </main>
+
+        <!-- =============================================== the one plate -->
+        <section class="plate" id="plate" aria-labelledby="plate-lead">
+          <div class="shell">
+            <div class="plate__inner">
+              <p class="plate__figure" id="plate-figure">—</p>
+              <div class="plate__text">
+                <p class="label">The build-out</p>
+                <h2 class="plate__lead" id="plate-lead">of every advertised role</h2>
+                <p class="plate__note" id="plate-note"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <main class="shell">
+          <!-- findings + outlook, still part of the brief -->
+          <section class="band" aria-labelledby="findings-title">
+            <div class="numeral" aria-hidden="true">00</div>
+            <div class="band__head">
+              <p class="band__index">00 — Brief</p>
+              <h2 class="band__title" id="findings-title">what the book says</h2>
+              <p class="band__note">
+                Every statement below is arithmetic over the advertised roles. Nothing is estimated.
+              </p>
+            </div>
+            <div class="cols" id="findings"></div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Outlook — what the advertising implies</p>
+                <ol class="outlook" id="outlook"></ol>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================== 01 · clusters -->
+          <section class="band" id="s01" aria-labelledby="clusters-title">
+            <div class="numeral" aria-hidden="true">01</div>
+            <div class="band__head">
+              <p class="band__index">01 — Clusters</p>
+              <h2 class="band__title" id="clusters-title">where the work is aimed</h2>
+              <p class="band__note">
+                Roles tagged by strategic cluster from title, profession, discipline and description.
+                A role can serve more than one.
+              </p>
+            </div>
+            <div class="cols">
+              <div class="col-7">
+                <p class="subhead">Cluster by advertised roles</p>
+                <div class="rank rank--wide" id="themes"></div>
+              </div>
+              <div class="col-5">
+                <p class="subhead">Named products &amp; platforms</p>
+                <div class="rank" id="products"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================= 02 · shape -->
+          <section class="band" id="s02" aria-labelledby="shape-title">
+            <div class="numeral" aria-hidden="true">02</div>
+            <div class="band__head">
+              <p class="band__index">02 — Shape</p>
+              <h2 class="band__title" id="shape-title">how the org is being built</h2>
+              <p class="band__note">
+                Function mix, seniority pyramid, and the individual-contributor to people-manager
+                split.
+              </p>
+            </div>
+
+            <div class="cells" id="functionmix"></div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-5">
+                <p class="subhead">Seniority of advertised titles</p>
+                <div class="rank" id="seniority"></div>
+              </div>
+              <div class="col-7">
+                <p class="subhead">Profession × role type</p>
+                <div class="tablewrap">
+                  <table class="matrix" id="crosstab">
+                    <caption class="visually-hidden">
+                      Advertised roles by profession and role type
+                    </caption>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-6">
+                <p class="subhead">Profession</p>
+                <div class="rank rank--wide" id="professions"></div>
+              </div>
+              <div class="col-6">
+                <p class="subhead">Discipline</p>
+                <div class="rank rank--wide" id="disciplines"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================== 03 · momentum -->
+          <section class="band" id="s03" aria-labelledby="momentum-title">
+            <div class="numeral" aria-hidden="true">03</div>
+            <div class="band__head">
+              <p class="band__index">03 — Momentum</p>
+              <h2 class="band__title" id="momentum-title">what is accelerating</h2>
+              <p class="band__note">
+                Index = a cluster's share of the last 30 days of postings ÷ its share of the whole
+                open book. Above 1.00 means over-represented in recent hiring.
+              </p>
+            </div>
+
+            <div class="cols">
+              <div class="col-6">
+                <p class="subhead">Over-represented in recent postings</p>
+                <div id="rising"></div>
+              </div>
+              <div class="col-6">
+                <p class="subhead">Under-represented in recent postings</p>
+                <div id="cooling"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-8">
+                <p class="subhead">Postings created per day (currently open roles)</p>
+                <div id="trend"></div>
+                <p class="cell__note" id="trend-note"></p>
+              </div>
+              <div class="col-4">
+                <p class="subhead">Age of the open book</p>
+                <div class="rank" id="age"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================= 04 · geography -->
+          <section class="band" id="s04" aria-labelledby="geo-title">
+            <div class="numeral" aria-hidden="true">04</div>
+            <div class="band__head">
+              <p class="band__index">04 — Geography</p>
+              <h2 class="band__title" id="geo-title">where the roles sit</h2>
+              <p class="band__note">
+                A role listing several locations is counted once per country, so country totals
+                exceed the role count.
+              </p>
+            </div>
+            <div class="cols">
+              <div class="col-4">
+                <p class="subhead">Country</p>
+                <div class="rank" id="countries"></div>
+              </div>
+              <div class="col-4">
+                <p class="subhead">City</p>
+                <div class="rank rank--wide" id="cities"></div>
+              </div>
+              <div class="col-4">
+                <p class="subhead">Work-site policy</p>
+                <div class="rank rank--wide" id="worksite"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Required travel</p>
+                <div class="rank" id="travel"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================= 05 · index -->
+          <section class="band" id="s05" aria-labelledby="index-title">
+            <div class="numeral" aria-hidden="true">05</div>
+            <div class="band__head">
+              <p class="band__index">05 — Index</p>
+              <h2 class="band__title" id="index-title">the roles themselves</h2>
+              <p class="band__note">
+                Every advertised role, filterable. Each links to the live posting.
+              </p>
+            </div>
+
+            <div class="filters">
+              <label class="field">
+                <span>Search title, team, text</span>
+                <input type="search" id="f-q" placeholder="e.g. datacenter, copilot, silicon" />
+              </label>
+              <label class="field">
+                <span>Cluster</span>
+                <select id="f-theme"></select>
+              </label>
+              <label class="field">
+                <span>Profession</span>
+                <select id="f-profession"></select>
+              </label>
+              <label class="field">
+                <span>Country</span>
+                <select id="f-country"></select>
+              </label>
+              <label class="field">
+                <span>Seniority</span>
+                <select id="f-seniority"></select>
+              </label>
+              <label class="field">
+                <span>Sort</span>
+                <select id="f-sort">
+                  <option value="new">Newest first</option>
+                  <option value="old">Oldest first</option>
+                  <option value="title">Title A–Z</option>
+                </select>
+              </label>
+            </div>
+
+            <p class="label" id="index-count">—</p>
+            <div class="tablewrap">
+              <table class="index">
+                <caption class="visually-hidden">Advertised roles</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Role</th>
+                    <th scope="col">Cluster</th>
+                    <th scope="col">Locations</th>
+                    <th scope="col">Posted</th>
+                  </tr>
+                </thead>
+                <tbody id="index-body"></tbody>
+              </table>
+            </div>
+            <p style="margin-top: var(--space-md)">
+              <button class="chip" id="more" type="button">Show more roles</button>
+            </p>
+          </section>
+
+          <!-- =========================================== 06 · changes -->
+          <section class="band" id="s06" aria-labelledby="changes-title">
+            <div class="numeral" aria-hidden="true">06</div>
+            <div class="band__head">
+              <p class="band__index">06 — Changes</p>
+              <h2 class="band__title" id="changes-title">what moved</h2>
+              <p class="band__note">
+                Each daily batch diffs the live book against the last snapshot: openings added,
+                closed, and postings edited in place.
+              </p>
+            </div>
+            <div id="changes"></div>
+          </section>
+
+          <!-- ==================================== Ft4 · dense colophon -->
+          <footer class="colophon">
+            <div class="colophon__grid">
+              <div class="colophon__block">
+                <h3>Method</h3>
+                <p>
+                  Every page of the public search index on careers.microsoft.com is walked, then each
+                  posting's detail record is read for profession, discipline, role type, employment
+                  type, work-site policy, required travel and full description. Clusters are matched
+                  by keyword across all of those fields.
+                </p>
+              </div>
+              <div class="colophon__block">
+                <h3>Read it carefully</h3>
+                <ul id="caveats"></ul>
+              </div>
+              <div class="colophon__block">
+                <h3>Batch</h3>
+                <p class="colophon__meta" id="colophon-run"></p>
+              </div>
+            </div>
+            <hr class="colophon__rule" />
+            <p class="colophon__meta">
+              Local build · data cached on this machine · source
+              <a class="link" href="https://jobs.careers.microsoft.com/global/en/search"
+                >jobs.careers.microsoft.com</a
+              >
+              · not affiliated with Microsoft · figures describe advertised roles, not hires.
+            </p>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <script src="./js/app.js" type="module"></script>
+  </body>
+</html>
