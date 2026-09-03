@@ -61,7 +61,7 @@ Postings that disappear from the site are **not deleted** — they are marked `c
 | **00 · Brief** | The one-page executive summary: headline figure, six KPIs, six evidence sections, and a numbered outlook reading the hiring as strategy. |
 | **The plate** | Share of all postings touching the AI / datacenter / silicon build-out. |
 | **01 · Clusters** | Which strategic bet each role serves, plus named products and platforms. |
-| **02 · Organisation** | Which business unit is hiring (CO+I, ISD, MAI, SCHIE, Microsoft Security…), the commercial solution area (Data & AI, Business Applications, Modern Work…), the named strategic initiatives (Agentic AI, Frontier Firm, sovereign cloud), and business unit × seniority. |
+| **02 · Organisation** | Which division and business unit is hiring — MCAPS (ATU, CSU, GPS, CE&S, CSS, SME&C), Microsoft Frontier Company (ISD, FDE), and the engineering divisions (CO+I, SCHIE, MAI, CoreAI, Microsoft Security…) — plus commercial solution areas, named strategic initiatives, and business unit × seniority. |
 | **03 · Shape** | Build vs sell vs capacity vs run, the seniority pyramid, and profession × role type. |
 | **04 · Momentum** | What is over- and under-represented in the last 30 days, the daily posting trend, monthly composition by cluster and business unit, and the share shift between the last three months and the three before. |
 | **05 · Geography** | Countries, cities, work-site policy and travel requirements. |
@@ -73,9 +73,18 @@ Postings that disappear from the site are **not deleted** — they are marked `c
 Each role is placed on four independent axes, so the same posting can be read several ways:
 
 1. **Strategic cluster** — which bet the work serves (AI Platform, Datacenter Buildout, Go-to-Market…). Multi-valued.
-2. **Business unit** — which part of the company is hiring. Single-valued, and only when the advert
-   names its own organisation; about half do, and the rest are reported as *not stated* rather than
-   guessed, so unit totals are a floor rather than a census.
+2. **Business unit** — which part of the company is hiring, with the division it reports into:
+   **MCAPS** (ATU, CSU, GPS, CE&S, CSS, SME&C), **Microsoft Frontier Company** (ISD, FDE), and the
+   **engineering and product divisions** (CO+I, SCHIE, MAI, CoreAI, Microsoft Security, Cloud + AI,
+   E+D, MSR, Gaming, LinkedIn). Single-valued.
+
+   A unit is only counted when the advert **identifies itself** — *"within Microsoft's Global Partner
+   Solutions (GPS) organization"*, *"Microsoft Industry Solutions Delivery (ISD) is a global
+   organization"* — and only from the **Overview** section. This matters: the Responsibilities
+   section routinely lists teams a role merely collaborates with (*"across organizations (e.g., ATU,
+   CSU, ISD, GPS)"*), and counting those put field roles such as Account Technology Strategist in
+   the wrong unit entirely. About a third of adverts qualify; the rest are reported as *not stated*
+   rather than guessed, so unit totals are a floor rather than a census.
 3. **Solution area** — the commercial practice a customer-facing role is sold against.
 4. **Initiative** — the named narrative it is hired against, such as Agentic AI or the Frontier Firm
    transformation. Worth separating: *Frontier Firm* is a go-to-market story sold to customers,
@@ -209,6 +218,9 @@ Two corrections worth knowing about, because they changed the numbers a lot:
 - **Body text needs corroboration.** A keyword in the title, profession, discipline or department
   tags a role outright. In the free-text body a single mention is not enough — nearly half of all
   adverts name Azure somewhere — so two distinct keyword hits are required.
+- **Organisations must identify themselves.** An advert naming a team is not the same as belonging
+  to it. Only possessive constructions in the Overview count, which cut business-unit coverage from
+  56 % to about a third but removed the false positives entirely.
 
 Cluster shares overlap by design (a role can serve several), so they do not sum to 100 %. Where a
 combined figure is quoted, such as the AI / datacenter / silicon share, it is a **set union**, not a

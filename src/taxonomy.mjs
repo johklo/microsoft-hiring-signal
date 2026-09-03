@@ -195,100 +195,167 @@ const PRODUCT_DEFS = [
 export const PRODUCT_TERMS = PRODUCT_DEFS.map(([t]) => t);
 
 /**
- * Microsoft business units, as they actually name themselves in the adverts.
+ * Microsoft business units as they name themselves in adverts, with the parent
+ * they report into.
+ *
  * Ordered most-specific first: a role inside Industry Solutions Delivery also
- * says MCAPS, and the narrower unit is the more useful answer.
+ * mentions Frontier, and the narrower unit is the more useful answer.
  *
  * Single-valued — a role sits in one organisation.
  */
+export const ORG_PARENTS = {
+  mcaps: 'Customer & Partner Solutions (MCAPS)',
+  frontier: 'Microsoft Frontier Company',
+  engineering: 'Engineering & product divisions',
+};
+
 export const ORG_UNITS = [
+  // ---- MCAPS field organisation ----------------------------------------
+  {
+    id: 'atu',
+    parent: 'mcaps',
+    label: 'Account Team Unit (ATU)',
+    blurb: 'Owns the customer relationship inside named enterprise accounts.',
+    re: /\bATU\b|Account Team Unit/i,
+  },
+  {
+    id: 'csu',
+    parent: 'mcaps',
+    label: 'Customer Success Unit (CSU)',
+    blurb: 'Drives adoption and consumption after the sale.',
+    re: /\bCSU\b|Customer Success Unit/i,
+  },
+  {
+    id: 'gps',
+    parent: 'mcaps',
+    label: 'Global Partner Solutions (GPS)',
+    blurb: 'Builds and sells through the partner channel.',
+    re: /\bGPS\b|Global Partner Solutions/i,
+  },
+  {
+    id: 'css',
+    parent: 'mcaps',
+    label: 'Customer Service & Support (CSS)',
+    blurb: 'Front-line and escalation support, inside CE&S.',
+    // Never a bare "CSS" — that is the stylesheet language on front-end adverts.
+    re: /Customer Service\s*(?:&|and)\s*Support/i,
+  },
+  {
+    id: 'ces',
+    parent: 'mcaps',
+    label: 'Customer Experience & Success (CE&S)',
+    blurb: 'Post-sale success, support and delivery across the customer base.',
+    re: /\bCE&S\b|Customer Experience\s*(?:&|and)\s*Success/i,
+  },
+  {
+    id: 'smec',
+    parent: 'mcaps',
+    label: 'Small, Medium Enterprises & Channel (SME&C)',
+    blurb: 'The volume segment, sold largely through partners.',
+    re: /\bSME&C\b|Small,?\s*Medium Enterprises?\s*(?:&|and)\s*Channel/i,
+  },
+  {
+    id: 'mcaps',
+    parent: 'mcaps',
+    label: 'MCAPS \u2014 other / unspecified',
+    blurb: 'Named the commercial field organisation without naming a sub-unit.',
+    re: /\bMCAPS\b|Microsoft Customer and Partner Solutions/i,
+  },
+
+  // ---- Microsoft Frontier Company ---------------------------------------
+  {
+    id: 'isd',
+    parent: 'frontier',
+    label: 'Industry Solutions Delivery (ISD)',
+    blurb: 'Microsoft\u2019s own consulting and delivery arm, inside Frontier.',
+    // Never a bare "Industry Solutions": an ordinary noun phrase that also turns
+    // up in lists of collaborating teams.
+    re: /\bISD\b|Industry Solutions Delivery|Microsoft Industry Solutions/i,
+  },
+  {
+    id: 'fde',
+    parent: 'frontier',
+    label: 'Forward Deployed Engineering (FDE)',
+    blurb: 'Engineers embedded directly in customer transformations.',
+    re: /\bFDE\b|Forward Deployed Engineer/i,
+  },
+  {
+    id: 'frontier',
+    parent: 'frontier',
+    label: 'Frontier Company \u2014 other / unspecified',
+    blurb: 'The organisation rebuilding Microsoft\u2019s commercial business around AI.',
+    re: /Microsoft Frontier Company|Frontier Company|frontier organization/i,
+  },
+
+  // ---- engineering and product divisions --------------------------------
   {
     id: 'coi',
+    parent: 'engineering',
     label: 'Cloud Operations + Innovation (CO+I)',
     blurb: 'Builds and runs the datacenter estate that all of Microsoft Cloud sits on.',
     re: /\bCO\s?[+&]\s?I\b|Cloud Operations\s*(?:\+|&|and)\s*Innovation/i,
   },
   {
     id: 'schie',
+    parent: 'engineering',
     label: 'Silicon, Cloud Hardware & Infrastructure Engineering (SCHIE)',
     blurb: 'Designs the custom silicon, servers and hardware inside those datacenters.',
     re: /\bSCHIE\b|Silicon,?\s*Cloud Hardware/i,
   },
   {
     id: 'mai',
+    parent: 'engineering',
     label: 'Microsoft AI (MAI)',
-    blurb: 'The consumer-facing AI organisation — Copilot, Bing and in-house models.',
+    blurb: 'The consumer-facing AI organisation \u2014 Copilot, Bing and in-house models.',
     re: /\bMicrosoft AI\b|\bMAI\b/,
   },
   {
     id: 'coreai',
-    label: 'CoreAI — Platform & Tools',
+    parent: 'engineering',
+    label: 'CoreAI \u2014 Platform & Tools',
     blurb: 'The developer platform and AI tooling stack, including AI Foundry.',
     re: /\bCoreAI\b|\bCore AI\b/i,
   },
   {
     id: 'security',
+    parent: 'engineering',
     label: 'Microsoft Security',
     blurb: 'The security product division: Defender, Sentinel, Entra, Purview.',
     re: /\bMicrosoft Security\b|\bSecurity Division\b/i,
   },
   {
-    id: 'isd',
-    label: 'Industry Solutions Delivery (ISD)',
-    blurb: 'Microsoft\u2019s own consulting arm — delivers and implements for customers.',
-    re: /\bISD\b|Industry Solutions Delivery|\bIndustry Solutions\b/i,
-  },
-  {
-    id: 'css',
-    label: 'Customer Service & Support (CSS)',
-    blurb: 'Front-line and escalation support for customers already on the platform.',
-    // Never a bare "CSS" — that is the stylesheet language on front-end adverts.
-    re: /Customer Service\s*(?:&|and)\s*Support|\bCSS\s+(?:organization|team)\b/i,
-  },
-  {
-    id: 'smec',
-    label: 'Small, Medium Enterprises & Channel (SME&C)',
-    blurb: 'Volume segment sold largely through partners.',
-    re: /\bSME&C\b|Small,?\s*Medium Enterprises?\s*(?:&|and)\s*Channel/i,
-  },
-  {
-    id: 'ces',
-    label: 'Customer Experience & Success (CE&S)',
-    blurb: 'Post-sale adoption, success and support across the customer base.',
-    re: /\bCE&S\b|Customer Experience\s*(?:&|and)\s*Success/i,
-  },
-  {
-    id: 'mcaps',
-    label: 'Customer & Partner Solutions (MCAPS)',
-    blurb: 'The global commercial field organisation — sales, partners, go-to-market.',
-    re: /\bMCAPS\b|Microsoft Customer and Partner Solutions/i,
-  },
-  {
     id: 'cloudai',
+    parent: 'engineering',
     label: 'Cloud + AI',
     blurb: 'The Azure platform engineering organisation.',
-    re: /\bCloud\s*\+\s*AI\b|\bCloud and AI\b/i,
+    // Only the "+" form. "Microsoft cloud and AI solutions" is marketing prose,
+    // not the division.
+    re: /\bCloud\s*\+\s*AI\b/i,
   },
   {
     id: 'ed',
+    parent: 'engineering',
     label: 'Experiences + Devices (E+D)',
     blurb: 'Microsoft 365, Windows, Teams and first-party devices.',
     re: /\bE\+D\b|Experiences\s*\+\s*Devices/i,
   },
   {
     id: 'msr',
+    parent: 'engineering',
     label: 'Microsoft Research (MSR)',
     blurb: 'Long-horizon research, largely decoupled from shipping product.',
     re: /\bMicrosoft Research\b|\bMSR\b/,
   },
   {
     id: 'gaming',
+    parent: 'engineering',
     label: 'Gaming',
     blurb: 'Xbox, the studios and the games subscription business.',
     re: /\bXbox\b|Game Studios|\bMicrosoft Gaming\b|\bGaming (?:organization|division|team)\b/i,
   },
   {
     id: 'linkedin',
+    parent: 'engineering',
     label: 'LinkedIn',
     blurb: 'The professional network, run as its own business.',
     re: /\bLinkedIn\b/i,
@@ -345,13 +412,57 @@ export const INITIATIVES = [
   },
 ];
 
-/** First matching unit wins; returns null when no organisation is named. */
-export function detectOrg(strongText = '', bodyText = '') {
-  const hay = `${strongText}\n${bodyText}`;
+/**
+ * Only a *self-identifying* mention counts as the role's own organisation.
+ *
+ * Adverts routinely name other teams the role will work with — "collaborate
+ * with Global Partner Solutions (GPS)", "across organizations (e.g., ATU, CSU,
+ * ISD, GPS)" — and counting those put field roles in the wrong unit entirely.
+ * So a match must sit in a possessive construction:
+ *
+ *   before:  "within Microsoft's Global Partner Solutions (GPS) organization"
+ *   after:   "Microsoft Industry Solutions Delivery (ISD) is a global organization"
+ *
+ * Detection also reads the Overview block only. Qualifications and
+ * Responsibilities are where other teams get named.
+ */
+const SELF_BEFORE =
+  String.raw`(?:within|inside|part of|joining|join|welcome to|we are|we're|our|here at|in the|role in|role within|member of)\s+` +
+  String.raw`(?:the\s+)?(?:Microsoft(?:['\u2019]s)?\s+)?(?:the\s+)?`;
+
+const SELF_AFTER =
+  String.raw`\s*(?:\([^)]{1,24}\)\s*)?` +
+  String.raw`(?:organi[sz]ation|team|group|division|business unit|is\s+(?:a|an|the)\s|is looking|is hiring|is seeking|are looking|are hiring)`;
+
+const selfCache = new Map();
+function selfPatterns(unit) {
+  if (!selfCache.has(unit.id)) {
+    const src = unit.re.source;
+    selfCache.set(unit.id, [
+      new RegExp(SELF_BEFORE + `(?:${src})`, 'i'),
+      new RegExp(`(?:${src})` + SELF_AFTER, 'i'),
+    ]);
+  }
+  return selfCache.get(unit.id);
+}
+
+/**
+ * @param {string} strongText  title / profession / discipline / department
+ * @param {string} overviewText the advert's Overview block
+ * @returns {string|null} unit id, or null when no organisation identifies itself
+ */
+export function detectOrg(strongText = '', overviewText = '') {
+  const hay = `${strongText}\n${overviewText}`;
   for (const u of ORG_UNITS) {
-    if (u.re.test(hay)) return u.id;
+    const [before, after] = selfPatterns(u);
+    if (before.test(hay) || after.test(hay)) return u.id;
   }
   return null;
+}
+
+/** The parent division an org id reports into. */
+export function orgParent(id) {
+  return ORG_UNITS.find((u) => u.id === id)?.parent ?? null;
 }
 
 export function detectSolutionAreas(text = '') {
@@ -470,6 +581,16 @@ export function extractOverview(plainText = '') {
   const m = plainText.match(/Overview\s*\n+([\s\S]{40,900}?)(?:\n\s*(?:Qualifications|Responsibilities|Required\/Minimum)\b|$)/i);
   const raw = m ? m[1] : plainText.slice(0, 600);
   return raw.replace(/\s+/g, ' ').trim().slice(0, 700);
+}
+
+/**
+ * The full Overview block. This is where a team describes itself; the
+ * Qualifications and Responsibilities sections instead name *other* teams the
+ * role will work with, which is why organisation detection must not read them.
+ */
+export function extractOverviewBlock(plainText = '') {
+  const m = plainText.match(/Overview\s*\n+([\s\S]*?)(?:\n\s*(?:Qualifications|Responsibilities|Required\/Minimum|Additional or Preferred)\b|$)/i);
+  return (m ? m[1] : plainText.slice(0, 2500)).slice(0, 4000);
 }
 
 const COUNTRY_ALIASES = {

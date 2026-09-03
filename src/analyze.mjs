@@ -1,4 +1,13 @@
-import { BUSINESS_THEMES, INITIATIVES, ORG_UNITS, SOLUTION_AREAS, cityLabel, parseLocation } from './taxonomy.mjs';
+import {
+  BUSINESS_THEMES,
+  INITIATIVES,
+  ORG_PARENTS,
+  ORG_UNITS,
+  SOLUTION_AREAS,
+  cityLabel,
+  orgParent,
+  parseLocation,
+} from './taxonomy.mjs';
 
 const UNKNOWN = 'Unspecified';
 
@@ -128,6 +137,7 @@ export function analyze(allJobs, runs, history) {
   const byTheme = new Map();
   const byProduct = new Map();
   const byOrg = new Map();
+  const byOrgParent = new Map();
   const bySolutionArea = new Map();
   const byInitiative = new Map();
   const postedByDay = new Map();
@@ -175,6 +185,7 @@ export function analyze(allJobs, runs, history) {
     for (const p of j.products || []) tally(byProduct, p);
 
     tally(byOrg, j.org || 'not_stated');
+    tally(byOrgParent, j.org ? orgParent(j.org) : 'not_stated');
     for (const s of j.solutionAreas || []) tally(bySolutionArea, s);
     for (const i of j.initiatives || []) tally(byInitiative, i);
 
@@ -209,7 +220,18 @@ export function analyze(allJobs, runs, history) {
       share: +((x.count / Math.max(1, jobs.length)) * 100).toFixed(1),
     }));
 
-  const orgList = decorate(byOrg, orgMeta, 'Not stated');
+  const orgList = decorate(byOrg, orgMeta, 'Not stated').map((o) => ({
+    ...o,
+    parent: o.key === 'not_stated' ? null : orgParent(o.key),
+    parentLabel: o.key === 'not_stated' ? null : ORG_PARENTS[orgParent(o.key)] ?? null,
+  }));
+
+  const orgParentList = toList(byOrgParent).map((x) => ({
+    key: x.key,
+    label: x.key === 'not_stated' ? 'Not stated' : ORG_PARENTS[x.key] ?? x.key,
+    count: x.count,
+    share: +((x.count / Math.max(1, jobs.length)) * 100).toFixed(1),
+  }));
   const solutionAreaList = decorate(bySolutionArea, saMeta);
   const initiativeList = decorate(byInitiative, initMeta);
 
@@ -304,6 +326,7 @@ export function analyze(allJobs, runs, history) {
     },
     themes: themeList,
     orgs: orgList,
+    orgParents: orgParentList,
     solutionAreas: solutionAreaList,
     initiatives: initiativeList,
     themePairs: toList(themeCombo, 15).map((x) => {

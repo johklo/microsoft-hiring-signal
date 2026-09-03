@@ -9,6 +9,7 @@ import {
   detectSolutionAreas,
   detectThemes,
   extractOverview,
+  extractOverviewBlock,
   stripBoilerplate,
   toPlainText,
 } from './taxonomy.mjs';
@@ -100,6 +101,9 @@ export function buildRecord(summary, detail, previous) {
   // Legal/benefits boilerplate is stripped before tagging.
   const clean = stripBoilerplate(plain);
   const strong = [title, profession, discipline, summary.department].filter(Boolean).join('\n');
+  // Organisation is read from the Overview only — that is where a team
+  // describes itself rather than listing teams it collaborates with.
+  const overviewBlock = extractOverviewBlock(clean);
 
   return {
     id: String(summary.id),
@@ -122,7 +126,7 @@ export function buildRecord(summary, detail, previous) {
     url: detail?.publicUrl ?? `https://jobs.careers.microsoft.com/global/en/job/${summary.id}`,
     themes: detectThemes(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
-    org: detectOrg(strong, clean),
+    org: detectOrg(strong, overviewBlock),
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
     overview: clean ? extractOverview(clean) : previous?.overview ?? '',
@@ -145,12 +149,13 @@ export function reclassify(job) {
   const plain = toPlainText(job.descriptionHtml || '');
   const clean = stripBoilerplate(plain);
   const strong = [job.title, job.profession, job.discipline, job.department].filter(Boolean).join('\n');
+  const overviewBlock = extractOverviewBlock(clean);
   return {
     ...job,
     seniority: classifySeniority(job.title || ''),
     themes: detectThemes(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
-    org: detectOrg(strong, clean),
+    org: detectOrg(strong, overviewBlock),
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
     overview: clean ? extractOverview(clean) : job.overview ?? '',

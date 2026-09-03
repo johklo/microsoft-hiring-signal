@@ -162,6 +162,7 @@ export function buildBrief(jobs, stats, history) {
 
   // ---- organisation -------------------------------------------------------
   const orgs = (stats.orgs || []).filter((o) => o.key !== 'not_stated');
+  const divisions = (stats.orgParents || []).filter((d) => d.key !== 'not_stated');
   const orgCoverage = stats.meta.orgCoverage ?? 0;
   const topOrgs = orgs.slice(0, 5);
   const orgSkew = recencySkew(open.filter((j) => j.org), (j) => [j.org], 20);
@@ -228,11 +229,14 @@ export function buildBrief(jobs, stats, history) {
     {
       title: 'Which organisation is doing the hiring',
       points: [
-        topOrgs.length
-          ? `${orgCoverage}% of adverts name their own business unit. The largest are ${topOrgs
-              .map((o) => `${shortOrg(o.label)} (${o.count})`)
+        divisions.length
+          ? `Of the ${orgCoverage}% of adverts that identify their own organisation, the split by division is ${divisions
+              .map((d) => `${d.label.replace(/\s*\([^)]*\)/, '')} ${d.share}%`)
               .join(', ')}.`
-          : 'Few adverts name a business unit.',
+          : 'Few adverts identify their own organisation.',
+        topOrgs.length
+          ? `The largest named units are ${topOrgs.map((o) => `${shortOrg(o.label)} (${o.count})`).join(', ')}.`
+          : '',
         topOrgs[0]
           ? `${topOrgs[0].label} alone accounts for ${topOrgs[0].share}% of the whole open book. ${topOrgs[0].blurb}`
           : '',
@@ -382,7 +386,7 @@ export function buildBrief(jobs, stats, history) {
     caveats: [
       'Based only on publicly advertised roles on careers.microsoft.com; internal transfers and unadvertised hiring are not visible.',
       'A posting is not a hire \u2014 volumes indicate intent and capacity planning, not headcount actually added.',
-      'Business units are only counted when an advert names its own organisation, which about half do. The rest are reported as not stated rather than guessed, so unit totals are a floor, not a census.',
+      'Business units are counted only when an advert identifies its own organisation, and only from the Overview section \u2014 the Responsibilities section names teams a role merely collaborates with. About a third of adverts qualify; the rest are reported as not stated rather than guessed, so unit totals are a floor, not a census.',
       'The momentum index compares each theme\u2019s share of the last 30 days of postings against its share of the whole open book. Roles that close quickly are slightly under-counted.',
       'Cluster tagging is keyword-based over title, profession, discipline and description, after standard legal and benefits boilerplate is removed. Clusters overlap, so their shares do not sum to 100%.',
     ],

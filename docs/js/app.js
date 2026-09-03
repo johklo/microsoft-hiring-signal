@@ -548,16 +548,32 @@ async function boot() {
   // ---- organisation
   const notStated = stats.orgs.find((o) => o.key === 'not_stated');
   const namedOrgs = stats.orgs.filter((o) => o.key !== 'not_stated');
+
+  const parents = $('orgparents');
+  clear(parents);
+  for (const p of (stats.orgParents || []).filter((x) => x.key !== 'not_stated')) {
+    const cell = el('div', 'cell');
+    cell.appendChild(el('p', 'cell__value', `${p.share}%`));
+    cell.appendChild(el('p', 'cell__label', p.label));
+    cell.appendChild(el('p', 'cell__note', `${nf.format(p.count)} roles`));
+    parents.appendChild(cell);
+  }
+
   renderRank(
     $('orgs'),
-    namedOrgs.map((o) => ({ label: o.label, count: o.count, sub: o.blurb })),
+    namedOrgs.map((o) => ({
+      label: o.label,
+      count: o.count,
+      sub: `${o.parentLabel ? o.parentLabel + ' · ' : ''}${o.blurb}`,
+    })),
     { sub: true }
   );
   $('org-note').textContent =
-    `Read from the way each advert names its own organisation. ${stats.meta.orgCoverage}% of roles ` +
-    `(${nf.format(stats.meta.orgIdentified)}) name one; the remaining ` +
-    `${nf.format(notStated ? notStated.count : 0)} are reported as not stated rather than guessed, ` +
-    `so these totals are a floor, not a census.`;
+    `Counted only when an advert identifies its own organisation \u2014 "within X", "X is a global ` +
+    `organisation" \u2014 and read from the Overview, since Responsibilities lists teams the role merely ` +
+    `works with. ${stats.meta.orgCoverage}% of roles (${nf.format(stats.meta.orgIdentified)}) qualify; ` +
+    `the other ${nf.format(notStated ? notStated.count : 0)} are reported as not stated rather than ` +
+    `guessed, so these totals are a floor, not a census.`;
   renderRank($('solutionareas'), stats.solutionAreas.map((s) => ({ label: s.label, count: s.count })));
   renderRank(
     $('initiatives'),
