@@ -255,6 +255,13 @@ export const ORG_UNITS = [
     re: /\bSME&C\b|Small,?\s*Medium Enterprises?\s*(?:&|and)\s*Channel/i,
   },
   {
+    id: 'stu',
+    parent: 'mcaps',
+    label: 'Solution Team Unit (STU)',
+    blurb: 'Technical pre-sales — the solution engineers behind the specialist motion.',
+    re: /\bSTU\b|Solution Team Unit/i,
+  },
+  {
     id: 'mcaps',
     parent: 'mcaps',
     label: 'MCAPS \u2014 other / unspecified',
@@ -629,9 +636,18 @@ function selfPatterns(unit) {
 /**
  * @param {string} strongText  title / profession / discipline / department
  * @param {string} overviewText the advert's Overview block
- * @returns {string|null} unit id, or null when no organisation identifies itself
+ * @param {string} department   the posting's structured department field
+ * @returns {string|null} unit id, or null when no organisation is identifiable
  */
-export function detectOrg(strongText = '', overviewText = '') {
+export function detectOrg(strongText = '', overviewText = '', department = '') {
+  // The structured department outranks the prose. That is the same rule the
+  // cluster tagging already uses — a structured field states what the role is,
+  // while the Overview is hand-written and can name the wrong parent. Cloud
+  // Solution Architecture postings, for instance, sit in the Customer Success
+  // Unit, but a fifth of them describe themselves as the CE&S umbrella above it.
+  const byDepartment = unitForDepartment(department);
+  if (byDepartment) return byDepartment;
+
   const hay = `${strongText}\n${overviewText}`;
   for (const u of ORG_UNITS) {
     const [before, after] = selfPatterns(u);
@@ -643,6 +659,43 @@ export function detectOrg(strongText = '', overviewText = '') {
 /** The parent division an org id reports into. */
 export function orgParent(id) {
   return ORG_UNITS.find((u) => u.id === id)?.parent ?? null;
+}
+
+/**
+ * Second-tier organisation detection: the role family, read from the posting's
+ * structured `department` field.
+ *
+ * Self-identification is the better evidence and stays first — but it only
+ * covers about a third of the book, and a large block of what it misses is
+ * field roles whose department names the team outright. A Cloud Solution
+ * Architect posting is a Customer Success Unit posting whether or not its
+ * Overview says so.
+ *
+ * Matching is on the exact department string, not a pattern. That matters:
+ * "Partner Development Management" is the partner organisation, while "HR
+ * Business Partnership" and "Client Delivery Partnership" are not, and a
+ * regex on "partner" would take all three.
+ *
+ * Two departments are deliberately absent. "Solution Architecture" without
+ * "Cloud" leans Industry Solutions rather than the field — of the postings
+ * carrying it that identify themselves, all name ISD — and "Technical Support
+ * Engineering" already self-identifies as CSS on almost every posting.
+ */
+export const UNIT_BY_DEPARTMENT = new Map([
+  ['cloud solution architecture', 'csu'],
+  ['digital cloud solution architecture', 'csu'],
+  ['customer success account mgmt', 'csu'],
+  ['solution engineering', 'stu'],
+  ['digital solution engineering', 'stu'],
+  ['account technology', 'atu'],
+  ['strategic account technology', 'atu'],
+  ['partner development management', 'gps'],
+  ['partner solution sales', 'gps'],
+  ['partner enablement program mgmt', 'gps'],
+]);
+
+export function unitForDepartment(department = '') {
+  return UNIT_BY_DEPARTMENT.get(String(department).trim().toLowerCase()) ?? null;
 }
 
 export function detectSolutionAreas(text = '') {

@@ -76,17 +76,31 @@ Each role is placed on several independent axes, so the same posting can be read
 
 1. **Strategic cluster** — which bet the work serves (AI Platform, Datacenter Buildout, Go-to-Market…). Multi-valued.
 2. **Business unit** — which part of the company is hiring, with the division it reports into:
-   **MCAPS** (ATU, CSU, GPS, CE&S, CSS, SME&C), **Microsoft Frontier Company** (ISD, FDE), and the
+   **MCAPS** (ATU, CSU, STU, GPS, CE&S, CSS, SME&C), **Microsoft Frontier Company** (ISD, FDE), and the
    **engineering and product divisions** (CO+I, SCHIE, MAI, CoreAI, Microsoft Security, Cloud + AI,
    E+D, MSR, Gaming, LinkedIn). Single-valued.
 
-   A unit is only counted when the advert **identifies itself** — *"within Microsoft's Global Partner
-   Solutions (GPS) organization"*, *"Microsoft Industry Solutions Delivery (ISD) is a global
+   Resolved in two tiers. First the posting's **structured department**, where that names the team
+   outright — a *Cloud Solution Architecture* posting is a Customer Success Unit posting, a *Solution
+   Engineering* posting is an STU posting — because a structured field states what the role is while
+   the Overview is hand-written and can name the wrong parent. A fifth of Cloud Solution
+   Architecture postings describe themselves as the CE&S umbrella above CSU.
+
+   Where no department maps, the advert has to **identify itself** — *"within Microsoft's Global
+   Partner Solutions (GPS) organization"*, *"Microsoft Industry Solutions Delivery (ISD) is a global
    organization"* — and only from the **Overview** section. This matters: the Responsibilities
    section routinely lists teams a role merely collaborates with (*"across organizations (e.g., ATU,
    CSU, ISD, GPS)"*), and counting those put field roles such as Account Technology Strategist in
-   the wrong unit entirely. About a third of adverts qualify; the rest are reported as *not stated*
-   rather than guessed, so unit totals are a floor rather than a census.
+   the wrong unit entirely.
+
+   The department map is a list of exact department strings, not a pattern — *Partner Development
+   Management* is the partner organisation while *HR Business Partnership* is not, and a regex on
+   "partner" would take both. Two departments are deliberately absent: *Solution Architecture*
+   without "Cloud" leans Industry Solutions rather than the field, and *Technical Support
+   Engineering* already self-identifies as CSS on almost every posting.
+
+   About two fifths of adverts resolve; the rest are reported as *not stated* rather than guessed,
+   so unit totals are a floor rather than a census.
 3. **Solution area** — the commercial practice a customer-facing role is sold against.
 4. **Initiative** — the named narrative it is hired against, such as Agentic AI or the Frontier Firm
    transformation. Worth separating: *Frontier Firm* is a go-to-market story sold to customers,
@@ -285,9 +299,12 @@ Two corrections worth knowing about, because they changed the numbers a lot:
 - **Body text needs corroboration.** A keyword in the title, profession, discipline or department
   tags a role outright. In the free-text body a single mention is not enough — nearly half of all
   adverts name Azure somewhere — so two distinct keyword hits are required.
-- **Organisations must identify themselves.** An advert naming a team is not the same as belonging
-  to it. Only possessive constructions in the Overview count, which cut business-unit coverage from
-  56 % to about a third but removed the false positives entirely.
+- **Organisations are resolved in two tiers.** The structured department first, where it names the
+  team outright, then self-identification in the Overview. An advert naming a team is not the same
+  as belonging to it, so only possessive constructions in the Overview count for the second tier —
+  which cut business-unit coverage from 56 % to a third when it was introduced, and removed the
+  false positives entirely. Adding the department tier took coverage back to about two fifths
+  without loosening that rule.
 - **Requirements are read from the Qualifications block only**, and the standard "languages
   including, but not limited to…" clause is counted as one open-list requirement rather than as
   demand for each language it enumerates. Left alone it put five languages in the top ten.

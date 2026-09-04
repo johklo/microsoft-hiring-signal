@@ -18,6 +18,7 @@ import {
   requiredYears,
   stripBoilerplate,
   toPlainText,
+  unitForDepartment,
 } from './taxonomy.mjs';
 
 const first = (v) => (Array.isArray(v) ? v[0] ?? null : v ?? null);
@@ -107,18 +108,22 @@ export function buildRecord(summary, detail, previous) {
   // Legal/benefits boilerplate is stripped before tagging.
   const clean = stripBoilerplate(plain);
   const strong = [title, profession, discipline, summary.department].filter(Boolean).join('\n');
-  // Organisation is read from the Overview only — that is where a team
-  // describes itself rather than listing teams it collaborates with.
+  // Organisation is read from the structured department first, then from the
+  // Overview — that is where a team describes itself rather than listing teams
+  // it collaborates with.
   const overviewBlock = extractOverviewBlock(clean);
   // Skills are read from the Qualifications block only — that is the one part
   // of an advert that is a statement of demand.
   const qualifications = extractQualificationsBlock(clean);
+  const department = summary.department ?? detail?.department ?? null;
+  const orgByDepartment = unitForDepartment(department);
+  const orgBySelf = detectOrg(strong, overviewBlock);
 
   return {
     id: String(summary.id),
     jobId: summary.displayJobId ?? detail?.displayJobId ?? null,
     title,
-    department: summary.department ?? detail?.department ?? null,
+    department,
     profession,
     discipline,
     roleType,
@@ -137,7 +142,8 @@ export function buildRecord(summary, detail, previous) {
     themes: detectThemes(strong, clean),
     industries: detectIndustries(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
-    org: detectOrg(strong, overviewBlock),
+    org: orgByDepartment ?? orgBySelf,
+    orgSource: orgByDepartment ? 'department' : orgBySelf ? 'self' : null,
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
     skills: detectSkills(strong, qualifications),
@@ -173,7 +179,12 @@ export function reclassify(job) {
     themes: detectThemes(strong, clean),
     industries: detectIndustries(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
-    org: detectOrg(strong, overviewBlock),
+    org: detectOrg(strong, overviewBlock, job.department),
+    orgSource: unitForDepartment(job.department)
+      ? 'department'
+      : detectOrg(strong, overviewBlock)
+        ? 'self'
+        : null,
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
     skills: detectSkills(strong, qualifications),

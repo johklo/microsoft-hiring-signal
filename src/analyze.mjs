@@ -164,6 +164,7 @@ export function analyze(allJobs, runs, history) {
   const byProduct = new Map();
   const byOrg = new Map();
   const byOrgParent = new Map();
+  const byOrgSource = new Map();
   const byIndustry = new Map();
   const byArchetype = new Map();
   const bySolutionArea = new Map();
@@ -214,6 +215,7 @@ export function analyze(allJobs, runs, history) {
 
     tally(byOrg, j.org || 'not_stated');
     tally(byOrgParent, j.org ? orgParent(j.org) : 'not_stated');
+    if (j.org) tally(byOrgSource, j.orgSource || 'self');
     for (const v of j.industries || []) tally(byIndustry, v);
     tally(byArchetype, j.archetype || 'other');
     for (const s of j.solutionAreas || []) tally(bySolutionArea, s);
@@ -337,6 +339,10 @@ export function analyze(allJobs, runs, history) {
       untaggedByTheme: untagged,
       orgIdentified: jobs.length - (byOrg.get('not_stated') || 0),
       orgCoverage: +(((jobs.length - (byOrg.get('not_stated') || 0)) / Math.max(1, jobs.length)) * 100).toFixed(1),
+      // Two tiers, reported apart: the structured department names the team
+      // outright, the Overview has to be read for a self-description.
+      orgFromDepartment: byOrgSource.get('department') || 0,
+      orgFromSelfDescription: byOrgSource.get('self') || 0,
       avgDaysOpen: ageCount ? +(ageSum / ageCount).toFixed(1) : null,
       medianDaysToClose: medianDaysOpen,
       runCount: runs.length,
