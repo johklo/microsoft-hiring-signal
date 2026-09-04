@@ -276,8 +276,9 @@ export const ORG_UNITS = [
     label: 'Industry Solutions Delivery (ISD)',
     blurb: 'Microsoft\u2019s own consulting and delivery arm, inside Frontier.',
     // Never a bare "Industry Solutions": an ordinary noun phrase that also turns
-    // up in lists of collaborating teams.
-    re: /\bISD\b|Industry Solutions Delivery|Microsoft Industry Solutions/i,
+    // up in lists of collaborating teams. GCID, the Global Center for
+    // Innovation and Delivery, is ISD's own delivery centre and is folded in.
+    re: /\bISD\b|Industry Solutions Delivery|Microsoft Industry Solutions|\bGCID\b|Global Cent(?:er|re) (?:for )?Innovation and Delivery/i,
   },
   {
     id: 'fde',
@@ -676,22 +677,35 @@ export function orgParent(id) {
  * Business Partnership" and "Client Delivery Partnership" are not, and a
  * regex on "partner" would take all three.
  *
- * Two departments are deliberately absent. "Solution Architecture" without
- * "Cloud" leans Industry Solutions rather than the field — of the postings
- * carrying it that identify themselves, all name ISD — and "Technical Support
- * Engineering" already self-identifies as CSS on almost every posting.
+ * Two departments are deliberately absent. "Technical Support Engineering"
+ * already self-identifies as CSS on almost every posting, and "Business
+ * Program Management" spans every division rather than naming one.
  */
 export const UNIT_BY_DEPARTMENT = new Map([
+  // Customer Success Unit
   ['cloud solution architecture', 'csu'],
   ['digital cloud solution architecture', 'csu'],
   ['customer success account mgmt', 'csu'],
+  // Solution Team Unit — technical pre-sales and the specialist sellers
   ['solution engineering', 'stu'],
   ['digital solution engineering', 'stu'],
+  ['solution area specialists', 'stu'],
+  ['digital solution area specialists', 'stu'],
+  // Account Team Unit — the in-country account teams
   ['account technology', 'atu'],
   ['strategic account technology', 'atu'],
+  ['account management', 'atu'],
+  ['strategic account management', 'atu'],
+  ['digital account management', 'atu'],
+  ['services account management', 'atu'],
+  // Global Partner Solutions
   ['partner development management', 'gps'],
   ['partner solution sales', 'gps'],
   ['partner enablement program mgmt', 'gps'],
+  // Industry Solutions Delivery — the billable delivery disciplines
+  ['technology consulting', 'isd'],
+  ['solution architecture', 'isd'],
+  ['consulting project management', 'isd'],
 ]);
 
 export function unitForDepartment(department = '') {

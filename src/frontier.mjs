@@ -646,9 +646,9 @@ export function buildFrontier(allJobs) {
   ];
 
   const reading = [
-    `The Frontier organisation identifies itself on ${plural(n, 'advert', 'adverts')} \u2014 ${cohortShareOfBook}% of the open book \u2014 split ${units
+    `The Frontier organisation resolves on ${plural(n, 'advert', 'adverts')} \u2014 ${cohortShareOfBook}% of the open book \u2014 split ${units
       .map((u) => `${shortLabel(u.label)} ${u.count}`)
-      .join(', ')}. Detection needs the advert to name its own organisation, so this is a floor, not a census.`,
+      .join(', ')}. A posting resolves either because its structured department names the team or because the advert describes itself as part of it, so this is a floor, not a census.`,
 
     deliveryToDemand !== null
       ? `Composition is ${deliveryToDemand}:1 delivery-shaped to demand-shaped \u2014 ${deliveryCount} architect, consultant, engineering and delivery-management roles against ${plural(demandCount, 'selling role', 'selling roles')}. ${
