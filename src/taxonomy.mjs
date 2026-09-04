@@ -832,8 +832,12 @@ export const SKILL_CATEGORIES = [
   { id: 'infra', label: 'Datacenter & physical infrastructure' },
   { id: 'silicon', label: 'Silicon & hardware' },
   { id: 'practice', label: 'Engineering practice' },
-  { id: 'business', label: 'Commercial & delivery' },
+  { id: 'delivery', label: 'Delivery & programme' },
+  { id: 'commercial', label: 'Commercial & customer-facing' },
   { id: 'credential', label: 'Credentials & clearance' },
+  // Not a capability — a note on how the advert is written. Excluded from the
+  // capability ranking and reported on its own.
+  { id: 'openlist', label: 'Open-list clauses' },
 ];
 
 export const SKILLS = [
@@ -849,11 +853,20 @@ export const SKILLS = [
   { id: 'shell', cat: 'lang', label: 'PowerShell / Bash', re: /\bpowershell\b|\bbash\b|\bshell scripting\b/i },
   {
     id: 'any_lang',
-    cat: 'lang',
+    cat: 'openlist',
     label: 'Any mainstream language (open list)',
     // The standard engineering-ladder clause. Reported as its own requirement
     // rather than as demand for each language it happens to enumerate.
     re: /\blanguages?,?\s+includ(?:ing|e)\b/i,
+  },
+  {
+    id: 'any_background',
+    cat: 'openlist',
+    label: 'Any of several backgrounds (open list)',
+    // "5+ years experience in consulting, industry advisory, digital
+    // transformation, program management, or related roles" — an enumeration of
+    // acceptable histories, not a list of required skills.
+    re: /\bor\s+(?:related|similar)\s+(?:roles?|fields?|areas?|disciplines?|experience|domains?)\b/i,
   },
 
   // ---- cloud and platform ------------------------------------------------
@@ -906,13 +919,43 @@ export const SKILLS = [
   { id: 'testing', cat: 'practice', label: 'Testing & quality', re: /\bunit test|\btest automation\b|\bquality assurance\b|\btest[- ]driven\b/i },
   { id: 'architecture', cat: 'practice', label: 'Architecture & design', re: /\bsystem design\b|\bsolution architecture\b|\barchitectural (?:design|patterns?)\b|\bdesign patterns?\b|\bapi design\b/i },
 
-  // ---- commercial and delivery -------------------------------------------
-  { id: 'stakeholder', cat: 'business', label: 'Stakeholder & executive engagement', re: /\bstakeholder (?:management|engagement)\b|\bexecutive (?:presence|communication|engagement)\b|\bc[- ]level\b|\binfluenc(?:e|ing) without authority\b/i },
-  { id: 'presales', cat: 'business', label: 'Pre-sales & solutioning', re: /\bpre[- ]?sales\b|\bsolution selling\b|\btechnical sales\b|\bproof of concept\b|\bcustomer[- ]facing\b/i },
-  { id: 'quota', cat: 'business', label: 'Quota & pipeline', re: /\bquota\b|\bpipeline management\b|\brevenue targets?\b|\bsales forecast|\bclosing deals\b|\bdeal (?:cycle|structuring|closure)\b/i },
-  { id: 'delivery_mgmt', cat: 'business', label: 'Delivery & programme management', re: /\bproject management\b|\bprogram(?:me)? management\b|\bdelivery management\b|\bbudget management\b|\brisk management\b/i },
-  { id: 'consulting', cat: 'business', label: 'Consulting & advisory', re: /\bconsult(?:ing|ant|ancy)\b|\badvisory\b|\bclient[- ]facing\b|\bclient engagements?\b|\bworkshops?\b/i },
-  { id: 'industry_know', cat: 'business', label: 'Industry domain knowledge', re: /\bindustry (?:knowledge|expertise|experience)\b|\bdomain (?:knowledge|expertise)\b|\bvertical expertise\b/i },
+  // ---- delivery ------------------------------------------------------------
+  { id: 'stakeholder', cat: 'delivery', label: 'Stakeholder & executive engagement', re: /\bstakeholder (?:management|engagement)\b|\bexecutive (?:presence|communication|engagement)\b|\bc[- ]level\b|\binfluenc(?:e|ing) without authority\b/i },
+  {
+    id: 'delivery_mgmt',
+    cat: 'delivery',
+    label: 'Delivery & programme management',
+    // No bare "risk management" — it belongs to finance and security adverts as
+    // often as to delivery ones.
+    re: /\bproject management\b|\bprogram(?:me)? management\b|\bdelivery management\b|\bportfolio management\b/i,
+  },
+  {
+    id: 'consulting',
+    cat: 'delivery',
+    label: 'Consulting & advisory',
+    re: /\bconsult(?:ing|ant|ancy)\b|\badvisory\b|\bclient engagements?\b|\bworkshops?\b/i,
+  },
+
+  // ---- commercial and customer-facing --------------------------------------
+  { id: 'presales', cat: 'commercial', label: 'Pre-sales & solutioning', re: /\bpre[- ]?sales\b|\bsolution selling\b|\btechnical sales\b|\bproof of concept\b/i },
+  {
+    id: 'customer_facing',
+    cat: 'commercial',
+    label: 'Customer-facing experience',
+    // Its own requirement rather than evidence of pre-sales: customer success,
+    // support and programme roles all ask for it and none of them sell.
+    re: /\bcustomer[- ]facing\b|\bclient[- ]facing\b/i,
+  },
+  { id: 'quota', cat: 'commercial', label: 'Quota & pipeline', re: /\bquota\b|\bpipeline management\b|\brevenue targets?\b|\bsales forecast|\bclosing deals\b|\bdeal (?:cycle|structuring|closure)\b/i },
+  {
+    id: 'industry_know',
+    cat: 'commercial',
+    label: 'Industry domain knowledge',
+    // Not "industry experience" — that phrase means commercial experience of
+    // any kind ("industry experience with cloud technologies"), not knowledge
+    // of a customer's industry.
+    re: /\bindustry (?:knowledge|expertise)\b|\bdomain (?:knowledge|expertise)\b|\bvertical expertise\b/i,
+  },
 
   // ---- credentials --------------------------------------------------------
   { id: 'clearance', cat: 'credential', label: 'Security clearance', re: /\bsecurity clearance\b|\btop secret\b|\bts\/sci\b|\bpolygraph\b|\bnv1\b|\bbaseline clearance\b/i },
@@ -927,28 +970,44 @@ export const SKILL_META = Object.fromEntries(
 );
 
 /**
+ * Clauses inside a Qualifications block that enumerate options rather than
+ * state requirements. Each is matched as an "open list" requirement in its own
+ * right (`any_lang`, `any_background`) and then removed, so the specific things
+ * it happens to name are not each counted as separately demanded.
+ *
+ * Both were found by reading what the patterns actually matched:
+ *
+ *   "coding in languages including, but not limited to, C, C++, C#, Java,
+ *    JavaScript, or Python"            -> five languages, one requirement
+ *   "5+ years experience in consulting, industry advisory, digital
+ *    transformation, program management, or related roles"
+ *                                      -> four disciplines, one requirement
+ *   "Bachelor's Degree in Construction Project Management"
+ *                                      -> a degree subject, not a skill
+ */
+const OPEN_LIST_CLAUSES = [
+  /\blanguages?,?\s+includ(?:ing|e)\b[^.]*\.?/gi,
+  /\bexperience\s+(?:in|with)\b[^;\n]{0,240}?\bor\s+(?:related|similar)\s+(?:roles?|fields?|areas?|disciplines?|experience|domains?)\b/gi,
+  /\bdegree\s+in\s+[^.;\n]{0,120}?(?=\s+(?:AND|OR)\b|[.;\n]|$)/gi,
+];
+
+/**
  * @param {string} strongText  title / profession / discipline
  * @param {string} qualifications the advert's Qualifications block
  */
 export function detectSkills(strongText = '', qualifications = '') {
   if (!qualifications) return [];
 
-  // The engineering ladder's standard clause — "coding in languages including,
-  // but not limited to, C, C++, C#, Java, JavaScript, or Python" — enumerates
-  // every mainstream language as an OR-list. Counted naively it makes five
-  // languages look separately demanded on the same advert, which is how a
-  // boilerplate sentence becomes the top of a chart. The clause is matched as
-  // its own requirement (`any_lang`) and then removed, so a specific language
-  // only counts where the advert asks for it specifically.
-  const withoutOmnibus = qualifications.replace(/\blanguages?,?\s+includ(?:ing|e)\b[^.]*\.?/gi, ' ');
+  let trimmedQual = qualifications;
+  for (const re of OPEN_LIST_CLAUSES) trimmedQual = trimmedQual.replace(re, ' ');
 
-  const hay = `${strongText}\n${qualifications}`;
-  const trimmed = `${strongText}\n${withoutOmnibus}`;
-  const LANGUAGE = 'lang';
+  const full = `${strongText}\n${qualifications}`;
+  const trimmed = `${strongText}\n${trimmedQual}`;
+  const OPEN_LIST_IDS = new Set(['any_lang', 'any_background']);
 
-  return SKILLS.filter((s) =>
-    s.re.test(s.cat === LANGUAGE && s.id !== 'any_lang' ? trimmed : hay)
-  ).map((s) => s.id);
+  // The open-list markers read the original text; everything else reads the
+  // text with those clauses removed.
+  return SKILLS.filter((s) => s.re.test(OPEN_LIST_IDS.has(s.id) ? full : trimmed)).map((s) => s.id);
 }
 
 /**

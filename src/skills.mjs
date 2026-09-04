@@ -27,6 +27,15 @@ const monthKey = (ts) => (ts ? new Date(ts * 1000).toISOString().slice(0, 7) : n
 /** The stack that did not exist as a hiring requirement three years ago. */
 const AI_STACK = new Set(['llm', 'agents', 'rag', 'aifoundry', 'copilot_dev', 'mlops']);
 
+/**
+ * Markers of how an advert is written rather than of what it wants. They are
+ * kept out of every ranking, index and crosstab — a note about the prose is not
+ * a capability, and leaving it in makes it the largest bar on the page — and
+ * reported on their own instead.
+ */
+const OPEN_LIST = new Set(['any_lang', 'any_background']);
+const isCapability = (id) => !OPEN_LIST.has(id);
+
 const SENIORITY_BANDS = [
   { id: 'entry', label: 'Intern / entry', match: new Set(['Intern / University', 'Associate / Entry']) },
   { id: 'mid', label: 'Mid / unspecified', match: new Set(['Mid / Unspecified']) },
@@ -138,8 +147,12 @@ function shareShift(series, months, win = 3) {
 
 export function buildSkills(allJobs) {
   const open = allJobs.filter((j) => j.status === 'open');
-  const stated = open.filter((j) => j.hasQualifications);
-  const withSkills = open.filter((j) => (j.skills || []).length);
+  const stated = open
+    .filter((j) => j.hasQualifications)
+    // Every downstream figure reads `skills`, so the open-list markers are
+    // stripped once here rather than guarded at a dozen call sites.
+    .map((j) => ({ ...j, openList: (j.skills || []).filter((s) => !isCapability(s)), skills: (j.skills || []).filter(isCapability) }));
+  const withSkills = stated.filter((j) => j.skills.length);
 
   if (!stated.length) {
     return {
@@ -176,14 +189,32 @@ export function buildSkills(allJobs) {
     }))
     .sort((a, b) => b.count - a.count);
 
-  const categories = SKILL_CATEGORIES.map((c) => ({
-    key: c.id,
-    label: c.label,
-    count: byCategory.get(c.id) || 0,
-    share: pct(byCategory.get(c.id) || 0, n),
-  }))
+  const categories = SKILL_CATEGORIES.filter((c) => c.id !== 'openlist')
+    .map((c) => ({
+      key: c.id,
+      label: c.label,
+      count: byCategory.get(c.id) || 0,
+      share: pct(byCategory.get(c.id) || 0, n),
+    }))
     .filter((c) => c.count)
     .sort((a, b) => b.count - a.count);
+
+  // Reported separately: these say the advert accepts an open list, which is a
+  // fact about the writing, not a capability being demanded.
+  const openList = [
+    {
+      key: 'any_background',
+      label: 'Accepts any of several backgrounds',
+      count: stated.filter((j) => j.openList.includes('any_background')).length,
+      note: '"…or related roles" — an enumeration of acceptable histories',
+    },
+    {
+      key: 'any_lang',
+      label: 'Accepts any mainstream language',
+      count: stated.filter((j) => j.openList.includes('any_lang')).length,
+      note: '"…languages including, but not limited to…"',
+    },
+  ].map((o) => ({ ...o, share: pct(o.count, n) }));
 
   // ---- the entry bar ------------------------------------------------------
   const yearsStated = stated.filter((j) => typeof j.requiredYears === 'number');
@@ -343,7 +374,7 @@ export function buildSkills(allJobs) {
     `${pct(n, open.length)}% of the open book states its requirements, and those adverts name ${meanBreadth} distinct capabilities each. The capability the market is asked for most often is ${categories[0]?.label ?? 'n/a'} (${categories[0]?.share ?? 0}% of adverts), ahead of ${categories[1]?.label ?? 'n/a'} (${categories[1]?.share ?? 0}%).`,
 
     skills.length
-      ? `By named skill the ranking is ${skills.slice(0, 5).map((s) => `${s.label} (${s.share}%)`).join(', ')}. Read that as a floor: an advert that says "coding in languages including, but not limited to…" is counted as asking for an open list rather than for each language it enumerates, which is what that clause actually means.`
+      ? `By named skill the ranking is ${skills.slice(0, 5).map((s) => `${s.label} (${s.share}%)`).join(', ')}. Two clauses are deliberately kept out of that ranking because they enumerate options rather than state demands: ${openList[0].share}% of adverts accept any of several backgrounds ("…or related roles") and ${openList[1].share}% accept any mainstream language ("…languages including, but not limited to…"). Counted as skills they would be the two largest bars on the page while telling you nothing about what the job needs.`
       : '',
 
     medYears !== null
@@ -394,6 +425,7 @@ export function buildSkills(allJobs) {
     },
     kpis,
     categories,
+    openList,
     skills: skills.slice(0, 20),
     demand: { windowDays: 90, rising, fading, all: demand.slice(0, 24) },
     aiStack: { recentShare: aiRecentShare, baseShare: aiBaseShare, index: aiIndex, count: aiCount },

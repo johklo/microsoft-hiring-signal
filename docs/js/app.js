@@ -947,7 +947,7 @@ function renderSkills(sk) {
   if (!document.getElementById('s05')) return;
 
   const blanks = [
-    'sk-categories', 'sk-skills', 'sk-years', 'sk-bands', 'sk-degrees', 'sk-pairs',
+    'sk-categories', 'sk-skills', 'sk-openlist', 'sk-years', 'sk-bands', 'sk-degrees', 'sk-pairs',
   ];
   if (!sk || sk.empty) {
     $('sk-standfirst').textContent =
@@ -982,6 +982,11 @@ function renderSkills(sk) {
   renderRank(
     $('sk-skills'),
     sk.skills.map((s) => ({ label: s.label, count: s.count, sub: `${s.share}% · ${s.category}` })),
+    { sub: true, unit: 'adverts' }
+  );
+  renderRank(
+    $('sk-openlist'),
+    (sk.openList || []).map((o) => ({ label: o.label, count: o.count, sub: `${o.share}% · ${o.note}` })),
     { sub: true, unit: 'adverts' }
   );
 
