@@ -36,10 +36,11 @@
           <a class="sectionbar__link" href="#s02"><span>02</span><span>Org</span></a>
           <a class="sectionbar__link" href="#s03"><span>03</span><span>Frontier</span></a>
           <a class="sectionbar__link" href="#s04"><span>04</span><span>Shape</span></a>
-          <a class="sectionbar__link" href="#s05"><span>05</span><span>Momentum</span></a>
-          <a class="sectionbar__link" href="#s06"><span>06</span><span>Geography</span></a>
-          <a class="sectionbar__link" href="#s07"><span>07</span><span>Index</span></a>
-          <a class="sectionbar__link" href="#s08"><span>08</span><span>Changes</span></a>
+          <a class="sectionbar__link" href="#s05"><span>05</span><span>Skills</span></a>
+          <a class="sectionbar__link" href="#s06"><span>06</span><span>Momentum</span></a>
+          <a class="sectionbar__link" href="#s07"><span>07</span><span>Geography</span></a>
+          <a class="sectionbar__link" href="#s08"><span>08</span><span>Index</span></a>
+          <a class="sectionbar__link" href="#s09"><span>09</span><span>Changes</span></a>
         </div>
       </nav>
 
@@ -379,10 +380,157 @@
             </div>
           </section>
 
-          <!-- ========================================== 05 · momentum -->
-          <section class="band" id="s05" aria-labelledby="momentum-title">
+          <!-- ============================================= 05 · skills -->
+          <section class="band" id="s05" aria-labelledby="skills-title">
             <div class="band__head">
-              <p class="band__index">05 — Momentum</p>
+              <p class="band__index">05 — Skills</p>
+              <h2 class="band__title" id="skills-title">What the market is asked to supply</h2>
+              <p class="band__note" id="skills-note">
+                Requirements are read from each advert's Qualifications block and nowhere else —
+                the one part of a posting that states demand rather than describing the team or the
+                job.
+              </p>
+            </div>
+
+            <div class="kpis" id="sk-kpis"></div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-8">
+                <p class="prose" id="sk-standfirst"></p>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-5">
+                <p class="subhead">Capability asked for</p>
+                <div class="rank rank--wide" id="sk-categories"></div>
+                <p class="cell__note">
+                  An advert is counted once per capability, so these do not sum to the number of
+                  adverts.
+                </p>
+              </div>
+              <div class="col-7">
+                <p class="subhead">Most-named requirements</p>
+                <div class="rank rank--wide" id="sk-skills"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-7">
+                <figure class="figure">
+                  <p class="subhead">Highest demand index — last 90 days ÷ baseline</p>
+                  <div id="sk-rising"></div>
+                  <p class="subhead" style="margin-top: var(--space-md)">Lowest demand index</p>
+                  <div id="sk-fading"></div>
+                  <figcaption>
+                    Each row is a requirement's share of the last 90 days of postings divided by its
+                    share of the whole open book. The rule at 1.00 is parity. A requirement needs at
+                    least twelve adverts to appear.
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="col-5">
+                <p class="subhead">The entry bar</p>
+                <div class="rank" id="sk-years"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Median years by band</p>
+                <div class="rank rank--wide" id="sk-bands"></div>
+                <p class="cell__note">
+                  Where an advert states several thresholds, the lowest is taken — that is the bar it
+                  will actually accept. The manager band asks for years of people management, which
+                  is a different clock from the technical bands.
+                </p>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Market trend</p>
+                <p class="cell__note" id="sk-market-note"></p>
+              </div>
+              <div class="col-6">
+                <figure class="figure">
+                  <p class="subhead">Share of the month's postings naming the AI stack</p>
+                  <div id="sk-ai-line"></div>
+                  <figcaption>
+                    LLMs, agents, retrieval and model operations, counted as one requirement.
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="col-6">
+                <figure class="figure">
+                  <p class="subhead">Median years of experience demanded</p>
+                  <div id="sk-years-line"></div>
+                  <figcaption>
+                    The entry bar stated by that month's postings, in years.
+                  </figcaption>
+                </figure>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-6">
+                <figure class="figure">
+                  <p class="subhead">Requirements per month</p>
+                  <div class="spark" id="sk-tl-skill"></div>
+                </figure>
+              </div>
+              <div class="col-6">
+                <figure class="figure">
+                  <p class="subhead">Capabilities per month</p>
+                  <div class="spark" id="sk-tl-category"></div>
+                </figure>
+              </div>
+              <div class="col-12">
+                <figure class="figure">
+                  <p class="subhead">Share shift — last 3 months vs the 3 before</p>
+                  <div id="sk-shift"></div>
+                  <figcaption>
+                    Percentage points of the requirements named in each window.
+                  </figcaption>
+                </figure>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-5">
+                <p class="subhead">Degree named</p>
+                <div class="rank rank--wide" id="sk-degrees"></div>
+              </div>
+              <div class="col-7">
+                <p class="subhead">Requirements that travel together</p>
+                <div class="rank rank--wide" id="sk-pairs"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Capability × experience band</p>
+                <div class="tablewrap">
+                  <table class="matrix" id="sk-gradient">
+                    <caption class="visually-hidden">
+                      Share of each experience band's adverts naming each capability
+                    </caption>
+                  </table>
+                </div>
+                <p class="cell__note">
+                  Read down a column: the share of that band's adverts naming the capability. Bands
+                  differ wildly in size, so the cells are shares rather than counts.
+                </p>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Reading — what the market is being told to become</p>
+                <ol class="outlook" id="sk-reading"></ol>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================== 06 · momentum -->
+          <section class="band" id="s06" aria-labelledby="momentum-title">
+            <div class="band__head">
+              <p class="band__index">06 — Momentum</p>
               <h2 class="band__title" id="momentum-title">What is accelerating</h2>
               <p class="band__note">
                 Index = a cluster's share of the last 30 days of postings ÷ its share of the whole
@@ -448,10 +596,10 @@
             </div>
           </section>
 
-          <!-- ========================================= 06 · geography -->
-          <section class="band" id="s06" aria-labelledby="geo-title">
+          <!-- ========================================= 07 · geography -->
+          <section class="band" id="s07" aria-labelledby="geo-title">
             <div class="band__head">
-              <p class="band__index">06 — Geography</p>
+              <p class="band__index">07 — Geography</p>
               <h2 class="band__title" id="geo-title">Where the roles sit</h2>
               <p class="band__note">
                 A role listing several locations is counted once per country, so country totals
@@ -476,10 +624,10 @@
             </div>
           </section>
 
-          <!-- ============================================= 07 · index -->
-          <section class="band" id="s07" aria-labelledby="index-title">
+          <!-- ============================================= 08 · index -->
+          <section class="band" id="s08" aria-labelledby="index-title">
             <div class="band__head">
-              <p class="band__index">07 — Index</p>
+              <p class="band__index">08 — Index</p>
               <h2 class="band__title" id="index-title">The roles themselves</h2>
               <p class="band__note">
                 Every advertised role, filterable. Each links to the live posting.
@@ -546,10 +694,10 @@
             </p>
           </section>
 
-          <!-- =========================================== 08 · changes -->
-          <section class="band" id="s08" aria-labelledby="changes-title">
+          <!-- =========================================== 09 · changes -->
+          <section class="band" id="s09" aria-labelledby="changes-title">
             <div class="band__head">
-              <p class="band__index">08 — Changes</p>
+              <p class="band__index">09 — Changes</p>
               <h2 class="band__title" id="changes-title">What moved</h2>
               <p class="band__note">
                 Each daily batch diffs the live book against the last snapshot: openings added,

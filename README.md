@@ -64,10 +64,11 @@ Postings that disappear from the site are **not deleted** — they are marked `c
 | **02 · Organisation** | Which division and business unit is hiring — MCAPS (ATU, CSU, GPS, CE&S, CSS, SME&C), Microsoft Frontier Company (ISD, FDE), and the engineering divisions (CO+I, SCHIE, MAI, CoreAI, Microsoft Security…) — plus commercial solution areas, named strategic initiatives, and business unit × seniority. |
 | **03 · Frontier** | A deep read of the Frontier Company cohort on its own: unit split, industry verticals, role shapes, capability stack, seniority and travel against the rest of the book, monthly composition, distinctive language, the newest postings, and a written reading of where it is heading. |
 | **04 · Shape** | Build vs sell vs capacity vs run, the seniority pyramid, and profession × role type. |
-| **05 · Momentum** | What is over- and under-represented in the last 30 days, the daily posting trend, monthly composition by cluster and business unit, and the share shift between the last three months and the three before. |
-| **06 · Geography** | Countries, cities, work-site policy and travel requirements. |
-| **07 · Index** | Every role, filterable by cluster, business unit, industry vertical, profession, country, seniority and free text. |
-| **08 · Changes** | What each daily batch opened, closed and edited. |
+| **05 · Skills** | What the market is asked to supply: capability mix, most-named requirements, the demand index over the last 90 days, the entry bar in years and degrees, the market trend in the AI stack, and which requirements travel together. |
+| **06 · Momentum** | What is over- and under-represented in the last 30 days, the daily posting trend, monthly composition by cluster and business unit, and the share shift between the last three months and the three before. |
+| **07 · Geography** | Countries, cities, work-site policy and travel requirements. |
+| **08 · Index** | Every role, filterable by cluster, business unit, industry vertical, profession, country, seniority and free text. |
+| **09 · Changes** | What each daily batch opened, closed and edited. |
 
 ### The dimensions
 
@@ -98,6 +99,34 @@ Each role is placed on several independent axes, so the same posting can be read
    lead, programme management, sales and specialist, data and AI engineering, forward-deployed
    engineering, support, leadership. Single-valued, first match wins. On a delivery organisation this
    is the most direct read of what is being bought.
+7. **Requirements** — the skills, years of experience and degree an advert asks for, read from the
+   **Qualifications block only**. That block is the one part of a posting that states demand; the
+   Overview describes the team's ambitions and the Responsibilities describe the job, and both name
+   technology the role will merely be near. Multi-valued, grouped into ten capability categories.
+
+### Reading the Skills section
+
+Section 05 reads the other side of the advert: not what Microsoft is buying, but the bar a candidate
+has to clear.
+
+- **The demand index** is a requirement's share of the last 90 days of postings divided by its share
+  of the whole open book — the same method the momentum section uses for clusters. It is what the
+  section leans on, because it compares recent postings against the book rather than against an
+  earlier month.
+- **The market-trend lines** plot the AI-stack requirement and the median entry bar month by month.
+  Only months carrying at least 25 postings are drawn, and the earlier months are a
+  survivorship-biased sample: a role posted in spring is only visible if it is *still* unfilled. The
+  page says so next to the chart; read the recent end of those lines, not the slope from the start.
+- **One boilerplate clause is handled specially.** The engineering ladder's standard sentence —
+  *"coding in languages including, but not limited to, C, C++, C#, Java, JavaScript, or Python"* —
+  enumerates every mainstream language as an OR-list. Counted naively it makes five languages look
+  separately demanded on the same advert, which is how a boilerplate sentence becomes the top of a
+  chart. It is matched as its own requirement ("any mainstream language") and then removed, so a
+  named language only counts where an advert asks for it specifically. That single correction moved
+  Python from 613 adverts to 244.
+- **The entry bar takes the lowest threshold** an advert states, since that is the bar it will
+  actually accept. The manager band therefore reads low: what it asks for is years of people
+  management, a different clock from the technical bands.
 
 ### Reading the Frontier section
 
@@ -209,6 +238,7 @@ src/
   analyze.mjs       breakdowns, crosstabs, trends
   insight.mjs       the one-page executive brief
   frontier.mjs      the Frontier / ISD deep dive in section 03
+  skills.mjs        the requirements market in section 05
   daily.mjs         batch orchestrator
   rebuild.mjs       recompute from cache, no network
   schedule.mjs      Windows Scheduled Task install/remove
@@ -258,6 +288,12 @@ Two corrections worth knowing about, because they changed the numbers a lot:
 - **Organisations must identify themselves.** An advert naming a team is not the same as belonging
   to it. Only possessive constructions in the Overview count, which cut business-unit coverage from
   56 % to about a third but removed the false positives entirely.
+- **Requirements are read from the Qualifications block only**, and the standard "languages
+  including, but not limited to…" clause is counted as one open-list requirement rather than as
+  demand for each language it enumerates. Left alone it put five languages in the top ten.
+- **The daily trend is zero-filled.** It previously emitted only the days that carried a posting,
+  so a 180-point series spanned 283 calendar days with 103 days missing. Anything that treated the
+  index as time — the dated axis, the 7-day mean — was wrong by however many days were absent.
 
 Cluster shares overlap by design (a role can serve several), so they do not sum to 100 %. Where a
 combined figure is quoted, such as the AI / datacenter / silicon share, it is a **set union**, not a

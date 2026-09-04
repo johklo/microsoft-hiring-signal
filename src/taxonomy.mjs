@@ -798,6 +798,180 @@ export function extractOverviewBlock(plainText = '') {
   return (m ? m[1] : plainText.slice(0, 2500)).slice(0, 4000);
 }
 
+/**
+ * The Qualifications block — what the advert asks the candidate to already
+ * have. Skills are read from here and nowhere else, for the same reason
+ * organisations are read from the Overview and nowhere else: the Overview
+ * describes the team's ambitions and the Responsibilities describe the job, and
+ * both name technology the role will merely be *near*. Only this block is a
+ * statement of demand.
+ */
+export function extractQualificationsBlock(plainText = '') {
+  const m = plainText.match(
+    /(?:Required\/Minimum Qualifications|Qualifications)\s*\n+([\s\S]*?)(?:\n\s*(?:Responsibilities|Benefits|Microsoft is an equal)\b|$)/i
+  );
+  return (m ? m[1] : '').slice(0, 6000);
+}
+
+/**
+ * Skills, as an advert states them. Categorised so the page can report which
+ * *kind* of capability is being bought, not just which named tool.
+ *
+ * Patterns are explicit because several skill names are ordinary words. A skill
+ * counts on a single mention inside the Qualifications block — unlike the
+ * cluster rules, where a passing mention in the body proves nothing. A
+ * qualifications list is not prose about the team; every line in it is a
+ * demand, so one appearance is the signal.
+ */
+export const SKILL_CATEGORIES = [
+  { id: 'lang', label: 'Languages & runtimes' },
+  { id: 'cloud', label: 'Cloud & platform' },
+  { id: 'data_ai', label: 'Data, ML & AI' },
+  { id: 'agentic', label: 'Agents & Copilot stack' },
+  { id: 'security', label: 'Security' },
+  { id: 'infra', label: 'Datacenter & physical infrastructure' },
+  { id: 'silicon', label: 'Silicon & hardware' },
+  { id: 'practice', label: 'Engineering practice' },
+  { id: 'business', label: 'Commercial & delivery' },
+  { id: 'credential', label: 'Credentials & clearance' },
+];
+
+export const SKILLS = [
+  // ---- languages and runtimes -------------------------------------------
+  { id: 'python', cat: 'lang', label: 'Python', re: /\bpython\b/i },
+  { id: 'csharp', cat: 'lang', label: 'C#', re: /\bc#|\bc\s?sharp\b|\.net\b/i },
+  { id: 'java', cat: 'lang', label: 'Java', re: /\bjava\b(?!script)/i },
+  { id: 'js', cat: 'lang', label: 'JavaScript / TypeScript', re: /\bjavascript\b|\btypescript\b|\breact\b|\bnode\.?js\b/i },
+  { id: 'cpp', cat: 'lang', label: 'C / C++', re: /\bc\+\+|\bc\/c\+\+/i },
+  { id: 'go', cat: 'lang', label: 'Go', re: /\bgolang\b|\bgo\s+(?:programming|language)\b/i },
+  { id: 'rust', cat: 'lang', label: 'Rust', re: /\brust\b/i },
+  { id: 'sql', cat: 'lang', label: 'SQL', re: /\bsql\b|\bt-sql\b|\bkql\b/i },
+  { id: 'shell', cat: 'lang', label: 'PowerShell / Bash', re: /\bpowershell\b|\bbash\b|\bshell scripting\b/i },
+  {
+    id: 'any_lang',
+    cat: 'lang',
+    label: 'Any mainstream language (open list)',
+    // The standard engineering-ladder clause. Reported as its own requirement
+    // rather than as demand for each language it happens to enumerate.
+    re: /\blanguages?,?\s+includ(?:ing|e)\b/i,
+  },
+
+  // ---- cloud and platform ------------------------------------------------
+  { id: 'azure', cat: 'cloud', label: 'Azure', re: /\bazure\b/i },
+  { id: 'aws_gcp', cat: 'cloud', label: 'AWS / GCP', re: /\baws\b|\bamazon web services\b|\bgoogle cloud\b|\bgcp\b/i },
+  { id: 'k8s', cat: 'cloud', label: 'Kubernetes & containers', re: /\bkubernetes\b|\bk8s\b|\bdocker\b|\bcontaineri[sz]ation\b/i },
+  { id: 'iac', cat: 'cloud', label: 'Infrastructure as code', re: /\bterraform\b|\bbicep\b|\barm templates?\b|\binfrastructure as code\b|\bansible\b|\bpulumi\b/i },
+  { id: 'linux', cat: 'cloud', label: 'Linux', re: /\blinux\b|\bunix\b/i },
+  { id: 'networking', cat: 'cloud', label: 'Networking', re: /\bnetworking\b|\btcp\/ip\b|\bbgp\b|\bdns\b|\bload balanc/i },
+  { id: 'distributed', cat: 'cloud', label: 'Distributed systems', re: /\bdistributed systems?\b|\bmicroservices?\b|\bhigh availability\b|\bscalab(?:le|ility) (?:systems?|architecture)\b/i },
+
+  // ---- data, ML and AI ---------------------------------------------------
+  { id: 'ml', cat: 'data_ai', label: 'Machine learning', re: /\bmachine learning\b|\bdeep learning\b|\bneural network/i },
+  { id: 'llm', cat: 'data_ai', label: 'LLMs & generative AI', re: /\blarge language model|\bllms?\b|\bgenerative ai\b|\bgenai\b|\bfoundation models?\b|\bfine[- ]tuning\b/i },
+  { id: 'mlframe', cat: 'data_ai', label: 'PyTorch / TensorFlow', re: /\bpytorch\b|\btensorflow\b|\bonnx\b|\bhugging ?face\b|\bcuda\b/i },
+  { id: 'dataeng', cat: 'data_ai', label: 'Data engineering', re: /\bdata engineering\b|\betl\b|\bdata pipelines?\b|\bdata warehous|\bspark\b|\bdatabricks\b|\bsynapse\b/i },
+  { id: 'analytics', cat: 'data_ai', label: 'Analytics & BI', re: /\bpower ?bi\b|\bdata analysis\b|\bdata visuali[sz]ation\b|\bbusiness intelligence\b|\bdashboards?\b/i },
+  { id: 'mlops', cat: 'data_ai', label: 'MLOps & model operations', re: /\bmlops\b|\bmodel deployment\b|\bmodel monitoring\b|\bmodel serving\b|\binference optimi[sz]ation\b/i },
+  { id: 'stats', cat: 'data_ai', label: 'Statistics & experimentation', re: /\bstatistics\b|\bstatistical\b|\ba\/b test|\bexperimentation\b|\bcausal inference\b/i },
+
+  // ---- the agent stack ---------------------------------------------------
+  { id: 'agents', cat: 'agentic', label: 'Agent frameworks', re: /\bagentic\b|\bai agents?\b|\bagent frameworks?\b|\bmulti[- ]agent\b|\bautogen\b|\bsemantic kernel\b|\blangchain\b|\bmodel context protocol\b|\bmcp\b/i },
+  { id: 'copilot_dev', cat: 'agentic', label: 'Copilot & Copilot Studio', re: /\bcopilot studio\b|\bmicrosoft copilot\b|\bcopilot extensib/i },
+  { id: 'rag', cat: 'agentic', label: 'RAG & prompt engineering', re: /\bretrieval[- ]augmented\b|\brag\b|\bprompt engineering\b|\bvector (?:search|database|store)\b|\bembeddings?\b/i },
+  { id: 'aifoundry', cat: 'agentic', label: 'Azure AI Foundry / OpenAI', re: /\bai foundry\b|\bazure openai\b|\bopenai\b/i },
+
+  // ---- security -----------------------------------------------------------
+  { id: 'secops', cat: 'security', label: 'Security operations', re: /\bsecurity operations\b|\bsiem\b|\bincident response\b|\bthreat (?:detection|hunting|intelligence)\b|\bsentinel\b|\bsoc analyst\b/i },
+  { id: 'appsec', cat: 'security', label: 'Application & cloud security', re: /\bapplication security\b|\bcloud security\b|\bsecure coding\b|\bthreat model|\bpenetration test|\bvulnerability (?:management|assessment)\b/i },
+  { id: 'iam', cat: 'security', label: 'Identity & access', re: /\bidentity and access\b|\biam\b|\bentra\b|\bactive directory\b|\bzero trust\b|\boauth\b|\bsso\b/i },
+  { id: 'crypto', cat: 'security', label: 'Cryptography', re: /\bcryptograph|\bencryption\b|\bpki\b|\bkey management\b/i },
+  { id: 'compliance', cat: 'security', label: 'Compliance frameworks', re: /\bsoc ?2\b|\biso ?27001\b|\bnist\b|\bfedramp\b|\bgdpr\b|\bhipaa\b|\bpci[- ]dss\b|\bregulatory compliance\b/i },
+
+  // ---- datacenter and physical -------------------------------------------
+  { id: 'critenv', cat: 'infra', label: 'Critical environment operations', re: /\bcritical environment\b|\bdata ?cent(?:er|re) operations\b|\bups\b|\bgenerators?\b|\bswitchgear\b|\bcooling systems?\b/i },
+  { id: 'electrical', cat: 'infra', label: 'Electrical & mechanical', re: /\belectrical engineering\b|\bmechanical engineering\b|\bhvac\b|\bmedium voltage\b|\bpower distribution\b/i },
+  { id: 'construction', cat: 'infra', label: 'Construction & commissioning', re: /\bconstruction management\b|\bcommissioning\b|\bgeneral contractor|\bsite selection\b|\bpermitting\b/i },
+  { id: 'supplychain', cat: 'infra', label: 'Supply chain & sourcing', re: /\bsupply chain\b|\bsourcing\b|\bprocurement\b|\blogistics\b|\bdemand planning\b|\binventory management\b/i },
+
+  // ---- silicon and hardware ----------------------------------------------
+  { id: 'rtl', cat: 'silicon', label: 'RTL & verification', re: /\brtl\b|\bverilog\b|\bsystemverilog\b|\bvhdl\b|\buvm\b|\bdesign verification\b/i },
+  { id: 'chip', cat: 'silicon', label: 'SoC / ASIC / FPGA', re: /\basic\b|\bfpga\b|\bsystem[- ]on[- ]chip\b|\bsoc design\b|\bphysical design\b|\btiming closure\b|\bsynthesis\b/i },
+  { id: 'board', cat: 'silicon', label: 'Board & signal integrity', re: /\bpcb\b|\bsignal integrity\b|\bpower integrity\b|\bschematic\b|\bthermal (?:design|analysis)\b/i },
+  { id: 'firmware', cat: 'silicon', label: 'Firmware & embedded', re: /\bfirmware\b|\bembedded systems?\b|\bdevice drivers?\b|\bbios\b|\buefi\b/i },
+
+  // ---- engineering practice ----------------------------------------------
+  { id: 'cicd', cat: 'practice', label: 'CI/CD & DevOps', re: /\bci\/cd\b|\bcontinuous (?:integration|delivery|deployment)\b|\bdevops\b|\bgithub actions\b|\bazure devops\b/i },
+  { id: 'sre', cat: 'practice', label: 'SRE & reliability', re: /\bsite reliability\b|\bsre\b|\bobservability\b|\bmonitoring and alerting\b|\bslo\b|\bon[- ]call\b/i },
+  { id: 'agile', cat: 'practice', label: 'Agile delivery', re: /\bagile\b|\bscrum\b|\bkanban\b|\bsprint\b/i },
+  { id: 'testing', cat: 'practice', label: 'Testing & quality', re: /\bunit test|\btest automation\b|\bquality assurance\b|\btest[- ]driven\b/i },
+  { id: 'architecture', cat: 'practice', label: 'Architecture & design', re: /\bsystem design\b|\bsolution architecture\b|\barchitectural (?:design|patterns?)\b|\bdesign patterns?\b|\bapi design\b/i },
+
+  // ---- commercial and delivery -------------------------------------------
+  { id: 'stakeholder', cat: 'business', label: 'Stakeholder & executive engagement', re: /\bstakeholder (?:management|engagement)\b|\bexecutive (?:presence|communication|engagement)\b|\bc[- ]level\b|\binfluenc(?:e|ing) without authority\b/i },
+  { id: 'presales', cat: 'business', label: 'Pre-sales & solutioning', re: /\bpre[- ]?sales\b|\bsolution selling\b|\btechnical sales\b|\bproof of concept\b|\bcustomer[- ]facing\b/i },
+  { id: 'quota', cat: 'business', label: 'Quota & pipeline', re: /\bquota\b|\bpipeline management\b|\brevenue targets?\b|\bsales forecast|\bclosing deals\b|\bdeal (?:cycle|structuring|closure)\b/i },
+  { id: 'delivery_mgmt', cat: 'business', label: 'Delivery & programme management', re: /\bproject management\b|\bprogram(?:me)? management\b|\bdelivery management\b|\bbudget management\b|\brisk management\b/i },
+  { id: 'consulting', cat: 'business', label: 'Consulting & advisory', re: /\bconsult(?:ing|ant|ancy)\b|\badvisory\b|\bclient[- ]facing\b|\bclient engagements?\b|\bworkshops?\b/i },
+  { id: 'industry_know', cat: 'business', label: 'Industry domain knowledge', re: /\bindustry (?:knowledge|expertise|experience)\b|\bdomain (?:knowledge|expertise)\b|\bvertical expertise\b/i },
+
+  // ---- credentials --------------------------------------------------------
+  { id: 'clearance', cat: 'credential', label: 'Security clearance', re: /\bsecurity clearance\b|\btop secret\b|\bts\/sci\b|\bpolygraph\b|\bnv1\b|\bbaseline clearance\b/i },
+  { id: 'azure_cert', cat: 'credential', label: 'Azure certification', re: /\baz-\d{3}\b|\bazure certif|\bmicrosoft certified\b/i },
+  { id: 'pm_cert', cat: 'credential', label: 'PMP / delivery certification', re: /\bpmp\b|\bprince2\b|\bitil\b|\bcsm\b|\bscrum master certif/i },
+  { id: 'sec_cert', cat: 'credential', label: 'Security certification', re: /\bcissp\b|\bcism\b|\bceh\b|\bcomptia\b|\bsecurity\+\b/i },
+];
+
+const SKILL_CAT_LABELS = Object.fromEntries(SKILL_CATEGORIES.map((c) => [c.id, c.label]));
+export const SKILL_META = Object.fromEntries(
+  SKILLS.map((s) => [s.id, { label: s.label, cat: s.cat, catLabel: SKILL_CAT_LABELS[s.cat] }])
+);
+
+/**
+ * @param {string} strongText  title / profession / discipline
+ * @param {string} qualifications the advert's Qualifications block
+ */
+export function detectSkills(strongText = '', qualifications = '') {
+  if (!qualifications) return [];
+
+  // The engineering ladder's standard clause — "coding in languages including,
+  // but not limited to, C, C++, C#, Java, JavaScript, or Python" — enumerates
+  // every mainstream language as an OR-list. Counted naively it makes five
+  // languages look separately demanded on the same advert, which is how a
+  // boilerplate sentence becomes the top of a chart. The clause is matched as
+  // its own requirement (`any_lang`) and then removed, so a specific language
+  // only counts where the advert asks for it specifically.
+  const withoutOmnibus = qualifications.replace(/\blanguages?,?\s+includ(?:ing|e)\b[^.]*\.?/gi, ' ');
+
+  const hay = `${strongText}\n${qualifications}`;
+  const trimmed = `${strongText}\n${withoutOmnibus}`;
+  const LANGUAGE = 'lang';
+
+  return SKILLS.filter((s) =>
+    s.re.test(s.cat === LANGUAGE && s.id !== 'any_lang' ? trimmed : hay)
+  ).map((s) => s.id);
+}
+
+/**
+ * The entry bar in years, as stated. Adverts list several thresholds — a lower
+ * one for the degree-holding route, a higher one for the experience-only route
+ * — so the *minimum* stated is the bar the advert will actually accept.
+ * Values above 20 are almost always a typo or a date, and are dropped.
+ */
+export function requiredYears(qualifications = '') {
+  const found = [...qualifications.matchAll(/(\d{1,2})\+?\s*years?\b/gi)]
+    .map((m) => Number(m[1]))
+    .filter((n) => n >= 1 && n <= 20);
+  return found.length ? Math.min(...found) : null;
+}
+
+/** The highest degree the Qualifications block names, if any. */
+export function degreeLevel(qualifications = '') {
+  if (/\b(ph\.?d|doctorate)\b/i.test(qualifications)) return 'PhD';
+  if (/\bmaster'?s?\b|\bm\.?s\.?\b|\bmba\b/i.test(qualifications)) return "Master's";
+  if (/\bbachelor'?s?\b|\bb\.?s\.?\b|\bundergraduate degree\b/i.test(qualifications)) return "Bachelor's";
+  return null;
+}
+
 const COUNTRY_ALIASES = {
   USA: 'United States',
   UK: 'United Kingdom',

@@ -390,6 +390,7 @@ export function buildBrief(jobs, stats, history) {
       'The momentum index compares each theme\u2019s share of the last 30 days of postings against its share of the whole open book. Roles that close quickly are slightly under-counted.',
       'Cluster tagging is keyword-based over title, profession, discipline and description, after standard legal and benefits boilerplate is removed. Clusters overlap, so their shares do not sum to 100%.',
       'The Frontier deep dive reads only the adverts that identify themselves as part of that organisation, which is a small cohort. Every figure there is therefore reported against the rest of the open book as an index rather than as a standalone number, and its recency window is 90 days rather than 30.',
+      'Requirements are read from each advert\u2019s Qualifications block only, and the standard "languages including, but not limited to\u2026" clause is counted as one open-list requirement rather than as demand for each language it names. The month-by-month market lines are survivorship-biased at their early end, since a role posted months ago is only visible if it is still unfilled \u2014 the demand index against the whole book is the sounder read.',
     ],
   };
 }

@@ -30,6 +30,30 @@ const dayKey = (ts) => (ts ? new Date(ts * 1000).toISOString().slice(0, 10) : nu
 const monthKey = (ts) => (ts ? new Date(ts * 1000).toISOString().slice(0, 7) : null);
 
 /**
+ * A continuous daily series over the last `days` calendar days, zero-filled.
+ *
+ * Emitting only the days that happened to carry a posting looks like a series
+ * but is not one: the quiet early months have most of their days missing, so a
+ * fixed number of points spans a much longer stretch of calendar. Anything that
+ * treats the index as time — a dated axis, a moving average — is then wrong by
+ * however many days are absent. Filling the gaps with the zeros that are
+ * actually there is what makes the axis honest.
+ */
+function dailySeries(byDay, days) {
+  if (!byDay.size) return [];
+  const last = [...byDay.keys()].sort().pop();
+  const end = new Date(`${last}T00:00:00Z`);
+  const out = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(end);
+    d.setUTCDate(d.getUTCDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    out.push({ date: key, count: byDay.get(key) || 0 });
+  }
+  return out;
+}
+
+/**
  * Counts per month for each requested key, as small-multiple series.
  * Only currently-open roles are visible, so earlier months are progressively
  * understated as roles close — stated on the page rather than smoothed over.
@@ -257,10 +281,7 @@ export function analyze(allJobs, runs, history) {
     share: +((x.count / Math.max(1, jobs.length)) * 100).toFixed(1),
   }));
 
-  const trend = [...postedByDay.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, count]) => ({ date, count }))
-    .slice(-180);
+  const trend = dailySeries(postedByDay, 180);
 
   // ---- monthly composition -------------------------------------------------
   const monthTotals = new Map();
@@ -426,6 +447,8 @@ export function buildJobsLite(allJobs) {
         themes: j.themes || [],
         industries: j.industries || [],
         archetype: j.archetype || 'other',
+        skills: j.skills || [],
+        requiredYears: typeof j.requiredYears === 'number' ? j.requiredYears : null,
         products: j.products || [],
         org: j.org || null,
         solutionAreas: j.solutionAreas || [],

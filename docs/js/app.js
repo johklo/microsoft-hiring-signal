@@ -377,7 +377,7 @@ function renderShift(node, rows) {
   }
 }
 
-function renderCrosstab(table, ct) {  clear(table);
+function renderCrosstab(table, ct, opts = {}) {  clear(table);
   if (!ct || !ct.rows.length) return;
 
   // Drop all-zero columns so the table stays readable.
@@ -405,7 +405,7 @@ function renderCrosstab(table, ct) {  clear(table);
     const rowMax = Math.max(...keep.map((k) => ct.matrix[ri][k.i])) || 1;
     for (const k of keep) {
       const v = ct.matrix[ri][k.i];
-      const td = el('td', null, v ? nf.format(v) : '·');
+      const td = el('td', null, v ? `${nf.format(v)}${opts.suffix ?? ''}` : '·');
       if (v) {
         // Intensity is derived from the single signal ink, never a new colour.
         const pctv = Math.round((v / rowMax) * 22);
@@ -869,6 +869,184 @@ function renderFrontier(fr) {
   for (const line of fr.reading.slice(1)) reading.appendChild(el('li', null, line));
 }
 
+/**
+ * A single measure over months: an axis with the range named, a line, a dot on
+ * every observation and the last value labelled. Small enough to sit two to a
+ * row and still be read as a quantity rather than a shape.
+ */
+function renderMonthlyLine(node, months, values, opts = {}) {
+  clear(node);
+  const points = months
+    .map((m, i) => ({ month: m, value: values[i] }))
+    .filter((p) => p.value !== null && p.value !== undefined);
+
+  if (points.length < 2) {
+    node.appendChild(el('p', 'empty', 'Not enough months carry sizeable postings to plot this yet.'));
+    return;
+  }
+
+  const W = 440;
+  const H = 170;
+  const pad = { t: 14, r: 46, b: 26, l: 34 };
+  const innerW = W - pad.l - pad.r;
+  const innerH = H - pad.t - pad.b;
+  const top = opts.max ?? niceMax(Math.max(...points.map((p) => p.value)));
+  const x = (i) => pad.l + (i / (points.length - 1)) * innerW;
+  const y = (v) => pad.t + innerH - (v / top) * innerH;
+  const fmt = (v) => `${Number.isInteger(v) ? v : v.toFixed(1)}${opts.unit ?? ''}`;
+
+  const svg = svgEl('svg', {
+    viewBox: `0 0 ${W} ${H}`,
+    class: 'chart',
+    role: 'img',
+    'aria-label': `${opts.aria ?? 'Monthly series'}: ${points.map((p) => `${p.month} ${fmt(p.value)}`).join(', ')}`,
+  });
+
+  for (const v of [0, top / 2, top]) {
+    svg.appendChild(
+      svgEl('line', { x1: pad.l, x2: W - pad.r, y1: y(v), y2: y(v), class: v === 0 ? 'axis' : 'grid' })
+    );
+    const t = svgEl('text', { x: pad.l - 6, y: y(v) + 3.5, class: 'tick', 'text-anchor': 'end' });
+    t.textContent = fmt(v);
+    svg.appendChild(t);
+  }
+
+  // first and last month only — a two-to-a-row chart cannot carry twelve labels
+  for (const [i, anchor] of [
+    [0, 'start'],
+    [points.length - 1, 'end'],
+  ]) {
+    const t = svgEl('text', { x: x(i), y: y(0) + 16, class: 'tick', 'text-anchor': anchor });
+    t.textContent = points[i].month;
+    svg.appendChild(t);
+  }
+
+  const path = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
+  svg.appendChild(svgEl('path', { d: path, class: 'series--mean' }));
+
+  points.forEach((p, i) => {
+    svg.appendChild(svgEl('circle', { cx: x(i), cy: y(p.value), r: 2.5, class: 'marker' }));
+  });
+
+  const last = points[points.length - 1];
+  const label = svgEl('text', {
+    x: x(points.length - 1) + 6,
+    y: y(last.value) + 3.5,
+    class: 'tick tick--accent',
+    'text-anchor': 'start',
+  });
+  label.textContent = fmt(last.value);
+  svg.appendChild(label);
+
+  node.appendChild(svg);
+}
+
+// ---------------------------------------------------------------- skills ---
+
+function renderSkills(sk) {
+  if (!document.getElementById('s05')) return;
+
+  const blanks = [
+    'sk-categories', 'sk-skills', 'sk-years', 'sk-bands', 'sk-degrees', 'sk-pairs',
+  ];
+  if (!sk || sk.empty) {
+    $('sk-standfirst').textContent =
+      sk?.note ?? 'No advert in this batch carries a qualifications block yet.';
+    for (const id of blanks) {
+      const node = $(id);
+      if (node) {
+        clear(node);
+        node.appendChild(el('p', 'empty', 'No data in this batch.'));
+      }
+    }
+    return;
+  }
+
+  const cells = $('sk-kpis');
+  clear(cells);
+  for (const k of sk.kpis) {
+    const cell = el('div', 'kpi');
+    cell.appendChild(el('p', 'kpi__value', k.value));
+    cell.appendChild(el('p', 'kpi__label', k.label));
+    cell.appendChild(el('p', 'kpi__sub', k.sub));
+    cells.appendChild(cell);
+  }
+
+  $('sk-standfirst').textContent = sk.reading[0] ?? '';
+
+  renderRank(
+    $('sk-categories'),
+    sk.categories.map((c) => ({ label: c.label, count: c.count, sub: `${c.share}% of adverts` })),
+    { sub: true, unit: 'adverts' }
+  );
+  renderRank(
+    $('sk-skills'),
+    sk.skills.map((s) => ({ label: s.label, count: s.count, sub: `${s.share}% · ${s.category}` })),
+    { sub: true, unit: 'adverts' }
+  );
+
+  renderMomentum($('sk-rising'), sk.demand.rising, 'Too few adverts state requirements to index demand.');
+  renderMomentum($('sk-fading'), sk.demand.fading, 'Too few adverts state requirements to index demand.');
+
+  renderRank(
+    $('sk-years'),
+    sk.experience.buckets.map((b) => ({ label: b.label, count: b.count, sub: `${b.share}%` })),
+    { sub: true, unit: 'adverts' }
+  );
+  renderRank(
+    $('sk-bands'),
+    sk.experience.byBand.map((b) => ({
+      label: b.label,
+      count: b.median,
+      sub: `median of ${nf.format(b.count)} adverts stating a number`,
+    })),
+    { sub: true, unit: 'years' }
+  );
+
+  // ---- market trend
+  const mk = sk.market;
+  $('sk-market-note').textContent =
+    `Each point is one month of postings, and only months carrying at least ${mk.minPostings} of them are ` +
+    `plotted. Because just currently-open roles are visible, the earlier months are a ` +
+    `survivorship-biased sample — a role posted in spring is only here if it is still unfilled. ` +
+    `Read the recent end of these lines, and the demand index above, rather than the slope from the start.`;
+  renderMonthlyLine($('sk-ai-line'), mk.months, mk.aiShare, {
+    unit: '%',
+    aria: 'Share of postings naming the AI stack',
+  });
+  renderMonthlyLine($('sk-years-line'), mk.months, mk.medianYears, {
+    aria: 'Median years of experience demanded',
+    max: 8,
+  });
+
+  const tl = sk.timeline;
+  renderSpark($('sk-tl-skill'), tl.bySkill, tl.months);
+  renderSpark($('sk-tl-category'), tl.byCategory, tl.months);
+  renderShift(
+    $('sk-shift'),
+    [...(tl.shift.category || []), ...(tl.shift.skill || [])]
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0, 12)
+  );
+
+  renderRank(
+    $('sk-degrees'),
+    sk.degrees.map((d) => ({ label: d.label, count: d.count, sub: `${d.share}% of adverts` })),
+    { sub: true, unit: 'adverts' }
+  );
+  renderRank(
+    $('sk-pairs'),
+    sk.pairs.map((p) => ({ label: `${p.a} + ${p.b}`, count: p.count, sub: `${p.share}% of adverts` })),
+    { sub: true, unit: 'adverts' }
+  );
+
+  renderCrosstab($('sk-gradient'), sk.gradient, { suffix: '%' });
+
+  const reading = $('sk-reading');
+  clear(reading);
+  for (const line of sk.reading.slice(1)) reading.appendChild(el('li', null, line));
+}
+
 // -------------------------------------------------------------- rail sync --
 
 function trackSections() {
@@ -1006,6 +1184,9 @@ async function boot() {
 
   // ---- frontier deep dive
   renderFrontier(stats.frontier);
+
+  // ---- skills market
+  renderSkills(stats.skills);
 
   // ---- shape
   const fm = $('functionmix');

@@ -5,6 +5,7 @@ import { IncompleteIndexError, syncJobs } from './scrape.mjs';
 import { analyze, buildJobsLite } from './analyze.mjs';
 import { buildBrief } from './insight.mjs';
 import { buildFrontier } from './frontier.mjs';
+import { buildSkills } from './skills.mjs';
 
 function parseArgs(argv) {
   const opts = { full: false, limit: 0 };
@@ -46,6 +47,7 @@ export function rebuildDerived(allJobs, changes, history) {
   const stats = analyze(allJobs, changes, history);
   stats.brief = buildBrief(allJobs, stats, history);
   stats.frontier = buildFrontier(allJobs);
+  stats.skills = buildSkills(allJobs);
   writeJson(FILES.stats, stats);
   writeJson(FILES.jobsLite, buildJobsLite(allJobs));
   return stats;

@@ -4,14 +4,18 @@ import { fetchPositionDetails, fetchSearchPage, pool, rateStats } from './api.mj
 import {
   classifyArchetype,
   classifySeniority,
+  degreeLevel,
   detectIndustries,
   detectInitiatives,
   detectOrg,
   detectProducts,
+  detectSkills,
   detectSolutionAreas,
   detectThemes,
   extractOverview,
   extractOverviewBlock,
+  extractQualificationsBlock,
+  requiredYears,
   stripBoilerplate,
   toPlainText,
 } from './taxonomy.mjs';
@@ -106,6 +110,9 @@ export function buildRecord(summary, detail, previous) {
   // Organisation is read from the Overview only — that is where a team
   // describes itself rather than listing teams it collaborates with.
   const overviewBlock = extractOverviewBlock(clean);
+  // Skills are read from the Qualifications block only — that is the one part
+  // of an advert that is a statement of demand.
+  const qualifications = extractQualificationsBlock(clean);
 
   return {
     id: String(summary.id),
@@ -133,6 +140,10 @@ export function buildRecord(summary, detail, previous) {
     org: detectOrg(strong, overviewBlock),
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
+    skills: detectSkills(strong, qualifications),
+    requiredYears: requiredYears(qualifications),
+    degree: degreeLevel(qualifications),
+    hasQualifications: Boolean(qualifications),
     overview: clean ? extractOverview(clean) : previous?.overview ?? '',
     descriptionHash: hash(plain),
     descriptionHtml,
@@ -154,6 +165,7 @@ export function reclassify(job) {
   const clean = stripBoilerplate(plain);
   const strong = [job.title, job.profession, job.discipline, job.department].filter(Boolean).join('\n');
   const overviewBlock = extractOverviewBlock(clean);
+  const qualifications = extractQualificationsBlock(clean);
   return {
     ...job,
     seniority: classifySeniority(job.title || ''),
@@ -164,6 +176,10 @@ export function reclassify(job) {
     org: detectOrg(strong, overviewBlock),
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
+    skills: detectSkills(strong, qualifications),
+    requiredYears: requiredYears(qualifications),
+    degree: degreeLevel(qualifications),
+    hasQualifications: Boolean(qualifications),
     overview: clean ? extractOverview(clean) : job.overview ?? '',
   };
 }
