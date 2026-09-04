@@ -389,6 +389,7 @@ export function buildBrief(jobs, stats, history) {
       'Business units are counted only when an advert identifies its own organisation, and only from the Overview section \u2014 the Responsibilities section names teams a role merely collaborates with. About a third of adverts qualify; the rest are reported as not stated rather than guessed, so unit totals are a floor, not a census.',
       'The momentum index compares each theme\u2019s share of the last 30 days of postings against its share of the whole open book. Roles that close quickly are slightly under-counted.',
       'Cluster tagging is keyword-based over title, profession, discipline and description, after standard legal and benefits boilerplate is removed. Clusters overlap, so their shares do not sum to 100%.',
+      'The Frontier deep dive reads only the adverts that identify themselves as part of that organisation, which is a small cohort. Every figure there is therefore reported against the rest of the open book as an index rather than as a standalone number, and its recency window is 90 days rather than 30.',
     ],
   };
 }

@@ -27,11 +27,12 @@
           <a class="rail__link" href="#s00"><span>00</span><span>Brief</span></a>
           <a class="rail__link" href="#s01"><span>01</span><span>Clusters</span></a>
           <a class="rail__link" href="#s02"><span>02</span><span>Org</span></a>
-          <a class="rail__link" href="#s03"><span>03</span><span>Shape</span></a>
-          <a class="rail__link" href="#s04"><span>04</span><span>Momentum</span></a>
-          <a class="rail__link" href="#s05"><span>05</span><span>Geography</span></a>
-          <a class="rail__link" href="#s06"><span>06</span><span>Index</span></a>
-          <a class="rail__link" href="#s07"><span>07</span><span>Changes</span></a>
+          <a class="rail__link" href="#s03"><span>03</span><span>Frontier</span></a>
+          <a class="rail__link" href="#s04"><span>04</span><span>Shape</span></a>
+          <a class="rail__link" href="#s05"><span>05</span><span>Momentum</span></a>
+          <a class="rail__link" href="#s06"><span>06</span><span>Geography</span></a>
+          <a class="rail__link" href="#s07"><span>07</span><span>Index</span></a>
+          <a class="rail__link" href="#s08"><span>08</span><span>Changes</span></a>
         </div>
       </nav>
 
@@ -167,11 +168,164 @@
             </div>
           </section>
 
-          <!-- ============================================= 03 · shape -->
-          <section class="band" id="s03" aria-labelledby="shape-title">
+          <!-- ========================================== 03 · frontier -->
+          <section class="band" id="s03" aria-labelledby="frontier-title">
             <div class="numeral" aria-hidden="true">03</div>
             <div class="band__head">
-              <p class="band__index">03 — Shape</p>
+              <p class="band__index">03 — Frontier</p>
+              <h2 class="band__title" id="frontier-title">inside the Frontier organisation</h2>
+              <p class="band__note" id="frontier-note">
+                A deep read of the roles that identify themselves as Microsoft Frontier Company —
+                Industry Solutions Delivery, Forward Deployed Engineering, and the adverts that name
+                Frontier without naming a sub-unit.
+              </p>
+            </div>
+
+            <div class="kpis" id="fr-kpis"></div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="prose" id="fr-standfirst"></p>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-6">
+                <p class="subhead">Unit</p>
+                <div class="rank rank--wide" id="fr-units"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Industry vertical</p>
+                <div class="rank rank--wide" id="fr-industries"></div>
+                <p class="cell__note" id="fr-industry-note"></p>
+              </div>
+              <div class="col-6">
+                <p class="subhead">Role shape</p>
+                <div class="rank rank--wide" id="fr-archetypes"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Capability named</p>
+                <div class="rank rank--wide" id="fr-capabilities"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Frontier against the other two divisions</p>
+                <div class="tablewrap">
+                  <table class="matrix" id="fr-contrast">
+                    <caption class="visually-hidden">
+                      Frontier, MCAPS and the engineering divisions compared on role composition
+                    </caption>
+                  </table>
+                </div>
+                <p class="cell__note">
+                  Only adverts that identify their own organisation are counted, so each column is a
+                  floor. “Consulting-shaped” means an architect, consultant or engagement-lead title;
+                  “selling-shaped” means a sales, specialist or account title. Engineers are excluded
+                  from both, because across divisions that measures who writes code rather than who
+                  bills for delivery. Travel and people-manager shares are taken over the adverts
+                  that state those fields.
+                </p>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-6">
+                <p class="subhead">Role shapes over-represented in the last 30 days</p>
+                <div id="fr-rising-archetype"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">
+                  Verticals over-represented in the last 30 days
+                </p>
+                <div id="fr-rising-industry"></div>
+                <p class="cell__note" id="fr-momentum-note"></p>
+              </div>
+              <div class="col-6">
+                <p class="subhead">Seniority, against the rest of the book</p>
+                <div class="rank rank--wide" id="fr-seniority"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Required travel</p>
+                <div class="rank rank--wide" id="fr-travel"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-6">
+                <p class="subhead">Strategic clusters served</p>
+                <div class="rank rank--wide" id="fr-clusters"></div>
+              </div>
+              <div class="col-6">
+                <p class="subhead">Named initiative</p>
+                <div class="rank rank--wide" id="fr-initiatives"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">Commercial solution area</p>
+                <div class="rank rank--wide" id="fr-solutionareas"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-6">
+                <p class="subhead">Monthly composition by unit</p>
+                <div class="spark" id="fr-tl-unit"></div>
+              </div>
+              <div class="col-6">
+                <p class="subhead">Monthly composition by vertical</p>
+                <div class="spark" id="fr-tl-industry"></div>
+              </div>
+              <div class="col-12">
+                <p class="subhead">Share shift inside the cohort — last 3 months vs the 3 before</p>
+                <div id="fr-shift"></div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-5">
+                <p class="subhead">Where the roles sit</p>
+                <div class="rank rank--wide" id="fr-countries"></div>
+                <p class="subhead" style="margin-top: var(--space-md)">
+                  Named by roles outside the cohort
+                </p>
+                <div class="rank rank--wide" id="fr-surface"></div>
+                <p class="cell__note" id="fr-surface-note"></p>
+              </div>
+              <div class="col-7">
+                <p class="subhead">Language that separates these adverts from the rest of the book</p>
+                <div class="rank rank--wide" id="fr-language"></div>
+                <p class="cell__note">
+                  Lift = the share of Frontier adverts using the phrase ÷ its share of every other
+                  advert, counted once per advert so repetition cannot manufacture a signal.
+                </p>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Newest Frontier postings</p>
+                <div class="tablewrap">
+                  <table class="index">
+                    <caption class="visually-hidden">The most recently created Frontier roles</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Role</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Vertical</th>
+                        <th scope="col">Locations</th>
+                        <th scope="col">Posted</th>
+                      </tr>
+                    </thead>
+                    <tbody id="fr-pipeline"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="cols" style="margin-top: var(--space-lg)">
+              <div class="col-12">
+                <p class="subhead">Reading — where this organisation is heading</p>
+                <ol class="outlook" id="fr-reading"></ol>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================= 04 · shape -->
+          <section class="band" id="s04" aria-labelledby="shape-title">
+            <div class="numeral" aria-hidden="true">04</div>
+            <div class="band__head">
+              <p class="band__index">04 — Shape</p>
               <h2 class="band__title" id="shape-title">how the org is being built</h2>
               <p class="band__note">
                 Function mix, seniority pyramid, and the individual-contributor to people-manager
@@ -210,11 +364,11 @@
             </div>
           </section>
 
-          <!-- ========================================== 04 · momentum -->
-          <section class="band" id="s04" aria-labelledby="momentum-title">
-            <div class="numeral" aria-hidden="true">04</div>
+          <!-- ========================================== 05 · momentum -->
+          <section class="band" id="s05" aria-labelledby="momentum-title">
+            <div class="numeral" aria-hidden="true">05</div>
             <div class="band__head">
-              <p class="band__index">04 — Momentum</p>
+              <p class="band__index">05 — Momentum</p>
               <h2 class="band__title" id="momentum-title">what is accelerating</h2>
               <p class="band__note">
                 Index = a cluster's share of the last 30 days of postings ÷ its share of the whole
@@ -265,11 +419,11 @@
             </div>
           </section>
 
-          <!-- ========================================= 05 · geography -->
-          <section class="band" id="s05" aria-labelledby="geo-title">
-            <div class="numeral" aria-hidden="true">05</div>
+          <!-- ========================================= 06 · geography -->
+          <section class="band" id="s06" aria-labelledby="geo-title">
+            <div class="numeral" aria-hidden="true">06</div>
             <div class="band__head">
-              <p class="band__index">05 — Geography</p>
+              <p class="band__index">06 — Geography</p>
               <h2 class="band__title" id="geo-title">where the roles sit</h2>
               <p class="band__note">
                 A role listing several locations is counted once per country, so country totals
@@ -294,11 +448,11 @@
             </div>
           </section>
 
-          <!-- ============================================= 06 · index -->
-          <section class="band" id="s06" aria-labelledby="index-title">
-            <div class="numeral" aria-hidden="true">06</div>
+          <!-- ============================================= 07 · index -->
+          <section class="band" id="s07" aria-labelledby="index-title">
+            <div class="numeral" aria-hidden="true">07</div>
             <div class="band__head">
-              <p class="band__index">06 — Index</p>
+              <p class="band__index">07 — Index</p>
               <h2 class="band__title" id="index-title">the roles themselves</h2>
               <p class="band__note">
                 Every advertised role, filterable. Each links to the live posting.
@@ -317,6 +471,10 @@
               <label class="field">
                 <span>Business unit</span>
                 <select id="f-org"></select>
+              </label>
+              <label class="field">
+                <span>Industry vertical</span>
+                <select id="f-industry"></select>
               </label>
               <label class="field">
                 <span>Profession</span>
@@ -361,11 +519,11 @@
             </p>
           </section>
 
-          <!-- =========================================== 07 · changes -->
-          <section class="band" id="s07" aria-labelledby="changes-title">
-            <div class="numeral" aria-hidden="true">07</div>
+          <!-- =========================================== 08 · changes -->
+          <section class="band" id="s08" aria-labelledby="changes-title">
+            <div class="numeral" aria-hidden="true">08</div>
             <div class="band__head">
-              <p class="band__index">07 — Changes</p>
+              <p class="band__index">08 — Changes</p>
               <h2 class="band__title" id="changes-title">what moved</h2>
               <p class="band__note">
                 Each daily batch diffs the live book against the last snapshot: openings added,

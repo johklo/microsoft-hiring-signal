@@ -197,8 +197,7 @@ function renderShift(node, rows) {
   }
 }
 
-function renderCrosstab(table, ct) {
-  clear(table);
+function renderCrosstab(table, ct) {  clear(table);
   if (!ct || !ct.rows.length) return;
 
   // Drop all-zero columns so the table stays readable.
@@ -236,6 +235,50 @@ function renderCrosstab(table, ct) {
     }
     tbody.appendChild(tr);
   });
+  table.appendChild(tbody);
+}
+
+/**
+ * A small comparison table: one row per group, one column per measure. Unlike
+ * the crosstab the cells are already-computed percentages, so shading is scaled
+ * per column — the question is always "which group leans hardest on this".
+ */
+function renderProfile(table, spec) {
+  clear(table);
+  if (!spec || !spec.rows?.length) return;
+
+  const thead = el('thead');
+  const hr = el('tr');
+  hr.appendChild(el('th', null, ''));
+  for (const c of spec.cols) {
+    const th = el('th', null, c.label);
+    th.scope = 'col';
+    hr.appendChild(th);
+  }
+  thead.appendChild(hr);
+  table.appendChild(thead);
+
+  const colMax = new Map(
+    spec.cols.map((c) => [c.key, Math.max(...spec.rows.map((r) => Number(r[c.key]) || 0)) || 1])
+  );
+
+  const tbody = el('tbody');
+  for (const r of spec.rows) {
+    const tr = el('tr');
+    const th = el('th', null, r.label);
+    th.scope = 'row';
+    tr.appendChild(th);
+    for (const c of spec.cols) {
+      const v = Number(r[c.key]) || 0;
+      const td = el('td', null, c.format === 'pct' ? `${v}%` : nf.format(v));
+      if (v) {
+        const intensity = Math.round((v / colMax.get(c.key)) * 22);
+        td.style.background = `color-mix(in oklab, var(--color-accent) ${intensity}%, transparent)`;
+      }
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
   table.appendChild(tbody);
 }
 
@@ -277,7 +320,7 @@ function fillSelect(sel, values, allLabel) {
   for (const v of values) sel.appendChild(new Option(v.label, v.value));
 }
 
-function setupIndex(jobs, themeLabels, orgLabels) {
+function setupIndex(jobs, themeLabels, orgLabels, industryLabels) {
   const body = $('index-body');
   const countEl = $('index-count');
   const moreBtn = $('more');
@@ -301,6 +344,13 @@ function setupIndex(jobs, themeLabels, orgLabels) {
     'All business units'
   );
   fillSelect(
+    $('f-industry'),
+    [...new Set(jobs.flatMap((j) => j.industries || []))]
+      .map((k) => ({ value: k, label: industryLabels.get(k) || k }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+    'All verticals'
+  );
+  fillSelect(
     $('f-profession'),
     uniq(jobs.map((j) => j.profession)).map((v) => ({ value: v, label: v })),
     'All professions'
@@ -320,6 +370,7 @@ function setupIndex(jobs, themeLabels, orgLabels) {
     const q = $('f-q').value.trim().toLowerCase();
     const theme = $('f-theme').value;
     const org = $('f-org').value;
+    const industry = $('f-industry').value;
     const prof = $('f-profession').value;
     const country = $('f-country').value;
     const sen = $('f-seniority').value;
@@ -329,6 +380,7 @@ function setupIndex(jobs, themeLabels, orgLabels) {
       if (theme && !j.themes.includes(theme)) return false;
       if (org === '__none' && j.org) return false;
       if (org && org !== '__none' && j.org !== org) return false;
+      if (industry && !(j.industries || []).includes(industry)) return false;
       if (prof && j.profession !== prof) return false;
       if (country && !j.countries.includes(country)) return false;
       if (sen && j.seniority !== sen) return false;
@@ -391,7 +443,7 @@ function setupIndex(jobs, themeLabels, orgLabels) {
     moreBtn.textContent = shown >= rows.length ? 'All roles shown' : 'Show more roles';
   }
 
-  for (const id of ['f-q', 'f-theme', 'f-org', 'f-profession', 'f-country', 'f-seniority', 'f-sort']) {
+  for (const id of ['f-q', 'f-theme', 'f-org', 'f-industry', 'f-profession', 'f-country', 'f-seniority', 'f-sort']) {
     $(id).addEventListener('input', () => {
       shown = PAGE;
       render();
@@ -450,6 +502,201 @@ function renderChanges(node, runs) {
   }
 }
 
+// -------------------------------------------------------------- frontier ---
+
+/** "1.8× the rest of the book", or "only here" when nothing else mentions it. */
+const liftNote = (index) => {
+  if (index === null || index === undefined) return 'only in this cohort';
+  const n = index >= 10 ? Math.round(index) : index.toFixed(2);
+  return `${n}\u00d7 the rest of the book`;
+};
+
+function renderFrontier(fr) {
+  const section = document.getElementById('s03');
+  if (!section) return;
+
+  if (!fr || fr.empty) {
+    $('fr-standfirst').textContent =
+      fr?.note ?? 'No advert in this batch identifies itself as part of the Frontier organisation.';
+    for (const id of [
+      'fr-units', 'fr-industries', 'fr-archetypes', 'fr-capabilities', 'fr-clusters',
+      'fr-initiatives', 'fr-solutionareas', 'fr-seniority', 'fr-travel', 'fr-countries',
+      'fr-language', 'fr-surface',
+    ]) {
+      const node = $(id);
+      if (node) {
+        clear(node);
+        node.appendChild(el('p', 'empty', 'No data in this batch.'));
+      }
+    }
+    return;
+  }
+
+  const cells = $('fr-kpis');
+  clear(cells);
+  for (const k of fr.kpis) {
+    const cell = el('div', 'kpi');
+    cell.appendChild(el('p', 'kpi__value', k.value));
+    cell.appendChild(el('p', 'kpi__label', k.label));
+    cell.appendChild(el('p', 'kpi__sub', k.sub));
+    cells.appendChild(cell);
+  }
+
+  $('fr-standfirst').textContent = fr.reading[0] ?? '';
+
+  renderRank(
+    $('fr-units'),
+    fr.units.map((u) => ({ label: u.label, count: u.count, sub: `${u.share}% of the cohort · ${u.blurb}` })),
+    { sub: true }
+  );
+
+  renderRank(
+    $('fr-industries'),
+    fr.industries.map((v) => ({
+      label: v.label,
+      count: v.count,
+      sub: `${v.share}% of the cohort · ${liftNote(v.index)}`,
+    })),
+    { sub: true }
+  );
+  $('fr-industry-note').textContent = fr.industries.length
+    ? `Verticals are read from the advert's own text. A role can name more than one, so these do not sum to ${fr.cohortSize}.`
+    : 'No vertical is named often enough in this cohort to report.';
+
+  renderRank(
+    $('fr-archetypes'),
+    fr.archetypes.map((a) => ({
+      label: a.label,
+      count: a.count,
+      sub: `${a.share}% of the cohort · ${liftNote(a.index)}`,
+    })),
+    { sub: true }
+  );
+
+  renderRank(
+    $('fr-capabilities'),
+    fr.capabilities.map((c) => ({ label: c.label, count: c.count, sub: liftNote(c.index) })),
+    { sub: true, limit: 12 }
+  );
+
+  renderProfile($('fr-contrast'), fr.contrast);
+
+  renderMomentum(
+    $('fr-rising-archetype'),
+    fr.momentum.byArchetype.slice(0, 6),
+    'Too few dated postings in this cohort to compute a recency index.'
+  );
+  renderMomentum(
+    $('fr-rising-industry'),
+    fr.momentum.byIndustry.slice(0, 6),
+    'Too few dated postings naming a vertical to compute a recency index.'
+  );
+  $('fr-momentum-note').textContent =
+    `Index above 1.00 means over-represented in the cohort's last ${fr.momentum.windowDays} days ` +
+    `(${nf.format(fr.momentum.recent30)} of ${nf.format(fr.cohortSize)} postings) against its own baseline. ` +
+    `A row needs at least three postings to appear, so a thin month simply shows nothing.`;
+
+  renderRank(
+    $('fr-seniority'),
+    fr.seniority.map((s) => ({ label: s.label, count: s.count, sub: `${s.share}% · ${liftNote(s.index)}` })),
+    { sub: true }
+  );
+  renderRank(
+    $('fr-travel'),
+    fr.travel.map((t) => ({ label: t.label, count: t.count, sub: `${t.share}% · ${liftNote(t.index)}` })),
+    { sub: true, limit: 6 }
+  );
+
+  const months = fr.timeline.months;
+  renderRank(
+    $('fr-clusters'),
+    fr.clusterMix.map((c) => ({ label: c.label, count: c.count, sub: `${c.share}% · ${liftNote(c.index)}` })),
+    { sub: true, limit: 8 }
+  );
+  renderRank(
+    $('fr-initiatives'),
+    fr.initiatives.map((i) => ({ label: i.label, count: i.count, sub: `${i.share}% · ${liftNote(i.index)}` })),
+    { sub: true }
+  );
+  renderRank(
+    $('fr-solutionareas'),
+    fr.solutionAreas.map((s) => ({ label: s.label, count: s.count, sub: `${s.share}% · ${liftNote(s.index)}` })),
+    { sub: true }
+  );
+
+  renderSpark($('fr-tl-unit'), fr.timeline.byUnit, months);  
+  renderSpark($('fr-tl-industry'), fr.timeline.byIndustry, months);
+  renderShift(
+    $('fr-shift'),
+    [...(fr.timeline.shift.archetype || []), ...(fr.timeline.shift.industry || [])]
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0, 10)
+  );
+
+  renderRank(
+    $('fr-countries'),
+    fr.countries.map((c) => ({ label: c.label, count: c.count, sub: liftNote(c.index) })),
+    { sub: true, limit: 12 }
+  );
+
+  renderRank(
+    $('fr-language'),
+    fr.language.map((t) => ({
+      label: t.term,
+      count: t.count,
+      sub: `${t.lift}\u00d7 lift · ${t.share}% of Frontier adverts vs ${t.restShare}% elsewhere`,
+    })),
+    { sub: true }
+  );
+
+  renderRank(
+    $('fr-surface'),
+    (fr.surface?.byProfession || []).map((p) => ({ label: p.label, count: p.count })),
+    { limit: 8 }
+  );
+  $('fr-surface-note').textContent = fr.surface?.count
+    ? `${nf.format(fr.surface.count)} adverts (${fr.surface.share}% of the book) name Frontier, ISD or FDE without ` +
+      `claiming membership — roles told to work with the delivery arm rather than inside it. Shown by profession.`
+    : 'No advert outside the cohort names Frontier, ISD or FDE.';
+
+  const body = $('fr-pipeline');
+  clear(body);
+  for (const r of fr.pipeline) {
+    const tr = el('tr');
+
+    const tdTitle = el('td');
+    const a = el('a', 'index__title', r.title);
+    a.href = r.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    tdTitle.appendChild(a);
+    tdTitle.appendChild(el('span', 'index__meta', [r.archetype, r.seniority].filter(Boolean).join(' · ')));
+    tr.appendChild(tdTitle);
+
+    const tdUnit = el('td');
+    tdUnit.appendChild(el('span', 'index__meta', r.unit || '—'));
+    tr.appendChild(tdUnit);
+
+    const tdInd = el('td');
+    const tags = el('div', 'tags');
+    for (const v of r.industries.slice(0, 2)) tags.appendChild(el('span', 'tag', v));
+    if (!r.industries.length) tags.appendChild(el('span', 'rank__sub', '—'));
+    tdInd.appendChild(tags);
+    tr.appendChild(tdInd);
+
+    const tdLoc = el('td');
+    tdLoc.appendChild(el('span', 'index__meta', r.location || '—'));
+    tr.appendChild(tdLoc);
+
+    tr.appendChild(el('td', null, daysAgo(r.creationTs)));
+    body.appendChild(tr);
+  }
+
+  const reading = $('fr-reading');
+  clear(reading);
+  for (const line of fr.reading.slice(1)) reading.appendChild(el('li', null, line));
+}
+
 // -------------------------------------------------------------- rail sync --
 
 function trackSections() {
@@ -489,6 +736,7 @@ async function boot() {
   const m = brief.metrics;
   const themeLabels = new Map(stats.themes.map((t) => [t.key, t.label]));
   const orgLabels = new Map(stats.orgs.map((o) => [o.key, o.label]));
+  const industryLabels = new Map((stats.industries || []).map((v) => [v.key, v.label]));
 
   // ---- hero
   document.title = `${nf.format(m.openRoles)} open roles — Microsoft hiring signal`;
@@ -582,6 +830,9 @@ async function boot() {
   );
   renderCrosstab($('orgtab'), stats.crosstabs.orgBySeniority);
 
+  // ---- frontier deep dive
+  renderFrontier(stats.frontier);
+
   // ---- shape
   const fm = $('functionmix');
   clear(fm);
@@ -638,7 +889,7 @@ async function boot() {
   renderRank($('travel'), stats.breakdowns.travel.map((w) => ({ label: w.key, count: w.count })), { limit: 8 });
 
   // ---- index + changes
-  setupIndex(jobs, themeLabels, orgLabels);
+  setupIndex(jobs, themeLabels, orgLabels, industryLabels);
   renderChanges($('changes'), stats.recentChanges);
 
   const caveats = $('caveats');

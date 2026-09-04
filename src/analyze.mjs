@@ -1,5 +1,7 @@
 import {
+  ARCHETYPE_LABELS,
   BUSINESS_THEMES,
+  INDUSTRIES,
   INITIATIVES,
   ORG_PARENTS,
   ORG_UNITS,
@@ -138,6 +140,8 @@ export function analyze(allJobs, runs, history) {
   const byProduct = new Map();
   const byOrg = new Map();
   const byOrgParent = new Map();
+  const byIndustry = new Map();
+  const byArchetype = new Map();
   const bySolutionArea = new Map();
   const byInitiative = new Map();
   const postedByDay = new Map();
@@ -186,6 +190,8 @@ export function analyze(allJobs, runs, history) {
 
     tally(byOrg, j.org || 'not_stated');
     tally(byOrgParent, j.org ? orgParent(j.org) : 'not_stated');
+    for (const v of j.industries || []) tally(byIndustry, v);
+    tally(byArchetype, j.archetype || 'other');
     for (const s of j.solutionAreas || []) tally(bySolutionArea, s);
     for (const i of j.initiatives || []) tally(byInitiative, i);
 
@@ -210,6 +216,7 @@ export function analyze(allJobs, runs, history) {
   const orgMeta = Object.fromEntries(ORG_UNITS.map((o) => [o.id, { label: o.label, blurb: o.blurb }]));
   const saMeta = Object.fromEntries(SOLUTION_AREAS.map((s) => [s.id, { label: s.label }]));
   const initMeta = Object.fromEntries(INITIATIVES.map((i) => [i.id, { label: i.label, blurb: i.blurb }]));
+  const industryMeta = Object.fromEntries(INDUSTRIES.map((v) => [v.id, { label: v.label, blurb: v.blurb }]));
 
   const decorate = (map, meta, fallback) =>
     toList(map).map((x) => ({
@@ -234,6 +241,13 @@ export function analyze(allJobs, runs, history) {
   }));
   const solutionAreaList = decorate(bySolutionArea, saMeta);
   const initiativeList = decorate(byInitiative, initMeta);
+  const industryList = decorate(byIndustry, industryMeta);
+  const archetypeList = toList(byArchetype).map((x) => ({
+    key: x.key,
+    label: ARCHETYPE_LABELS[x.key] ?? x.key,
+    count: x.count,
+    share: +((x.count / Math.max(1, jobs.length)) * 100).toFixed(1),
+  }));
 
   const themeList = toList(byTheme).map((x) => ({
     key: x.key,
@@ -305,7 +319,21 @@ export function analyze(allJobs, runs, history) {
       avgDaysOpen: ageCount ? +(ageSum / ageCount).toFixed(1) : null,
       medianDaysToClose: medianDaysOpen,
       runCount: runs.length,
-      lastRun: runs[0] ?? null,
+      // Summary fields only. The full run record carries every added, closed and
+      // edited posting, which on a batch that refreshes the whole corpus is
+      // hundreds of kilobytes the browser never reads.
+      lastRun: runs[0]
+        ? {
+            date: runs[0].date,
+            startedAt: runs[0].startedAt,
+            finishedAt: runs[0].finishedAt,
+            mode: runs[0].mode,
+            openCount: runs[0].openCount,
+            addedCount: runs[0].addedCount,
+            removedCount: runs[0].removedCount,
+            updatedCount: runs[0].updatedCount,
+          }
+        : null,
     },
     breakdowns: {
       profession: toList(byProfession),
@@ -329,6 +357,8 @@ export function analyze(allJobs, runs, history) {
     orgParents: orgParentList,
     solutionAreas: solutionAreaList,
     initiatives: initiativeList,
+    industries: industryList,
+    archetypes: archetypeList,
     themePairs: toList(themeCombo, 15).map((x) => {
       const [a, b] = x.key.split('|');
       return { a: themeMeta[a]?.label ?? a, b: themeMeta[b]?.label ?? b, count: x.count };
@@ -394,6 +424,8 @@ export function buildJobsLite(allJobs) {
         postedTs: j.postedTs,
         creationTs: j.creationTs,
         themes: j.themes || [],
+        industries: j.industries || [],
+        archetype: j.archetype || 'other',
         products: j.products || [],
         org: j.org || null,
         solutionAreas: j.solutionAreas || [],

@@ -2,7 +2,9 @@ import crypto from 'node:crypto';
 import { CHECKPOINT_EVERY, CONCURRENCY, DETAIL_BUDGET, DETAIL_REFRESH_DAYS, PAGE_SIZE } from './config.mjs';
 import { fetchPositionDetails, fetchSearchPage, pool, rateStats } from './api.mjs';
 import {
+  classifyArchetype,
   classifySeniority,
+  detectIndustries,
   detectInitiatives,
   detectOrg,
   detectProducts,
@@ -117,6 +119,7 @@ export function buildRecord(summary, detail, previous) {
     workSite,
     travel,
     seniority: classifySeniority(title),
+    archetype: classifyArchetype(title),
     locations: summary.locations ?? detail?.locations ?? [],
     countryCodes: summary.standardizedLocations ?? detail?.standardizedLocations ?? [],
     workLocationOption: summary.workLocationOption ?? null,
@@ -125,6 +128,7 @@ export function buildRecord(summary, detail, previous) {
     isHot: Boolean(summary.isHot),
     url: detail?.publicUrl ?? `https://jobs.careers.microsoft.com/global/en/job/${summary.id}`,
     themes: detectThemes(strong, clean),
+    industries: detectIndustries(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
     org: detectOrg(strong, overviewBlock),
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
@@ -153,7 +157,9 @@ export function reclassify(job) {
   return {
     ...job,
     seniority: classifySeniority(job.title || ''),
+    archetype: classifyArchetype(job.title || ''),
     themes: detectThemes(strong, clean),
+    industries: detectIndustries(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
     org: detectOrg(strong, overviewBlock),
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),

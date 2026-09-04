@@ -62,15 +62,16 @@ Postings that disappear from the site are **not deleted** — they are marked `c
 | **The plate** | Share of all postings touching the AI / datacenter / silicon build-out. |
 | **01 · Clusters** | Which strategic bet each role serves, plus named products and platforms. |
 | **02 · Organisation** | Which division and business unit is hiring — MCAPS (ATU, CSU, GPS, CE&S, CSS, SME&C), Microsoft Frontier Company (ISD, FDE), and the engineering divisions (CO+I, SCHIE, MAI, CoreAI, Microsoft Security…) — plus commercial solution areas, named strategic initiatives, and business unit × seniority. |
-| **03 · Shape** | Build vs sell vs capacity vs run, the seniority pyramid, and profession × role type. |
-| **04 · Momentum** | What is over- and under-represented in the last 30 days, the daily posting trend, monthly composition by cluster and business unit, and the share shift between the last three months and the three before. |
-| **05 · Geography** | Countries, cities, work-site policy and travel requirements. |
-| **06 · Index** | Every role, filterable by cluster, business unit, profession, country, seniority and free text. |
-| **07 · Changes** | What each daily batch opened, closed and edited. |
+| **03 · Frontier** | A deep read of the Frontier Company cohort on its own: unit split, industry verticals, role shapes, capability stack, seniority and travel against the rest of the book, monthly composition, distinctive language, the newest postings, and a written reading of where it is heading. |
+| **04 · Shape** | Build vs sell vs capacity vs run, the seniority pyramid, and profession × role type. |
+| **05 · Momentum** | What is over- and under-represented in the last 30 days, the daily posting trend, monthly composition by cluster and business unit, and the share shift between the last three months and the three before. |
+| **06 · Geography** | Countries, cities, work-site policy and travel requirements. |
+| **07 · Index** | Every role, filterable by cluster, business unit, industry vertical, profession, country, seniority and free text. |
+| **08 · Changes** | What each daily batch opened, closed and edited. |
 
-### The four dimensions
+### The dimensions
 
-Each role is placed on four independent axes, so the same posting can be read several ways:
+Each role is placed on several independent axes, so the same posting can be read several ways:
 
 1. **Strategic cluster** — which bet the work serves (AI Platform, Datacenter Buildout, Go-to-Market…). Multi-valued.
 2. **Business unit** — which part of the company is hiring, with the division it reports into:
@@ -89,6 +90,39 @@ Each role is placed on four independent axes, so the same posting can be read se
 4. **Initiative** — the named narrative it is hired against, such as Agentic AI or the Frontier Firm
    transformation. Worth separating: *Frontier Firm* is a go-to-market story sold to customers,
    while *frontier-scale AI* is an engineering one about model training. They are counted apart.
+5. **Industry vertical** — which market the work is aimed at (Financial Services, Healthcare & Life
+   Sciences, Government & Public Sector, Defense, Manufacturing…). Multi-valued, tagged with the same
+   two-tier rule as clusters. The delivery organisations are structured by industry rather than by
+   product, so this is the axis that shows which markets delivery capacity is being built for.
+6. **Role shape** — an archetype read from the title: architect, consultant, delivery and engagement
+   lead, programme management, sales and specialist, data and AI engineering, forward-deployed
+   engineering, support, leadership. Single-valued, first match wins. On a delivery organisation this
+   is the most direct read of what is being bought.
+
+### Reading the Frontier section
+
+Section 03 answers a narrower question than the rest of the site: given that Frontier is the
+organisation Microsoft built to rebuild its commercial business around AI, what is it actually
+buying?
+
+Every figure there is a **comparison**. A count on a cohort of this size says little on its own, so
+each breakdown carries an index — the cohort's share of a thing divided by the share the rest of the
+open book gives it. Above `1.00` means Frontier over-weights it relative to everyone else; where
+nothing outside the cohort mentions it at all, the row says *only in this cohort* rather than
+printing a fake ratio.
+
+Three things are worth knowing about how it is computed:
+
+- **The recency window is 90 days, not 30.** The cohort is small enough that a single month of
+  postings is noise.
+- **Distinctive language** is measured by document frequency — counted once per advert, so one
+  advert repeating a phrase cannot manufacture a signal — and lift is smoothed, so a phrase absent
+  from the rest of the book gets a large but finite score rather than infinity. Single words have to
+  clear a higher bar than phrases, because on their own they are usually house style rather than
+  signal.
+- **Mentions are separated from membership.** Adverts that name Frontier, ISD or FDE without claiming
+  to be part of them are reported as a separate *surface* figure, never folded into the cohort. That
+  is the same rule that governs business-unit detection everywhere else on the site.
 
 ### How "business purpose" is derived
 
@@ -154,6 +188,7 @@ waits, and resumes. Tune with environment variables:
 $env:MSJOBS_INTERVAL_MS = '1500'   # slower, safer
 $env:MSJOBS_CONCURRENCY = '2'
 $env:MSJOBS_COOLDOWN_MS = '90000'  # pause length after a block
+$env:MSJOBS_DETAIL_BUDGET = '0'    # 0 = no cap; default 700 detail fetches per run
 npm run batch
 ```
 
@@ -169,9 +204,11 @@ src/
   config.mjs        pacing, endpoints, thresholds
   api.mjs           paced HTTP client, retry + WAF circuit breaker
   scrape.mjs        index walk, record building, change detection
-  taxonomy.mjs      boilerplate stripping, seniority rules, clusters, products
+  taxonomy.mjs      boilerplate stripping, seniority rules, clusters, products,
+                    organisations, industry verticals, role archetypes
   analyze.mjs       breakdowns, crosstabs, trends
   insight.mjs       the one-page executive brief
+  frontier.mjs      the Frontier / ISD deep dive in section 03
   daily.mjs         batch orchestrator
   rebuild.mjs       recompute from cache, no network
   schedule.mjs      Windows Scheduled Task install/remove

@@ -9,6 +9,8 @@ export const USER_AGENT =
 export const PAGE_SIZE = 10;
 
 const num = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+/** Same, but 0 is a legal value rather than "unset". */
+const numOrZero = (v, d) => (v !== undefined && v !== '' && Number.isFinite(Number(v)) && Number(v) >= 0 ? Number(v) : d);
 
 /**
  * Pacing. The origin sits behind an Azure Front Door WAF with a rate rule that
@@ -41,7 +43,7 @@ export const CHECKPOINT_EVERY = 50;
  * the corpus backfills across successive daily batches rather than in one burst.
  * 0 disables the cap.
  */
-export const DETAIL_BUDGET = num(process.env.MSJOBS_DETAIL_BUDGET, 700);
+export const DETAIL_BUDGET = numOrZero(process.env.MSJOBS_DETAIL_BUDGET, 700);
 
 /** How many daily runs to retain in the change log. */
 export const CHANGELOG_RUNS = 120;

@@ -413,6 +413,186 @@ export const INITIATIVES = [
 ];
 
 /**
+ * Industry verticals.
+ *
+ * The delivery organisations — Industry Solutions Delivery above all — are
+ * organised by industry rather than by product, so this is the axis that says
+ * which markets delivery capacity is being built for. Tagged with the same
+ * two-tier rule as clusters: decisive in the structured fields, two
+ * corroborating hits required in the body.
+ */
+export const INDUSTRIES = [
+  {
+    id: 'public',
+    label: 'Government & Public Sector',
+    blurb: 'Civilian government, state and local, citizen services.',
+    keywords: ['public sector', 'government', 'federal agencies', 'state and local', 'citizen services', 'fedramp', 'government agencies', 'public administration', 'civilian agencies'],
+  },
+  {
+    id: 'defense',
+    label: 'Defense & National Security',
+    blurb: 'Defence, intelligence and classified workloads.',
+    keywords: ['department of defense', 'national security', 'defense', 'defence', 'warfighter', 'intelligence community', 'classified environments', 'air gapped', 'gcc high', 'nato', 'military', 'security clearance'],
+  },
+  {
+    id: 'finserv',
+    label: 'Financial Services',
+    blurb: 'Banking, capital markets, insurance and payments.',
+    keywords: ['financial services', 'banking', 'capital markets', 'insurance', 'fintech', 'payments', 'wealth management', 'financial institutions', 'basel', 'trading platform'],
+  },
+  {
+    id: 'health',
+    label: 'Healthcare & Life Sciences',
+    blurb: 'Providers, payers, pharma and medical research.',
+    keywords: ['healthcare', 'health care', 'life sciences', 'clinical', 'patient', 'electronic health record', 'fhir', 'hipaa', 'payers and providers', 'pharmaceutical', 'medical imaging', 'health systems'],
+  },
+  {
+    id: 'manufacturing',
+    label: 'Manufacturing & Mobility',
+    blurb: 'Discrete and process manufacturing, automotive, industrials.',
+    // Not bare "manufacturing": Microsoft manufactures its own hardware, and
+    // that is a different thing from selling to manufacturers.
+    keywords: ['manufacturing industry', 'manufacturing customers', 'discrete manufacturing', 'process manufacturing', 'automotive', 'industrial equipment', 'shop floor', 'factory operations', 'digital twin', 'product lifecycle management', 'industrial iot', 'mobility industry'],
+  },
+  {
+    id: 'energy',
+    label: 'Energy & Resources',
+    blurb: 'Utilities, oil and gas, mining and the grid.',
+    // Deliberately not "power" or bare "energy" — datacenter adverts are full
+    // of both, and mean something else entirely.
+    keywords: ['oil and gas', 'energy industry', 'energy sector', 'energy customers', 'energy and resources', 'utilities', 'grid operator', 'upstream operations', 'mining industry', 'natural resources'],
+  },
+  {
+    id: 'retail',
+    label: 'Retail & Consumer Goods',
+    blurb: 'Retailers, CPG and commerce.',
+    keywords: ['retail industry', 'retail customers', 'retailers', 'consumer goods', 'merchandising', 'point of sale', 'omnichannel', 'e-commerce', 'store operations', 'consumer packaged goods'],
+  },
+  {
+    id: 'telco',
+    label: 'Telco & Media',
+    blurb: 'Operators, networks, broadcast and entertainment.',
+    keywords: ['telecommunications', 'telco', 'network operator', 'media and entertainment', 'broadcast', 'content delivery', 'operator network', 'communications industry'],
+  },
+  {
+    id: 'education',
+    label: 'Education',
+    blurb: 'Higher education, schools and research institutions.',
+    // Not bare "education": it turns up in the qualifications clause on most
+    // adverts ("degree or equivalent education").
+    keywords: ['higher education', 'k-12', 'edtech', 'academic institutions', 'student success', 'education sector', 'education industry', 'education customers'],
+  },
+  {
+    id: 'sovereign_ind',
+    label: 'Sovereign & Regulated',
+    blurb: 'Data-residency-constrained and nationally operated cloud.',
+    keywords: ['sovereign cloud', 'data residency', 'data sovereignty', 'regulated industries', 'regulated customers', 'national cloud', 'regulatory compliance requirements'],
+  },
+];
+
+
+
+/**
+ * How a role is shaped, read from its title.
+ *
+ * Single-valued and evaluated in order, so the more specific archetype wins.
+ * On a delivery organisation this is the most direct read of what is being
+ * bought: architects and consultants mean billable delivery capacity, sellers
+ * and specialists mean demand generation, managers mean new scaffolding.
+ */
+export const ROLE_ARCHETYPES = [
+  {
+    id: 'business_support',
+    label: 'Business & executive support',
+    blurb: 'Assistants and administrators who support a leadership team.',
+    // Ahead of leadership: an assistant *to* a CVP is not a CVP.
+    re: /\bexecutive (?:assistant|business administrator)\b|\badministrative assistant\b|\bbusiness administrator\b|\b\(EA\)/i,
+  },
+  {
+    id: 'leadership',
+    label: 'Leadership',
+    blurb: 'Director and above — new scaffolding rather than delivery capacity.',
+    re: /\b(director|general manager|vice president|\bcvp\b|\bcto\b|chief technology officer|chief of staff|head of)\b/i,
+  },
+  {
+    id: 'architect',
+    label: 'Architect',
+    blurb: 'Solution, cloud and technical architects — the billable technical spine.',
+    re: /\barchitect(?:ure)?\b/i,
+  },
+  {
+    id: 'consultant',
+    label: 'Consultant',
+    blurb: 'Named consulting delivery.',
+    re: /\bconsultant\b|\bconsulting\b|\badvisor\b|\badvisory\b/i,
+  },
+  {
+    id: 'delivery_lead',
+    label: 'Delivery & engagement lead',
+    blurb: 'Owns an engagement, a practice or a delivery portfolio.',
+    re: /\b(delivery|engagement|practice|portfolio|service)\s+(lead|leader|manager|management|director|executive|partner)\b|\bdelivery (?:excellence|management)\b|\bengagement manager\b/i,
+  },
+  {
+    id: 'program',
+    label: 'Program & project management',
+    blurb: 'Programme, project and technical programme managers.',
+    re: /\b(program|programme|project|technical program)\s+manager\b|\bTPM\b|\bproject management\b|\bscrum master\b/i,
+  },
+  {
+    id: 'csam',
+    label: 'Customer success account management',
+    blurb: 'Owns consumption and adoption inside an account.',
+    re: /\bcustomer success account manager\b|\bCSAM\b|\bcustomer success manager\b/i,
+  },
+  {
+    id: 'sales',
+    label: 'Sales & specialist',
+    blurb: 'Quota-carrying and pre-sales specialist roles.',
+    re: /\b(account executive|account manager|account technology|sales|seller|specialist|business development|solution area)\b/i,
+  },
+  {
+    id: 'data_ai',
+    label: 'Data & AI engineering',
+    blurb: 'Data scientists, AI and ML engineers building the customer-facing models.',
+    re: /\b(data scientist|data engineer|machine learning|applied scientist|\bAI\b engineer|ai engineer|research scientist)\b/i,
+  },
+  {
+    id: 'engineer',
+    label: 'Software & forward-deployed engineering',
+    blurb: 'Engineers who write code inside customer engagements.',
+    re: /\b(software engineer|forward deployed|developer|full[- ]stack|platform engineer|devops engineer|site reliability)\b/i,
+  },
+  {
+    id: 'support',
+    label: 'Support & escalation engineering',
+    blurb: 'Reactive support, escalation and technical account management.',
+    re: /\b(support engineer|escalation engineer|technical support|customer engineer|technical account manager)\b/i,
+  },
+  {
+    id: 'security',
+    label: 'Security delivery',
+    blurb: 'Security consulting, incident response and compliance delivery.',
+    re: /\b(security|cybersecurity|incident response|compliance)\b/i,
+  },
+  {
+    id: 'manager',
+    label: 'People management (other)',
+    blurb: 'A manager title with no delivery discipline named.',
+    re: /\bmanager\b|\bmanagement\b|\blead\b/i,
+  },
+];
+
+export function classifyArchetype(title = '') {
+  for (const a of ROLE_ARCHETYPES) if (a.re.test(title)) return a.id;
+  return 'other';
+}
+
+export const ARCHETYPE_LABELS = {
+  ...Object.fromEntries(ROLE_ARCHETYPES.map((a) => [a.id, a.label])),
+  other: 'Other / unclassified',
+};
+
+/**
  * Only a *self-identifying* mention counts as the role's own organisation.
  *
  * Adverts routinely name other teams the role will work with — "collaborate
@@ -479,6 +659,11 @@ const escape = (s) => s.replace(WORD_BOUNDARY_SAFE, '\\$&');
 const THEME_MATCHERS = BUSINESS_THEMES.map((t) => ({
   id: t.id,
   regexes: t.keywords.map((k) => new RegExp(`(^|[^a-z0-9])${escape(k)}([^a-z0-9]|$)`, 'i')),
+}));
+
+const INDUSTRY_MATCHERS = INDUSTRIES.map((v) => ({
+  id: v.id,
+  regexes: v.keywords.map((k) => new RegExp(`(^|[^a-z0-9])${escape(k)}([^a-z0-9]|$)`, 'i')),
 }));
 
 const PRODUCT_MATCHERS = PRODUCT_DEFS.map(([term, regex]) => ({ term, regex }));
@@ -574,6 +759,26 @@ export function detectThemes(strongText = '', bodyText = '') {
 
 export function detectProducts(text) {
   return PRODUCT_MATCHERS.filter((m) => m.regex.test(text)).map((m) => m.term);
+}
+
+/** Industry verticals, tagged with the same two-tier rule as clusters. */
+export function detectIndustries(strongText = '', bodyText = '') {
+  const strong = String(strongText).toLowerCase();
+  const body = String(bodyText).toLowerCase();
+  const hits = [];
+
+  for (const m of INDUSTRY_MATCHERS) {
+    if (m.regexes.some((re) => re.test(strong))) {
+      hits.push(m.id);
+      continue;
+    }
+    let n = 0;
+    for (const re of m.regexes) {
+      if (re.test(body) && ++n >= 2) break;
+    }
+    if (n >= 2) hits.push(m.id);
+  }
+  return hits;
 }
 
 /** Pull the "Overview" paragraph, which states the team's business purpose. */
