@@ -269,6 +269,47 @@ export const ORG_UNITS = [
     re: /\bMCAPS\b|Microsoft Customer and Partner Solutions/i,
   },
 
+  // ---- commercial sub-organisations ---------------------------------------
+  // These carry `precedence: 'high'`: when one of them names itself, it beats
+  // the department map. The department says what discipline a role practises —
+  // a Global Black Belt is filed under Solution Area Specialists — while these
+  // names say which organisation runs it, which is the more specific answer.
+  // The opposite case is why the department normally wins: a Cloud Solution
+  // Architecture posting that calls itself CE&S is naming the umbrella above
+  // its own unit.
+  {
+    id: 'gbb',
+    parent: 'mcaps',
+    precedence: 'high',
+    label: 'Global Black Belt (GBB)',
+    blurb: 'The deep-specialist sales force, pulled into deals the field cannot close alone.',
+    re: /Global Black Belt|\bGBB\b/,
+  },
+  {
+    id: 'ceai',
+    parent: 'mcaps',
+    precedence: 'high',
+    label: 'Commercial Engineering & AI (CEAI)',
+    blurb: 'Builds the engineering and AI capability inside the commercial organisation itself.',
+    re: /\bCEAI\b|Commercial Engineering\s*(?:&|and)\s*AI/i,
+  },
+  {
+    id: 'digitalsales',
+    parent: 'mcaps',
+    precedence: 'high',
+    label: 'Digital Sales & Digital Natives',
+    blurb: 'The scaled remote motion \u2014 digital account executives, specialists, startups and ISVs.',
+    re: /\bDigital Natives?\b|\bDigital Sales\b/i,
+  },
+  {
+    id: 'msdigital',
+    parent: 'mcaps',
+    precedence: 'high',
+    label: 'Microsoft Digital',
+    blurb: 'Microsoft\u2019s own IT and corporate systems, run as customer zero.',
+    re: /\bMicrosoft Digital\b/i,
+  },
+
   // ---- Microsoft Frontier Company ---------------------------------------
   {
     id: 'isd',
@@ -620,7 +661,12 @@ const SELF_BEFORE =
 
 const SELF_AFTER =
   String.raw`\s*(?:\([^)]{1,24}\)\s*)?` +
-  String.raw`(?:organi[sz]ation|team|group|division|business unit|is\s+(?:a|an|the)\s|is looking|is hiring|is seeking|are looking|are hiring)`;
+  String.raw`(?:organi[sz]ation|team|group|division|business unit|is\s+(?:a|an|the)\s|is looking|is hiring|is seeking|are looking|are hiring` +
+  // Verbs a team uses about itself. "Microsoft Digital (MSD) builds and manages
+  // the critical products Microsoft runs on" is a self-description; the same
+  // name inside "collaborate with Global Black Belts (GBBs) on competitive
+  // positioning" is followed by a preposition and still will not match.
+  String.raw`|partners\b|builds\b|develops\b|delivers\b|operates\b|manages\b|owns\b|drives\b|runs\b)`;
 
 const selfCache = new Map();
 function selfPatterns(unit) {
@@ -635,24 +681,47 @@ function selfPatterns(unit) {
 }
 
 /**
+ * Resolve the organisation a posting sits in, in four steps of falling
+ * specificity:
+ *
+ *   1. A commercial sub-organisation naming itself. GBB and CEAI are filed
+ *      under ordinary field departments, so the department would otherwise
+ *      bury them.
+ *   2. The structured department, where it names a team outright.
+ *   3. The structured profession, for the scaled digital motion.
+ *   4. Any other unit naming itself in the Overview.
+ *
+ * Steps 2 and 3 sit above step 4 because a structured field states what the
+ * role is while the Overview is hand-written and can name the wrong parent —
+ * Cloud Solution Architecture postings sit in the Customer Success Unit, but a
+ * fifth of them describe themselves as the CE&S umbrella above it.
+ *
  * @param {string} strongText  title / profession / discipline / department
  * @param {string} overviewText the advert's Overview block
  * @param {string} department   the posting's structured department field
+ * @param {string} profession   the posting's structured profession field
  * @returns {string|null} unit id, or null when no organisation is identifiable
  */
-export function detectOrg(strongText = '', overviewText = '', department = '') {
-  // The structured department outranks the prose. That is the same rule the
-  // cluster tagging already uses — a structured field states what the role is,
-  // while the Overview is hand-written and can name the wrong parent. Cloud
-  // Solution Architecture postings, for instance, sit in the Customer Success
-  // Unit, but a fifth of them describe themselves as the CE&S umbrella above it.
+export function detectOrg(strongText = '', overviewText = '', department = '', profession = '') {
+  const hay = `${strongText}\n${overviewText}`;
+
+  const names = (unit) => {
+    const [before, after] = selfPatterns(unit);
+    return before.test(hay) || after.test(hay);
+  };
+
+  for (const u of ORG_UNITS) {
+    if (u.precedence === 'high' && names(u)) return u.id;
+  }
+
   const byDepartment = unitForDepartment(department);
   if (byDepartment) return byDepartment;
 
-  const hay = `${strongText}\n${overviewText}`;
+  const byProfession = unitForProfession(profession);
+  if (byProfession) return byProfession;
+
   for (const u of ORG_UNITS) {
-    const [before, after] = selfPatterns(u);
-    if (before.test(hay) || after.test(hay)) return u.id;
+    if (u.precedence !== 'high' && names(u)) return u.id;
   }
   return null;
 }
@@ -684,19 +753,15 @@ export function orgParent(id) {
 export const UNIT_BY_DEPARTMENT = new Map([
   // Customer Success Unit
   ['cloud solution architecture', 'csu'],
-  ['digital cloud solution architecture', 'csu'],
   ['customer success account mgmt', 'csu'],
   // Solution Team Unit — technical pre-sales and the specialist sellers
   ['solution engineering', 'stu'],
-  ['digital solution engineering', 'stu'],
   ['solution area specialists', 'stu'],
-  ['digital solution area specialists', 'stu'],
   // Account Team Unit — the in-country account teams
   ['account technology', 'atu'],
   ['strategic account technology', 'atu'],
   ['account management', 'atu'],
   ['strategic account management', 'atu'],
-  ['digital account management', 'atu'],
   ['services account management', 'atu'],
   // Global Partner Solutions
   ['partner development management', 'gps'],
@@ -708,8 +773,23 @@ export const UNIT_BY_DEPARTMENT = new Map([
   ['consulting project management', 'isd'],
 ]);
 
+/**
+ * The scaled digital motion is a profession, not a department. Every one of the
+ * four "Digital …" departments — account management, solution area specialists,
+ * solution engineering, cloud solution architecture — carries the profession
+ * "Digital Sales and Solutions" on every posting, and each is the digital
+ * counterpart of a field discipline rather than part of it. Keying on the
+ * profession collects all four in one rule instead of four department entries
+ * that would each have to be kept in step.
+ */
+export const UNIT_BY_PROFESSION = new Map([['digital sales and solutions', 'digitalsales']]);
+
 export function unitForDepartment(department = '') {
   return UNIT_BY_DEPARTMENT.get(String(department).trim().toLowerCase()) ?? null;
+}
+
+export function unitForProfession(profession = '') {
+  return UNIT_BY_PROFESSION.get(String(profession).trim().toLowerCase()) ?? null;
 }
 
 export function detectSolutionAreas(text = '') {

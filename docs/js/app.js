@@ -1174,12 +1174,14 @@ async function boot() {
     { sub: true }
   );
   $('org-note').textContent =
-    `Read from the posting's structured department where that names the team outright — a Cloud ` +
-    `Solution Architecture posting is a Customer Success Unit posting — and otherwise from the way ` +
-    `the advert describes itself in its Overview ("within X", "X is a global organisation"), never ` +
-    `from Responsibilities, which lists teams the role merely works with. ` +
+    `Resolved in order of how specific the evidence is: a commercial sub-organisation naming itself, ` +
+    `then the posting's structured department or profession where those name a team outright, then ` +
+    `any other organisation describing itself in the Overview. Never from Responsibilities, which ` +
+    `lists teams the role merely works with \u2014 the 36 adverts naming Global Black Belt, for ` +
+    `instance, all name it as a team they collaborate with rather than belong to. ` +
     `${stats.meta.orgCoverage}% of roles (${nf.format(stats.meta.orgIdentified)}) resolve: ` +
     `${nf.format(stats.meta.orgFromDepartment)} by department, ` +
+    `${nf.format(stats.meta.orgFromProfession)} by profession, ` +
     `${nf.format(stats.meta.orgFromSelfDescription)} by self-description. The other ` +
     `${nf.format(notStated ? notStated.count : 0)} are reported as not stated rather than guessed, ` +
     `so these totals are a floor, not a census.`;

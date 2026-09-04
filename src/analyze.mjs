@@ -342,6 +342,7 @@ export function analyze(allJobs, runs, history) {
       // Two tiers, reported apart: the structured department names the team
       // outright, the Overview has to be read for a self-description.
       orgFromDepartment: byOrgSource.get('department') || 0,
+      orgFromProfession: byOrgSource.get('profession') || 0,
       orgFromSelfDescription: byOrgSource.get('self') || 0,
       avgDaysOpen: ageCount ? +(ageSum / ageCount).toFixed(1) : null,
       medianDaysToClose: medianDaysOpen,

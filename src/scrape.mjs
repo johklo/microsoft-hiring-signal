@@ -19,6 +19,7 @@ import {
   stripBoilerplate,
   toPlainText,
   unitForDepartment,
+  unitForProfession,
 } from './taxonomy.mjs';
 
 const first = (v) => (Array.isArray(v) ? v[0] ?? null : v ?? null);
@@ -117,7 +118,15 @@ export function buildRecord(summary, detail, previous) {
   const qualifications = extractQualificationsBlock(clean);
   const department = summary.department ?? detail?.department ?? null;
   const orgByDepartment = unitForDepartment(department);
-  const orgBySelf = detectOrg(strong, overviewBlock);
+  const orgByProfession = unitForProfession(profession);
+  const org = detectOrg(strong, overviewBlock, department, profession);
+  const orgSource = !org
+    ? null
+    : org === orgByDepartment
+      ? 'department'
+      : org === orgByProfession
+        ? 'profession'
+        : 'self';
 
   return {
     id: String(summary.id),
@@ -142,8 +151,8 @@ export function buildRecord(summary, detail, previous) {
     themes: detectThemes(strong, clean),
     industries: detectIndustries(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
-    org: orgByDepartment ?? orgBySelf,
-    orgSource: orgByDepartment ? 'department' : orgBySelf ? 'self' : null,
+    org,
+    orgSource,
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
     skills: detectSkills(strong, qualifications),
@@ -172,6 +181,9 @@ export function reclassify(job) {
   const strong = [job.title, job.profession, job.discipline, job.department].filter(Boolean).join('\n');
   const overviewBlock = extractOverviewBlock(clean);
   const qualifications = extractQualificationsBlock(clean);
+  const org = detectOrg(strong, overviewBlock, job.department, job.profession);
+  const byDepartment = unitForDepartment(job.department);
+  const byProfession = unitForProfession(job.profession);
   return {
     ...job,
     seniority: classifySeniority(job.title || ''),
@@ -179,12 +191,14 @@ export function reclassify(job) {
     themes: detectThemes(strong, clean),
     industries: detectIndustries(strong, clean),
     products: detectProducts(`${strong}\n${clean}`),
-    org: detectOrg(strong, overviewBlock, job.department),
-    orgSource: unitForDepartment(job.department)
-      ? 'department'
-      : detectOrg(strong, overviewBlock)
-        ? 'self'
-        : null,
+    org,
+    orgSource: !org
+      ? null
+      : org === byDepartment
+        ? 'department'
+        : org === byProfession
+          ? 'profession'
+          : 'self',
     solutionAreas: detectSolutionAreas(`${strong}\n${clean}`),
     initiatives: detectInitiatives(`${strong}\n${clean}`),
     skills: detectSkills(strong, qualifications),
