@@ -33,7 +33,7 @@ async function loadJson(path) {
 
 // ---------------------------------------------------------------- figures --
 
-/** Ranked stepped-bar rows: name, bar on the column track, real number. */
+/** Ranked rows: name, hairline bar on a shared scale, the number itself. */
 function renderRank(node, items, opts = {}) {
   clear(node);
   if (!items || !items.length) {
@@ -60,88 +60,239 @@ function renderRank(node, items, opts = {}) {
     row.appendChild(el('div', 'rank__val', nf.format(item.count)));
     node.appendChild(row);
   }
+
+  // A bar without a scale is decoration. Say what full width means — but only
+  // where there are enough rows for the bars to be doing comparison work.
+  const shown = Math.min(limit, items.length);
+  if (shown >= 5) {
+    node.appendChild(
+      el('p', 'rank__scale', `Full width = ${nf.format(max)}${opts.unit ? ' ' + opts.unit : ''}`)
+    );
+  }
 }
 
-/** Momentum gauge: 0–2 index scale with the 1.00 baseline drawn at centre. */
+/**
+ * Dot plot on a 0–2 index scale with the 1.00 parity rule drawn through it.
+ * A stem runs from parity to the value, so over- and under-representation read
+ * as direction rather than as bar length.
+ */
 function renderMomentum(node, items, emptyMsg) {
   clear(node);
   if (!items || !items.length) {
     node.appendChild(el('p', 'empty', emptyMsg));
     return;
   }
-  for (const it of items) {
-    const row = el('div', 'momentum__row');
-    row.appendChild(el('div', 'rank__name', it.label));
 
-    const gauge = el('div', 'gauge');
-    const bar = el('i');
-    const idx = Math.max(0, Math.min(2, it.index));
-    bar.style.left = `${(Math.min(idx, 1) / 2) * 100}%`;
-    bar.style.width = `${(Math.abs(idx - 1) / 2) * 100}%`;
-    bar.dataset.dir = it.index >= 1 ? 'up' : 'down';
-    gauge.appendChild(bar);
-    row.appendChild(gauge);
+  const wrap = el('div', 'dots');
+  const pos = (v) => (Math.max(0, Math.min(2, v)) / 2) * 100;
+
+  const scale = el('div', 'dots__scale');
+  scale.appendChild(el('div', 'label', 'Index'));
+  const ticks = el('div', 'dots__ticks');
+  for (const t of [0, 0.5, 1, 1.5, 2]) {
+    const s = el('span', null, t.toFixed(t === 1 ? 2 : 1));
+    s.style.left = `${pos(t)}%`;
+    if (t === 1) s.dataset.base = 'true';
+    ticks.appendChild(s);
+  }
+  scale.appendChild(ticks);
+  scale.appendChild(el('div', 'label', ''));
+  wrap.appendChild(scale);
+
+  for (const it of items) {
+    const row = el('div', 'dots__row');
+    row.appendChild(el('div', 'dots__label', it.label));
+
+    const track = el('div', 'dots__track');
+    const base = el('i', 'dots__base');
+    base.style.left = `${pos(1)}%`;
+    track.appendChild(base);
+
+    const dir = it.index >= 1 ? 'up' : 'down';
+    const from = Math.min(pos(1), pos(it.index));
+    const stem = el('i', 'dots__stem');
+    stem.style.left = `${from}%`;
+    stem.style.width = `${Math.abs(pos(it.index) - pos(1))}%`;
+    stem.dataset.dir = dir;
+    track.appendChild(stem);
+
+    const dot = el('b', 'dots__dot');
+    dot.style.left = `${pos(it.index)}%`;
+    dot.dataset.dir = dir;
+    // An index past the end of the scale must not sit where 2.00 sits.
+    if (it.index > 2) dot.dataset.off = 'true';
+    track.appendChild(dot);
+
+    track.setAttribute('role', 'img');
+    track.setAttribute(
+      'aria-label',
+      `${it.label}: index ${it.index.toFixed(2)}, ${dir === 'up' ? 'above' : 'below'} parity`
+    );
+    row.appendChild(track);
 
     row.appendChild(el('div', 'idx', it.index.toFixed(2)));
-    node.appendChild(row);
+    wrap.appendChild(row);
   }
+
+  node.appendChild(wrap);
 }
 
-/** Hand-drawn area chart — no chart library, so it inherits the theme exactly. */
+const SVG = 'http://www.w3.org/2000/svg';
+const svgEl = (tag, attrs = {}) => {
+  const n = document.createElementNS(SVG, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  return n;
+};
+
+/** Round a maximum up to a readable gridline value. */
+function niceMax(v) {
+  if (v <= 5) return 5;
+  const mag = 10 ** Math.floor(Math.log10(v));
+  for (const step of [1, 2, 2.5, 5, 10]) {
+    if (v <= step * mag) return step * mag;
+  }
+  return 10 * mag;
+}
+
+/** Centred moving average. Undefined where the window does not fit. */
+function movingAverage(values, window) {
+  const half = Math.floor(window / 2);
+  return values.map((_, i) => {
+    if (i < half || i >= values.length - half) return null;
+    let sum = 0;
+    for (let k = i - half; k <= i + half; k++) sum += values[k];
+    return sum / window;
+  });
+}
+
+/**
+ * Daily posting volume: a dated x-axis with month ticks, a labelled y-axis, the
+ * raw daily series, and a 7-day mean in the signal ink so the trend is legible
+ * through the day-of-week noise.
+ */
 function renderTrend(node, series) {
   clear(node);
   if (!series || series.length < 2) {
     node.appendChild(el('p', 'empty', 'Not enough dated postings to plot a trend.'));
     return null;
   }
+
   const W = 900;
-  const H = 190;
-  const pad = { t: 12, r: 4, b: 18, l: 4 };
-  const max = Math.max(...series.map((d) => d.count)) || 1;
+  const H = 240;
+  const pad = { t: 14, r: 12, b: 30, l: 40 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
+
+  const counts = series.map((d) => d.count);
+  const peak = Math.max(...counts);
+  const top = niceMax(peak);
   const x = (i) => pad.l + (i / (series.length - 1)) * innerW;
-  const y = (v) => pad.t + innerH - (v / max) * innerH;
+  const y = (v) => pad.t + innerH - (v / top) * innerH;
 
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('class', 'trend');
-  svg.setAttribute('role', 'img');
-  svg.setAttribute(
-    'aria-label',
-    `Postings created per day from ${series[0].date} to ${series[series.length - 1].date}. Peak ${max} in one day.`
-  );
+  const svg = svgEl('svg', {
+    viewBox: `0 0 ${W} ${H}`,
+    class: 'chart',
+    role: 'img',
+    'aria-label':
+      `Postings created per day from ${series[0].date} to ${series[series.length - 1].date}. ` +
+      `Peak ${peak} in one day; the seven-day mean is drawn over the daily series.`,
+  });
 
-  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  // horizontal gridlines + y labels
+  for (const v of [0, top / 2, top]) {
+    svg.appendChild(
+      svgEl('line', {
+        x1: pad.l, x2: W - pad.r, y1: y(v), y2: y(v),
+        class: v === 0 ? 'axis' : 'grid',
+      })
+    );
+    const t = svgEl('text', { x: pad.l - 7, y: y(v) + 3.5, class: 'tick', 'text-anchor': 'end' });
+    t.textContent = String(Math.round(v));
+    svg.appendChild(t);
+  }
+
+  // month ticks along the base
+  let lastMonth = '';
+  series.forEach((d, i) => {
+    const month = d.date.slice(0, 7);
+    if (month === lastMonth) return;
+    lastMonth = month;
+    if (i === 0 && series.length > 20) return;
+    svg.appendChild(svgEl('line', { x1: x(i), x2: x(i), y1: y(0), y2: y(0) + 4, class: 'axis' }));
+    const t = svgEl('text', { x: x(i), y: y(0) + 17, class: 'tick', 'text-anchor': 'middle' });
+    t.textContent = new Date(`${d.date}T00:00:00Z`).toLocaleString('en-US', {
+      month: 'short',
+      timeZone: 'UTC',
+    });
+    svg.appendChild(t);
+  });
+
   const line = series.map((d, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(d.count).toFixed(1)}`).join(' ');
-  area.setAttribute('d', `${line} L${x(series.length - 1).toFixed(1)},${y(0)} L${x(0).toFixed(1)},${y(0)} Z`);
-  area.setAttribute('class', 'series');
-  svg.appendChild(area);
+  svg.appendChild(
+    svgEl('path', {
+      d: `${line} L${x(series.length - 1).toFixed(1)},${y(0)} L${x(0).toFixed(1)},${y(0)} Z`,
+      class: 'series--fill',
+    })
+  );
+  svg.appendChild(svgEl('path', { d: line, class: 'series' }));
 
-  const axis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  axis.setAttribute('x1', pad.l);
-  axis.setAttribute('x2', W - pad.r);
-  axis.setAttribute('y1', y(0));
-  axis.setAttribute('y2', y(0));
-  axis.setAttribute('class', 'axis');
-  svg.appendChild(axis);
+  const mean = movingAverage(counts, 7);
+  const meanPath = mean
+    .map((v, i) => (v === null ? null : `${i && mean[i - 1] !== null ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`))
+    .filter(Boolean)
+    .join(' ');
+  if (meanPath) svg.appendChild(svgEl('path', { d: meanPath, class: 'series--mean' }));
+
+  // mark the peak so the y-axis has an anchor the reader can name
+  const peakIndex = counts.indexOf(peak);
+  svg.appendChild(svgEl('circle', { cx: x(peakIndex), cy: y(peak), r: 3, class: 'marker' }));
+  // Flip the label to the left once the peak sits in the right third, so it is
+  // never cut off by the plot edge.
+  const flip = x(peakIndex) > pad.l + innerW * 0.66;
+  const peakLabel = svgEl('text', {
+    x: x(peakIndex) + (flip ? -8 : 8),
+    y: y(peak) - 6,
+    class: 'tick tick--accent',
+    'text-anchor': flip ? 'end' : 'start',
+  });
+  peakLabel.textContent = `peak ${peak} · ${series[peakIndex].date.slice(5)}`;
+  svg.appendChild(peakLabel);
 
   node.appendChild(svg);
-  return { max, from: series[0].date, to: series[series.length - 1].date };
+
+  const legend = el('div', 'legend');
+  const item = (kind, text) => {
+    const s = el('span');
+    const i = el('i');
+    if (kind) i.dataset.kind = kind;
+    s.appendChild(i);
+    s.appendChild(document.createTextNode(text));
+    return s;
+  };
+  legend.appendChild(item(null, 'Postings per day'));
+  legend.appendChild(item('mean', '7-day mean'));
+  node.appendChild(legend);
+
+  return { max: peak, from: series[0].date, to: series[series.length - 1].date };
 }
 
-/** Small multiples: one row per series, bars scaled to a shared maximum. */
+/**
+ * Small multiples. Rows share one vertical scale so they are comparable, the
+ * month axis is printed once, and the tallest bar is named — without that the
+ * bars are shapes rather than quantities.
+ */
 function renderSpark(node, series, months) {
   clear(node);
   if (!series || !series.length || months.length < 2) {
     node.appendChild(el('p', 'empty', 'Not enough dated postings to plot a monthly composition.'));
     return;
   }
-  // One shared scale across every row, so rows are comparable to each other.
   const max = Math.max(...series.flatMap((s) => s.counts)) || 1;
+  const mid = months[Math.floor((months.length - 1) / 2)];
 
   const axis = el('div', 'spark__axis');
   axis.appendChild(el('span', null, months[0]));
+  axis.appendChild(el('span', null, mid));
   axis.appendChild(el('span', null, months[months.length - 1]));
   node.appendChild(axis);
 
@@ -164,9 +315,18 @@ function renderSpark(node, series, months) {
     row.appendChild(el('div', 'rank__val', nf.format(s.total)));
     node.appendChild(row);
   }
+
+  node.appendChild(
+    el(
+      'p',
+      'rank__scale',
+      `${months.length} months · one shared scale, tallest bar = ${nf.format(max)} postings · ` +
+        `last bar is the current, partial month`
+    )
+  );
 }
 
-/** Percentage-point change in share between two consecutive windows. */
+/** Diverging bars around a zero rule, with the range of the axis printed. */
 function renderShift(node, rows) {
   clear(node);
   if (!rows || !rows.length) {
@@ -174,22 +334,42 @@ function renderShift(node, rows) {
     return;
   }
   const max = Math.max(...rows.map((r) => Math.abs(r.delta))) || 1;
+  const bound = Math.ceil(max);
+
+  const scale = el('div', 'shift__scale');
+  scale.appendChild(el('div', 'label', 'Row'));
+  const ticks = el('div', 'dots__ticks');
+  for (const [left, text] of [
+    [0, `−${bound}pp`],
+    [50, '0'],
+    [100, `+${bound}pp`],
+  ]) {
+    const s = el('span', null, text);
+    s.style.left = `${left}%`;
+    if (left === 50) s.dataset.base = 'true';
+    ticks.appendChild(s);
+  }
+  scale.appendChild(ticks);
+  scale.appendChild(el('div', 'label', ''));
+  node.appendChild(scale);
 
   for (const r of rows) {
     const row = el('div', 'shift__row');
     const name = el('div', 'rank__name');
     name.appendChild(document.createTextNode(r.label));
-    name.appendChild(el('span', 'rank__sub', `${r.priorShare}% \u2192 ${r.recentShare}% of postings`));
+    name.appendChild(el('span', 'rank__sub', `${r.priorShare}% → ${r.recentShare}% of postings`));
     row.appendChild(name);
 
     const track = el('div', 'shift__track');
     const bar = el('i');
-    const w = (Math.abs(r.delta) / max) * 50;
+    const w = (Math.abs(r.delta) / bound) * 50;
     bar.style.width = `${w}%`;
     if (r.delta >= 0) bar.style.left = '50%';
     else bar.style.left = `${50 - w}%`;
     bar.dataset.dir = r.delta >= 0 ? 'up' : 'down';
     track.appendChild(bar);
+    track.setAttribute('role', 'img');
+    track.setAttribute('aria-label', `${r.label}: ${r.delta >= 0 ? '+' : ''}${r.delta} percentage points`);
     row.appendChild(track);
 
     row.appendChild(el('div', 'shift__val', `${r.delta >= 0 ? '+' : ''}${r.delta}`));
@@ -284,21 +464,13 @@ function renderProfile(table, spec) {
 
 // ------------------------------------------------------------------ hero ---
 
-function tickTo(node, target) {
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) {
-    node.textContent = nf.format(target);
-    return;
-  }
-  const dur = 520;
-  const t0 = performance.now();
-  const step = (now) => {
-    const p = Math.min(1, (now - t0) / dur);
-    const eased = 1 - Math.pow(1 - p, 3);
-    node.textContent = nf.format(Math.round(target * eased));
-    if (p < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+/**
+ * Newsprint is a print metaphor, so the headline figure is set, not counted up.
+ * An animating number is a dashboard tell and it delays the one fact the reader
+ * came for.
+ */
+function setFigure(node, target) {
+  node.textContent = nf.format(target);
 }
 
 // ----------------------------------------------------------------- index ---
@@ -700,7 +872,7 @@ function renderFrontier(fr) {
 // -------------------------------------------------------------- rail sync --
 
 function trackSections() {
-  const links = [...document.querySelectorAll('.rail__link')];
+  const links = [...document.querySelectorAll('.sectionbar__link')];
   const map = new Map(links.map((l) => [l.getAttribute('href').slice(1), l]));
   const targets = [...map.keys()].map((id) => document.getElementById(id)).filter(Boolean);
   if (!targets.length) return;
@@ -740,14 +912,16 @@ async function boot() {
 
   // ---- hero
   document.title = `${nf.format(m.openRoles)} open roles — Microsoft hiring signal`;
-  tickTo($('hero-figure'), m.openRoles);
+  setFigure($('hero-figure'), m.openRoles);
   $('a11y-headline').textContent = `${nf.format(m.openRoles)} open roles advertised`;
   $('hero-standfirst').textContent = brief.headline;
   $('k-date').textContent = `Batch ${stamp(stats.meta.generatedAt)}`;
   $('k-scope').textContent = `${nf.format(stats.meta.totalOpen)} open · ${nf.format(
     stats.meta.totalClosedTracked
   )} closed since tracking began`;
-  $('rail-meta').textContent = `${nf.format(m.openRoles)} roles · ${stats.meta.generatedAt.slice(0, 10)}`;
+  $('masthead-meta').textContent =
+    `${nf.format(m.openRoles)} open roles\n${stats.meta.generatedAt.slice(0, 10)} · ` +
+    `${stats.meta.countries} countries`;
 
   const kpis = $('kpis');
   clear(kpis);
@@ -859,8 +1033,9 @@ async function boot() {
   const t = renderTrend($('trend'), stats.trend);
   if (t) {
     $('trend-note').textContent =
-      `${t.from} to ${t.to}. Peak ${t.max} postings created in a single day. ` +
-      `Only currently-open roles appear, so older days are understated as roles close.`;
+      `Daily count of postings created, ${t.from} to ${t.to}, with a centred 7-day mean drawn over ` +
+      `it. Peak ${t.max} in a single day. Only currently-open roles appear, so older days are ` +
+      `progressively understated as roles close — read the shape of the mean, not the level.`;
   }
   renderRank($('age'), stats.breakdowns.age.map((a) => ({ label: a.key, count: a.count })));
 
@@ -870,9 +1045,9 @@ async function boot() {
     $('timeline-head').textContent = `Monthly composition — ${tl.months[0]} to ${tl.months[tl.months.length - 1]}`;
     $('timeline-note').textContent =
       `Postings grouped by the month they were created. Bars share one scale across rows, and the ` +
-      `final bar — shown in black — is the current month, which is still in progress. Because only ` +
-      `currently-open roles are visible, earlier months are progressively understated as roles close. ` +
-      `Read the shape and the share shift below, not the absolute level.`;
+      `final bar is the current month, which is still filling. Because only currently-open roles ` +
+      `are visible, earlier months are progressively understated as roles close. Read the shape and ` +
+      `the share shift below, not the absolute level.`;
     renderSpark($('tl-theme'), tl.byTheme, tl.months);
     renderSpark($('tl-org'), tl.byOrg, tl.months);
 

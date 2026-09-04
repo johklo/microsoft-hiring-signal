@@ -172,7 +172,7 @@ These caveats are printed in the site's colophon too, so the numbers are never r
 | `npm run batch:full` | Force a re-fetch of every detail record. |
 | `npm run rebuild` | Recompute the analysis and brief from cached data, no network. |
 | `npm run serve` | Serve the dashboard on `http://localhost:4173`. |
-| `npm run fonts` | Re-vendor the Archivo webfont into `public/fonts`. |
+| `npm run fonts` | Re-vendor the Newsreader / Source Serif 4 / IBM Plex Sans webfonts into `docs/fonts`. |
 
 `npm run rebuild` is the fast loop when changing the taxonomy or the brief wording.
 
@@ -269,10 +269,35 @@ sum of the parts.
 
 Built with the Hallmark design skill.
 
-- **Macrostructure** Stat-Led — the data is the narrative.
-- **Genre** editorial · **Theme** Grid (Swiss neo-grotesque, exposed 12-column hairline grid,
-  one signal ink in ultramarine).
-- **Nav** N3 numbered side-rail · **Footer** Ft4 dense colophon, set in Grid's label voice.
-- Figures are hand-drawn CSS and SVG on the column grid rather than a chart library, so they inherit
-  the theme exactly and the page stays dependency-free and fully offline.
-- Archivo is vendored into `docs/fonts`, so nothing is fetched from a CDN at runtime.
+- **Macrostructure** Long Document — the page reads as a printed research note, not a dashboard.
+- **Genre** editorial · **Theme** Newsprint (warm stock, roman serif display, one brick signal ink).
+- **Nav** N6 newspaper masthead with a sticky ruled section index · **Footer** Ft1 mast-headed,
+  colophon beneath.
+- **Type** Newsreader (display) · Source Serif 4 (body) · IBM Plex Sans (label voice and figures).
+  Three families, vendored into `docs/fonts` by `npm run fonts`, so nothing is fetched at runtime.
+  Every number on the page is set in tabular lining figures, which is what makes a column of
+  numbers read as a column.
+- **Motion** none. Newsprint is a print metaphor: the page does not animate, and the headline
+  figure is set rather than counted up.
+
+### Figures
+
+Charts are hand-drawn SVG and CSS on the document measure rather than a chart library, so they
+inherit the theme exactly and the page stays dependency-free and fully offline. Each one carries an
+axis, a scale and a unit:
+
+- **Daily trend** — dated x-axis with month ticks, labelled y-axis, the raw daily series, and a
+  centred 7-day mean in the signal ink so the trend is legible through the day-of-week noise. The
+  peak is marked and named.
+- **Momentum** — a dot plot on a 0–2 index scale with the 1.00 parity rule drawn through it. A stem
+  runs from parity to the value, so over- and under-representation read as direction. A value past
+  the end of the scale is drawn as an arrowhead, never as a dot sitting on 2.00.
+- **Monthly composition** — small multiples on one shared scale, with the scale's maximum named and
+  the current, still-filling month drawn in a lighter ink.
+- **Share shift** — diverging bars around a zero rule, with the axis range printed in percentage
+  points.
+- **Ranks** — hairline bars whose full width is stated, so the bar is a reading aid and the number
+  is the fact.
+
+`docs/lab.html` (git-ignored) is a local style-comparison sheet: the same section rendered in six
+visual registers. It loads webfonts from a CDN and is never published.

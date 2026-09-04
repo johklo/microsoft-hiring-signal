@@ -14,25 +14,32 @@
   </head>
   <body>
     <div class="sheet">
-      <div class="rails" aria-hidden="true"></div>
-
-      <!-- N3 · Side-rail, numbered -->
-      <nav class="rail" aria-label="Sections">
-        <div>
-          <span class="rail__mark" aria-hidden="true"></span>
-          <p class="rail__word">hiring<br />signal</p>
+      <!-- N6 · newspaper masthead -->
+      <header class="masthead">
+        <div class="masthead__inner">
+          <p class="masthead__word">Hiring Signal</p>
+          <p class="masthead__meta" id="masthead-meta">—</p>
+          <div class="masthead__rule" aria-hidden="true"></div>
+          <p class="masthead__strap">
+            <span>A standing read of careers.microsoft.com</span>
+            <span id="k-source">careers.microsoft.com</span>
+            <span id="k-date">—</span>
+            <span id="k-scope">—</span>
+          </p>
         </div>
-        <p class="rail__meta" id="rail-meta">—</p>
-        <div class="rail__index">
-          <a class="rail__link" href="#s00"><span>00</span><span>Brief</span></a>
-          <a class="rail__link" href="#s01"><span>01</span><span>Clusters</span></a>
-          <a class="rail__link" href="#s02"><span>02</span><span>Org</span></a>
-          <a class="rail__link" href="#s03"><span>03</span><span>Frontier</span></a>
-          <a class="rail__link" href="#s04"><span>04</span><span>Shape</span></a>
-          <a class="rail__link" href="#s05"><span>05</span><span>Momentum</span></a>
-          <a class="rail__link" href="#s06"><span>06</span><span>Geography</span></a>
-          <a class="rail__link" href="#s07"><span>07</span><span>Index</span></a>
-          <a class="rail__link" href="#s08"><span>08</span><span>Changes</span></a>
+      </header>
+
+      <nav class="sectionbar" aria-label="Sections">
+        <div class="sectionbar__inner">
+          <a class="sectionbar__link" href="#s00"><span>00</span><span>Brief</span></a>
+          <a class="sectionbar__link" href="#s01"><span>01</span><span>Clusters</span></a>
+          <a class="sectionbar__link" href="#s02"><span>02</span><span>Org</span></a>
+          <a class="sectionbar__link" href="#s03"><span>03</span><span>Frontier</span></a>
+          <a class="sectionbar__link" href="#s04"><span>04</span><span>Shape</span></a>
+          <a class="sectionbar__link" href="#s05"><span>05</span><span>Momentum</span></a>
+          <a class="sectionbar__link" href="#s06"><span>06</span><span>Geography</span></a>
+          <a class="sectionbar__link" href="#s07"><span>07</span><span>Index</span></a>
+          <a class="sectionbar__link" href="#s08"><span>08</span><span>Changes</span></a>
         </div>
       </nav>
 
@@ -41,17 +48,14 @@
           <!-- ============================================ 00 · the brief -->
           <section class="band band--open hero" id="s00">
             <p class="hero__kicker">
-              <span id="k-source">careers.microsoft.com</span>
-              <span id="k-date">—</span>
-              <span id="k-scope">—</span>
+              <span>The open book</span>
+              <span>Read as a statement of intent</span>
             </p>
 
             <h1>
               <span class="visually-hidden" id="a11y-headline">Open roles advertised</span>
               <span class="hero__figure" id="hero-figure" aria-hidden="true">—</span>
-              <span class="hero__lead" id="hero-lead"
-                >open roles<span class="period" aria-hidden="true"></span
-              ></span>
+              <span class="hero__lead" id="hero-lead">open roles</span>
             </h1>
 
             <div class="hero__body">
@@ -60,7 +64,7 @@
               </div>
               <div class="hero__aside">
                 <p class="label">Reading</p>
-                <p class="prose" style="font-size: var(--text-sm)">
+                <p class="prose" style="font-size: var(--text-sm); margin-top: var(--space-3xs)">
                   A job advert is a company spending money on intent. Read together, the open book
                   shows which bets are being staffed, which are being wound down, and where capacity
                   is being built.
@@ -70,11 +74,9 @@
 
             <div class="kpis" id="kpis"></div>
           </section>
-        </main>
 
-        <!-- =============================================== the one plate -->
-        <section class="plate" id="plate" aria-labelledby="plate-lead">
-          <div class="shell">
+          <!-- the one statement -->
+          <section class="plate" id="plate" aria-labelledby="plate-lead">
             <div class="plate__inner">
               <p class="plate__figure" id="plate-figure">—</p>
               <div class="plate__text">
@@ -83,16 +85,13 @@
                 <p class="plate__note" id="plate-note"></p>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <main class="shell">
           <!-- findings + outlook, still part of the brief -->
           <section class="band" aria-labelledby="findings-title">
-            <div class="numeral" aria-hidden="true">00</div>
             <div class="band__head">
               <p class="band__index">00 — Brief</p>
-              <h2 class="band__title" id="findings-title">what the book says</h2>
+              <h2 class="band__title" id="findings-title">What the book says</h2>
               <p class="band__note">
                 Every statement below is arithmetic over the advertised roles. Nothing is estimated.
               </p>
@@ -109,10 +108,9 @@
 
           <!-- ========================================== 01 · clusters -->
           <section class="band" id="s01" aria-labelledby="clusters-title">
-            <div class="numeral" aria-hidden="true">01</div>
             <div class="band__head">
               <p class="band__index">01 — Clusters</p>
-              <h2 class="band__title" id="clusters-title">where the work is aimed</h2>
+              <h2 class="band__title" id="clusters-title">Where the work is aimed</h2>
               <p class="band__note">
                 Roles tagged by strategic cluster from title, profession, discipline and description.
                 A role can serve more than one.
@@ -132,10 +130,9 @@
 
           <!-- ========================================= 02 · organisation -->
           <section class="band" id="s02" aria-labelledby="org-title">
-            <div class="numeral" aria-hidden="true">02</div>
             <div class="band__head">
               <p class="band__index">02 — Organisation</p>
-              <h2 class="band__title" id="org-title">which part of the company is hiring</h2>
+              <h2 class="band__title" id="org-title">Which part of the company is hiring</h2>
               <p class="band__note" id="org-note">
                 Business units are read from the way each advert names its own organisation.
               </p>
@@ -170,10 +167,9 @@
 
           <!-- ========================================== 03 · frontier -->
           <section class="band" id="s03" aria-labelledby="frontier-title">
-            <div class="numeral" aria-hidden="true">03</div>
             <div class="band__head">
               <p class="band__index">03 — Frontier</p>
-              <h2 class="band__title" id="frontier-title">inside the Frontier organisation</h2>
+              <h2 class="band__title" id="frontier-title">Inside the Frontier organisation</h2>
               <p class="band__note" id="frontier-note">
                 A deep read of the roles that identify themselves as Microsoft Frontier Company —
                 Industry Solutions Delivery, Forward Deployed Engineering, and the adverts that name
@@ -184,7 +180,7 @@
             <div class="kpis" id="fr-kpis"></div>
 
             <div class="cols" style="margin-top: var(--space-lg)">
-              <div class="col-12">
+              <div class="col-8">
                 <p class="prose" id="fr-standfirst"></p>
               </div>
             </div>
@@ -228,13 +224,15 @@
 
             <div class="cols" style="margin-top: var(--space-lg)">
               <div class="col-6">
-                <p class="subhead">Role shapes over-represented in the last 30 days</p>
-                <div id="fr-rising-archetype"></div>
-                <p class="subhead" style="margin-top: var(--space-md)">
-                  Verticals over-represented in the last 30 days
-                </p>
-                <div id="fr-rising-industry"></div>
-                <p class="cell__note" id="fr-momentum-note"></p>
+                <figure class="figure">
+                  <p class="subhead">Role shapes, recent share ÷ baseline share</p>
+                  <div id="fr-rising-archetype"></div>
+                  <p class="subhead" style="margin-top: var(--space-md)">
+                    Verticals, recent share ÷ baseline share
+                  </p>
+                  <div id="fr-rising-industry"></div>
+                  <figcaption id="fr-momentum-note"></figcaption>
+                </figure>
               </div>
               <div class="col-6">
                 <p class="subhead">Seniority, against the rest of the book</p>
@@ -259,16 +257,34 @@
 
             <div class="cols" style="margin-top: var(--space-lg)">
               <div class="col-6">
-                <p class="subhead">Monthly composition by unit</p>
-                <div class="spark" id="fr-tl-unit"></div>
+                <figure class="figure">
+                  <p class="subhead">Postings per month, by unit</p>
+                  <div class="spark" id="fr-tl-unit"></div>
+                  <figcaption>
+                    Counted by the month each posting was created. Bars share one scale across rows;
+                    the last bar is the current month and is still filling.
+                  </figcaption>
+                </figure>
               </div>
               <div class="col-6">
-                <p class="subhead">Monthly composition by vertical</p>
-                <div class="spark" id="fr-tl-industry"></div>
+                <figure class="figure">
+                  <p class="subhead">Postings per month, by vertical</p>
+                  <div class="spark" id="fr-tl-industry"></div>
+                  <figcaption>
+                    Same scale and window as the panel to the left, so the two read against each
+                    other.
+                  </figcaption>
+                </figure>
               </div>
               <div class="col-12">
-                <p class="subhead">Share shift inside the cohort — last 3 months vs the 3 before</p>
-                <div id="fr-shift"></div>
+                <figure class="figure">
+                  <p class="subhead">Share shift inside the cohort — last 3 months vs the 3 before</p>
+                  <div id="fr-shift"></div>
+                  <figcaption>
+                    Percentage points of the cohort's own postings. Positive means the row took a
+                    larger share of the last three months than of the three before.
+                  </figcaption>
+                </figure>
               </div>
             </div>
 
@@ -323,10 +339,9 @@
 
           <!-- ============================================= 04 · shape -->
           <section class="band" id="s04" aria-labelledby="shape-title">
-            <div class="numeral" aria-hidden="true">04</div>
             <div class="band__head">
               <p class="band__index">04 — Shape</p>
-              <h2 class="band__title" id="shape-title">how the org is being built</h2>
+              <h2 class="band__title" id="shape-title">How the org is being built</h2>
               <p class="band__note">
                 Function mix, seniority pyramid, and the individual-contributor to people-manager
                 split.
@@ -366,10 +381,9 @@
 
           <!-- ========================================== 05 · momentum -->
           <section class="band" id="s05" aria-labelledby="momentum-title">
-            <div class="numeral" aria-hidden="true">05</div>
             <div class="band__head">
               <p class="band__index">05 — Momentum</p>
-              <h2 class="band__title" id="momentum-title">what is accelerating</h2>
+              <h2 class="band__title" id="momentum-title">What is accelerating</h2>
               <p class="band__note">
                 Index = a cluster's share of the last 30 days of postings ÷ its share of the whole
                 open book. Above 1.00 means over-represented in recent hiring.
@@ -377,21 +391,26 @@
             </div>
 
             <div class="cols">
-              <div class="col-6">
-                <p class="subhead">Over-represented in recent postings</p>
-                <div id="rising"></div>
-              </div>
-              <div class="col-6">
-                <p class="subhead">Under-represented in recent postings</p>
-                <div id="cooling"></div>
+              <div class="col-12">
+                <figure class="figure">
+                  <p class="subhead">Postings created per day, currently open roles</p>
+                  <div id="trend"></div>
+                  <figcaption id="trend-note"></figcaption>
+                </figure>
               </div>
             </div>
 
             <div class="cols" style="margin-top: var(--space-lg)">
               <div class="col-8">
-                <p class="subhead">Postings created per day (currently open roles)</p>
-                <div id="trend"></div>
-                <p class="cell__note" id="trend-note"></p>
+                <figure class="figure">
+                  <p class="subhead">Over- and under-represented in the last 30 days</p>
+                  <div id="rising"></div>
+                  <div id="cooling" style="margin-top: var(--space-sm)"></div>
+                  <figcaption>
+                    Each row is a cluster's share of the last 30 days of postings divided by its
+                    share of the whole open book. The rule at 1.00 is parity.
+                  </figcaption>
+                </figure>
               </div>
               <div class="col-4">
                 <p class="subhead">Age of the open book</p>
@@ -405,26 +424,35 @@
                 <p class="cell__note" id="timeline-note"></p>
               </div>
               <div class="col-6">
-                <p class="subhead">By strategic cluster</p>
-                <div class="spark" id="tl-theme"></div>
+                <figure class="figure">
+                  <p class="subhead">By strategic cluster</p>
+                  <div class="spark" id="tl-theme"></div>
+                </figure>
               </div>
               <div class="col-6">
-                <p class="subhead">By business unit</p>
-                <div class="spark" id="tl-org"></div>
+                <figure class="figure">
+                  <p class="subhead">By business unit</p>
+                  <div class="spark" id="tl-org"></div>
+                </figure>
               </div>
               <div class="col-12">
-                <p class="subhead">Share shift — last 3 months vs the 3 before</p>
-                <div id="shift"></div>
+                <figure class="figure">
+                  <p class="subhead">Share shift — last 3 months vs the 3 before</p>
+                  <div id="shift"></div>
+                  <figcaption>
+                    Percentage points of all dated postings. A row gaining share is not the same as a
+                    row gaining volume — the whole book grew over the window.
+                  </figcaption>
+                </figure>
               </div>
             </div>
           </section>
 
           <!-- ========================================= 06 · geography -->
           <section class="band" id="s06" aria-labelledby="geo-title">
-            <div class="numeral" aria-hidden="true">06</div>
             <div class="band__head">
               <p class="band__index">06 — Geography</p>
-              <h2 class="band__title" id="geo-title">where the roles sit</h2>
+              <h2 class="band__title" id="geo-title">Where the roles sit</h2>
               <p class="band__note">
                 A role listing several locations is counted once per country, so country totals
                 exceed the role count.
@@ -450,10 +478,9 @@
 
           <!-- ============================================= 07 · index -->
           <section class="band" id="s07" aria-labelledby="index-title">
-            <div class="numeral" aria-hidden="true">07</div>
             <div class="band__head">
               <p class="band__index">07 — Index</p>
-              <h2 class="band__title" id="index-title">the roles themselves</h2>
+              <h2 class="band__title" id="index-title">The roles themselves</h2>
               <p class="band__note">
                 Every advertised role, filterable. Each links to the live posting.
               </p>
@@ -521,10 +548,9 @@
 
           <!-- =========================================== 08 · changes -->
           <section class="band" id="s08" aria-labelledby="changes-title">
-            <div class="numeral" aria-hidden="true">08</div>
             <div class="band__head">
               <p class="band__index">08 — Changes</p>
-              <h2 class="band__title" id="changes-title">what moved</h2>
+              <h2 class="band__title" id="changes-title">What moved</h2>
               <p class="band__note">
                 Each daily batch diffs the live book against the last snapshot: openings added,
                 closed, and postings edited in place.
@@ -533,8 +559,9 @@
             <div id="changes"></div>
           </section>
 
-          <!-- ==================================== Ft4 · dense colophon -->
+          <!-- ==================================== Ft1 · mast-headed -->
           <footer class="colophon">
+            <p class="colophon__mast">Hiring Signal</p>
             <div class="colophon__grid">
               <div class="colophon__block">
                 <h3>Method</h3>

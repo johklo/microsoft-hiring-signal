@@ -6,3 +6,7 @@ node_modules/
 /shots/
 /.hallmark/
 *.log
+
+# Local style-comparison mockup. Never published — it loads webfonts from a CDN,
+# which the shipped site deliberately does not do.
+/docs/lab.html
