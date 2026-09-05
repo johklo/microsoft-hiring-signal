@@ -1,0 +1,25 @@
+{
+  "status": "baseline",
+  "finishedAt": "2026-09-05T12:01:37.314Z",
+  "durationSec": 3353.4,
+  "mode": "full",
+  "openCount": 2252,
+  "added": 0,
+  "removed": 0,
+  "updated": 0,
+  "detailsFetched": 2252,
+  "missingDetail": 0,
+  "errors": {
+    "searchPages": 0,
+    "details": 0,
+    "wafBlocks": 4
+  },
+  "index": {
+    "status": "complete",
+    "sortBy": "timestamp",
+    "passes": 1,
+    "requests": 228,
+    "uniqueCount": 2252,
+    "reportedTotal": 2252
+  }
+}
