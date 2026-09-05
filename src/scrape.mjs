@@ -40,6 +40,8 @@ const MAX_INDEX_FAILURE_RATE = 0.02;
 export class IncompleteIndexError extends Error {}
 
 const MAX_INDEX_PASSES = 3;
+const DETAIL_RECOVERY_DELAY_MS = 30_000;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const pageIds = (page) => page.positions.map((p) => String(p.id)).sort().join(',');
 
 function validateSearchPage(page) {
@@ -313,7 +315,7 @@ export async function syncJobs(existing, opts = {}, dependencies = {}) {
 
   if (opts.limit) summaries = summaries.slice(0, opts.limit);
 
-  const liveIds = new Set(summaries.map((s) => String(s.id)));
+  let liveIds = new Set(summaries.map((s) => String(s.id)));
   const staleBefore = Date.now() - DETAIL_REFRESH_DAYS * 86400000;
 
   // Seed every live job from cached data first, so a mid-run block still
@@ -352,11 +354,12 @@ export async function syncJobs(existing, opts = {}, dependencies = {}) {
   );
   let detailErrors = 0;
   let fetched = 0;
+  const successfulDetails = new Map();
 
-  if (needsDetail.length) {
+  async function collectDetails(items) {
     const bar = progressBar('job details');
     const { errors } = await pool(
-      needsDetail,
+      items,
       CONCURRENCY,
       async (s) => {
         const detail = await (dependencies.fetchDetail ?? fetchPositionDetails)(s.id);
@@ -367,9 +370,11 @@ export async function syncJobs(existing, opts = {}, dependencies = {}) {
       },
       async (done, totalItems, index, detail) => {
         if (detail) {
-          const s = needsDetail[index];
+          const s = items[index];
           const id = String(s.id);
-          jobs.set(id, buildRecord(s, detail, existing.get(id)));
+          const record = buildRecord(s, detail, existing.get(id));
+          jobs.set(id, record);
+          if (opts.strict) successfulDetails.set(id, { detail, fetchedAt: record.detailFetchedAt });
           fetched++;
         }
         bar(done, totalItems);
@@ -378,11 +383,49 @@ export async function syncJobs(existing, opts = {}, dependencies = {}) {
         }
       }
     );
-    detailErrors = errors.length;
-    if (detailErrors) console.warn(`  ! ${detailErrors} detail fetch(es) failed`);
+    for (const { item, error } of errors) {
+      console.warn(`  ! Detail fetch failed: ${JSON.stringify({ id: String(item.id), error })}`);
+    }
+    return errors;
+  }
+
+  let failures = needsDetail.length ? await collectDetails(needsDetail) : [];
+  if (opts.strict && failures.length) {
+    console.warn(`  ! Retrying only ${failures.length} failed details once after ${DETAIL_RECOVERY_DELAY_MS / 1000}s.`);
+    await (dependencies.sleep ?? sleep)(DETAIL_RECOVERY_DELAY_MS);
+    failures = await collectDetails(failures.map(({ item }) => item));
+
+    if (failures.length) {
+      // Only a fresh, independently complete index can establish disappearance.
+      console.warn('  ! Re-enumerating the strict index once to check failed IDs for disappearance.');
+      ({ total, summaries, pageErrors, index } = await fetchAllSummaries(opts, dependencies.fetchPage));
+      liveIds = new Set(summaries.map((s) => String(s.id)));
+      const disappeared = failures.filter(({ item }) => !liveIds.has(String(item.id)));
+      if (disappeared.length) {
+        console.warn(`  ! Failed IDs absent from refreshed complete index: ${JSON.stringify(disappeared.map(({ item }) => String(item.id)))}`);
+      }
+      failures = failures.filter(({ item }) => liveIds.has(String(item.id)));
+      if (!failures.length) {
+        failures = await collectDetails(summaries.filter((s) => !successfulDetails.has(String(s.id))));
+      }
+    }
+  }
+  detailErrors = failures.length;
+  if (opts.strict) {
+    // Rebuild against the original durable state, not interim summary/detail records.
+    jobs.clear();
+    for (const s of summaries) {
+      const id = String(s.id);
+      const fresh = successfulDetails.get(id);
+      if (!fresh) continue;
+      jobs.set(id, { ...buildRecord(s, fresh.detail, existing.get(id)), detailFetchedAt: fresh.fetchedAt });
+    }
+    fetched = jobs.size;
   }
   if (opts.strict && (detailErrors || fetched !== summaries.length)) {
-    throw new Error(`Incomplete detail collection: ${fetched}/${summaries.length} fetched, ${detailErrors} errors.`);
+    const diagnostics = failures.map(({ item, error }) => ({ id: String(item.id), error }));
+    throw new Error(`Incomplete detail collection: ${fetched}/${summaries.length} fetched, ${detailErrors} errors. ` +
+      `Unresolved details: ${JSON.stringify(diagnostics)}. Previous state retained.`);
   }
 
   // Classify additions and modifications now that details have landed.

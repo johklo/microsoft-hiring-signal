@@ -212,7 +212,7 @@ test('strict collection refuses incomplete detail data and never checkpoints', a
   const fetchPage = async () => ({ total: 1, sortBy: 'timestamp', positions: [{ id: '1', name: 'Engineer' }] });
   for (const fetchDetail of [async () => null, async () => ({}), async () => ({ jobDescription: '' }),
     async () => { throw new Error('detail unavailable'); }]) {
-    await assert.rejects(syncJobs(new Map(), opts, { fetchPage, fetchDetail }), /Incomplete detail collection/);
+    await assert.rejects(syncJobs(new Map(), opts, { fetchPage, fetchDetail, sleep: async () => {} }), /Incomplete detail collection/);
   }
   assert.equal(checkpoints, 0);
   await assert.rejects(syncJobs(new Map(), { strict: true, full: true, budget: 1 }), /requires --full/);
@@ -235,6 +235,155 @@ test('complete full collection detects additions, closures, and description edit
   assert.equal(run.missingDetail, 0);
 });
 
+const strictOptions = { strict: true, full: true, budget: 0 };
+function indexSnapshots(snapshots) {
+  let calls = 0;
+  return async (start, options) => {
+    assert.equal(start, 0);
+    assert.equal(options.sortBy, 'timestamp');
+    // Each small complete index requires both enumeration and a boundary check.
+    const positions = snapshots[Math.min(Math.floor(calls++ / 2), snapshots.length - 1)];
+    return { total: positions.length, sortBy: 'timestamp', positions };
+  };
+}
+
+test('strict recovery delays once and retries only failed details, preserving original diagnostics', async (t) => {
+  const warnings = [];
+  t.mock.method(console, 'warn', (message) => warnings.push(message));
+  const calls = [];
+  let delays = 0;
+  let pageCalls = 0;
+  const fetchPage = indexSnapshots([[{ id: '1' }, { id: '2' }]]);
+  const { jobs, run } = await syncJobs(new Map(), strictOptions, {
+    fetchPage: (...args) => { pageCalls++; return fetchPage(...args); },
+    fetchDetail: async (id) => {
+      calls.push(id);
+      if (id === '2' && calls.filter((value) => value === id).length === 1) {
+        throw new Error('original connection reset');
+      }
+      return { jobDescription: `Fresh description ${id}` };
+    },
+    sleep: async (ms) => { assert.equal(ms, 30_000); delays++; },
+  });
+  assert.deepEqual(calls, ['1', '2', '2']);
+  assert.equal(delays, 1);
+  assert.equal(pageCalls, 2, 'no index refresh after recovered details');
+  assert.equal(run.detailsFetched, 2);
+  assert.equal(run.errors.details, 0);
+  assert.equal(run.missingDetail, 0);
+  assert.equal(jobs.get('2').descriptionHtml, 'Fresh description 2');
+  assert.ok(warnings.some((line) => line.includes('"id":"2"') && line.includes('original connection reset')));
+});
+
+test('strict refresh reconciles disappearances and new IDs against original state with exact fetch timestamps', async (t) => {
+  const start = Date.parse(now);
+  t.mock.timers.enable({ apis: ['Date'], now: start });
+  const original = ['1', '2', '4', '5'].map((id) => [
+    id, buildRecord({ id, name: `Original ${id}` }, { jobDescription: `Old description ${id}` }),
+  ]);
+  original[3][1].status = 'closed';
+  const existing = new Map(original);
+  const before = structuredClone(existing);
+  const calls = [];
+  let pageCalls = 0;
+  let delays = 0;
+  const fetchPage = indexSnapshots([
+    [{ id: '1', name: 'Interim title' }, { id: '2' }, { id: '4' }, { id: '6' }],
+    [{ id: '1', name: 'Final title' }, { id: '3', name: 'New role' }, { id: '5', name: 'Reopened' }],
+  ]);
+  const { jobs, run } = await syncJobs(existing, strictOptions, {
+    fetchPage: (...args) => { pageCalls++; return fetchPage(...args); },
+    fetchDetail: async (id) => {
+      calls.push(id);
+      if (id === '2' || id === '6') throw new Error(`HTTP 404 for ${id}`);
+      return { jobDescription: `Fresh description ${id}` };
+    },
+    sleep: async () => { delays++; t.mock.timers.tick(30_000); },
+  });
+  assert.equal(pageCalls, 4);
+  assert.equal(delays, 1);
+  assert.deepEqual(calls, ['6', '1', '2', '4', '6', '2', '3', '5']);
+  assert.deepEqual(existing, before, 'never mutate the durable input');
+  assert.equal(jobs.get('1').detailFetchedAt, now, 'reused detail keeps its actual successful timestamp');
+  assert.equal(jobs.get('3').detailFetchedAt, new Date(start + 30_000).toISOString());
+  assert.equal(jobs.get('1').firstSeenAt, before.get('1').firstSeenAt);
+  assert.equal(jobs.get('5').firstSeenAt, new Date(start + 30_000).toISOString());
+  assert.equal(jobs.get('1').title, 'Final title');
+  assert.equal(jobs.get('2').status, 'closed');
+  assert.equal(jobs.get('2').descriptionHtml, before.get('2').descriptionHtml);
+  assert.equal(jobs.get('4').descriptionHash, before.get('4').descriptionHash, 'closure keeps durable record, not interim detail');
+  assert.equal(jobs.has('6'), false, 'unseen disappeared job is neither added nor closed');
+  assert.deepEqual(run.added.map((j) => j.id), ['3', '5']);
+  assert.deepEqual(run.removed.map((j) => j.id), ['2', '4']);
+  assert.equal(run.updatedCount, 1);
+  assert.deepEqual(run.updated[0].changed.title, { from: 'Original 1', to: 'Final title' });
+  assert.deepEqual(run.updated[0].changed.descriptionHash, {
+    from: before.get('1').descriptionHash, to: jobs.get('1').descriptionHash,
+  });
+  assert.equal(run.detailsFetched, 3, 'count unique successful details in final open index only');
+  assert.equal(run.openCount, 3);
+  assert.equal(run.reportedTotal, 3);
+  assert.equal(run.missingDetail, 0);
+  assert.equal(run.errors.details, 0);
+  assert.deepEqual(run.index, {
+    status: 'complete', sortBy: 'timestamp', passes: 1, requests: 2, uniqueCount: 3, reportedTotal: 3,
+  });
+});
+
+test('strict recovery refuses still-listed failures rather than accepting cached details or inferring closure', async () => {
+  for (const status of [403, 404]) {
+    const original = buildRecord({ id: '1' }, { jobDescription: 'Cached complete description' });
+    const existing = new Map([['1', original]]);
+    const before = structuredClone(existing);
+    let calls = 0;
+    let pageCalls = 0;
+    let checkpoints = 0;
+    const fetchPage = indexSnapshots([[{ id: '1' }]]);
+    await assert.rejects(syncJobs(existing, { ...strictOptions, onCheckpoint: () => checkpoints++ }, {
+      fetchPage: (...args) => { pageCalls++; return fetchPage(...args); },
+      fetchDetail: async () => { calls++; throw new Error(`HTTP ${status}: original cause`); },
+      sleep: async () => {},
+    }), (error) => {
+      assert.match(error.message, /Incomplete detail collection: 0\/1 fetched/);
+      assert.ok(error.message.includes(`"id":"1","error":"HTTP ${status}: original cause"`));
+      return true;
+    });
+    assert.equal(calls, 2);
+    assert.equal(pageCalls, 4);
+    assert.equal(checkpoints, 0);
+    assert.deepEqual(existing, before);
+  }
+});
+
+test('strict recovery cannot infer disappearance from an incomplete refreshed index', async () => {
+  let pages = 0;
+  let details = 0;
+  await assert.rejects(syncJobs(new Map(), strictOptions, {
+    fetchPage: async () => (++pages <= 2
+      ? { total: 1, sortBy: 'timestamp', positions: [{ id: '1' }] }
+      : { total: 2, sortBy: 'timestamp', positions: [{ id: '2' }, { id: '2' }] }),
+    fetchDetail: async () => { details++; throw new Error('HTTP 404'); },
+    sleep: async () => {},
+  }), IncompleteIndexError);
+  assert.equal(pages, 5, 'refreshed enumeration retains three independent pass bound');
+  assert.equal(details, 2);
+});
+
+test('strict recovery aborts on a newly discovered detail failure without another recovery cycle', async () => {
+  let delays = 0;
+  const calls = [];
+  let pageCalls = 0;
+  const fetchPage = indexSnapshots([[{ id: '1' }], [{ id: '2' }]]);
+  await assert.rejects(syncJobs(new Map(), strictOptions, {
+    fetchPage: (...args) => { pageCalls++; return fetchPage(...args); },
+    fetchDetail: async (id) => { calls.push(id); throw new Error(`Unavailable ${id}`); },
+    sleep: async () => { delays++; },
+  }), /"id":"2","error":"Unavailable 2"/);
+  assert.deepEqual(calls, ['1', '1', '2']);
+  assert.equal(delays, 1);
+  assert.equal(pageCalls, 4);
+});
+
 test('local incremental collection retains capped detail fetching and checkpoints', async () => {
   let checkpoints = 0;
   const { run } = await syncJobs(new Map(), { budget: 1, onCheckpoint: () => checkpoints++ }, {
@@ -244,6 +393,24 @@ test('local incremental collection retains capped detail fetching and checkpoint
   assert.equal(run.detailsFetched, 1);
   assert.equal(run.missingDetail, 1);
   assert.equal(checkpoints, 1);
+});
+
+test('local incremental detail failures keep cached data without strict recovery requests', async () => {
+  const previous = buildRecord({ id: '1' }, { jobDescription: 'Cached description' });
+  previous.detailFetchedAt = '2000-01-01T00:00:00.000Z';
+  let pages = 0;
+  let details = 0;
+  const { jobs, run } = await syncJobs(new Map([['1', previous]]), { budget: 0 }, {
+    fetchPage: async () => { pages++; return { total: 1, positions: [{ id: '1' }] }; },
+    fetchDetail: async () => { details++; throw new Error('offline'); },
+    sleep: async () => assert.fail('incremental mode must not enter strict recovery'),
+  });
+  assert.equal(pages, 1);
+  assert.equal(details, 1);
+  assert.equal(run.detailsFetched, 0);
+  assert.equal(run.errors.details, 1);
+  assert.equal(jobs.get('1').descriptionHtml, previous.descriptionHtml);
+  assert.equal(jobs.get('1').detailFetchedAt, previous.detailFetchedAt);
 });
 
 test('state validation rejects corrupt shapes and inconsistent comparisons', () => {
@@ -401,13 +568,15 @@ test('daily CLI exits nonzero for incomplete index without modifying any canonic
 test('daily CLI exits nonzero for missing descriptions without canonical checkpoints', (t) => {
   const cwd = crawlerFixture(t);
   putSnapshot(cwd, 'success');
-  const before = fs.readFileSync(path.join(cwd, 'data', 'jobs.json'), 'utf8');
+  const files = [...STATE_FILES, 'docs/data/stats.json', 'docs/data/jobs.min.json'];
+  const before = files.map((file) => fs.readFileSync(path.join(cwd, ...file.split('/')), 'utf8'));
   const result = runFixture(cwd, ['--strict', '--full'], {
     index: { count: 1, positions: [{ id: '1', name: 'Engineer' }] }, detail: {},
   });
   assert.equal(result.status, 1, result.stderr);
   assert.match(result.stderr, /Incomplete detail collection/);
-  assert.equal(fs.readFileSync(path.join(cwd, 'data', 'jobs.json'), 'utf8'), before);
+  assert.match(result.stderr, /"id":"1","error":"Missing description for 1"/);
+  assert.deepEqual(files.map((file) => fs.readFileSync(path.join(cwd, ...file.split('/')), 'utf8')), before);
 });
 
 test('daily CLI baseline builds a valid completed snapshot without claiming all jobs are new', (t) => {

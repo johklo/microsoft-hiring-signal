@@ -76,10 +76,21 @@ aggregates and state-branch commits remain available.
 **Failure safety and recovery**
 
 Missing state on a scheduled run, invalid JSON/state shape, any failed search page, empty index,
-coverage that remains inconsistent after bounded reconciliation, or any missing/failed description
+coverage that remains inconsistent after bounded reconciliation, or any unresolved missing/failed description
 causes a nonzero exit. Strict runs do not write partial checkpoints.
 No failed collection is pushed. Concurrent source/state pushes reject the atomic publication of
 **both** branches; rerun from current `main`, rather than overwriting another writer's work.
+
+Strict detail recovery logs each failed ID and original error, waits **30 seconds**, then retries
+**only failed details once** (in addition to the API's existing paced retries/backoff). If failures
+remain, it performs **one fresh strict index enumeration**, with the same completeness checks and
+three-pass limit. A failed ID is considered gone only if absent from that complete index—never
+from a 404/403 alone. Still-listed failures abort immediately. Otherwise the final job set uses
+the refreshed index, fetching newly discovered IDs and reusing only successful details from this
+logical run with their original fetch timestamps. Any new detail failure aborts; there is no
+second recovery/reconciliation cycle. Successful counts cover unique final open jobs, index
+metadata describes the final enumeration, and all additions/edits/closures compare against the
+original durable state. Cached descriptions do not satisfy strict full collection.
 
 Inspect the Actions logs and run summary for the first failing step. The last published site and
 remote state remain available after a failed collection. A timeout discards that runner's partial
