@@ -25,8 +25,9 @@ export function ensureDirs() {
 export function readJson(file, fallback) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
-  } catch {
-    return fallback;
+  } catch (err) {
+    if (err.code === 'ENOENT') return fallback;
+    throw err;
   }
 }
 
@@ -37,4 +38,3 @@ export function writeJson(file, value, pretty = false) {
   fs.writeFileSync(tmp, JSON.stringify(value, null, pretty ? 2 : 0));
   fs.renameSync(tmp, file);
 }
-

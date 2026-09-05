@@ -1,24 +1,26 @@
 # Hiring Signal
 
-A local website that reads every role advertised on **careers.microsoft.com** and turns it into
+A static website that reads roles advertised on **careers.microsoft.com** and turns them into
 business insight: what kind of work is being bought, which strategic bets it serves, how the
 organisation is being shaped, and what the advertising implies about direction.
 
-Everything runs on your machine. No account, no API key, no third-party service.
+Run it locally without an API key, or use GitHub Actions for daily collection and GitHub Pages
+for publishing. The hosted workflow uses the repository's built-in `GITHUB_TOKEN`; no personal token is needed.
 
 ---
 
 ## Quick start
 
 ```powershell
-npm run batch      # collect the data (first run is a full crawl, ~65 min)
+npm run batch      # collect the index and up to 700 outstanding descriptions
 npm run serve      # open http://localhost:4173
 ```
 
 There is nothing to install — the project uses only Node's standard library (Node 18+).
 
-The first run walks the whole index and fetches a detail record for every posting. Later runs are
-incremental and take a few minutes.
+Local batches walk the index and fetch up to 700 new, reposted, or stale descriptions per run.
+Repeat to backfill, or set `MSJOBS_DETAIL_BUDGET=0` and use `npm run batch:full` for all descriptions.
+Runtime depends on corpus size and source rate limiting; a full crawl can take hours.
 
 If a run is interrupted, just run `npm run batch` again — progress is checkpointed and it resumes
 where it left off.
@@ -26,6 +28,94 @@ where it left off.
 ---
 
 ## Daily batch
+
+### GitHub-hosted automation (recommended)
+
+`.github/workflows/daily.yml` runs at **07:00 KST**, expressed as `0 22 * * *` UTC on the
+preceding calendar day, and can be started manually. GitHub schedules are best-effort: runs may
+be delayed or dropped under load, and inactive public repositories can have schedules disabled.
+The workflow must exist on the default `main` branch. Runs are serialized without cancelling an
+active crawl, with a 180-minute crawl timeout.
+
+Hosted runs restore the last successful snapshot, fetch the complete index and **every description**
+(`--full --strict`, `MSJOBS_DETAIL_BUDGET=0`), compare additions / closures / edits, regenerate the
+site, then atomically push both:
+
+- `main`: only `docs/data/stats.json` and `docs/data/jobs.min.json`.
+- `crawl-state`: only `data/jobs.json`, `data/changes.json`, `data/history.json`, and
+  `data/last-run.json`, preserving the previous state commit as parent.
+
+The state branch, not an Actions cache or expiring artifact, is the durable comparison record.
+It contains public-source job descriptions and observation history and is **public in a public
+repository**, even though `data/` is ignored on `main`. Never put credentials or private material
+in these files. State history grows over time; the recent change log retains 120 runs while daily
+aggregates and state-branch commits remain available.
+
+**First-time setup**
+
+1. Enable Actions and allow the workflow's `GITHUB_TOKEN` to write repository contents.
+   Branch/ruleset policies must allow the workflow to create/update `crawl-state` and update `main`;
+   the workflow never force-pushes or bypasses protections.
+2. In **Settings → Pages → Build and deployment → Source**, choose **GitHub Actions**, not
+   “Deploy from a branch”. Allow the `github-pages` environment to deploy from `main`.
+3. From Actions, run **Daily crawl** on `main` with **bootstrap** checked, or:
+
+   ```powershell
+   gh workflow run daily.yml --ref main -f bootstrap=true
+   ```
+
+   This option is used only when `crawl-state` is absent. The first successful snapshot is labelled
+   `baseline`, with zero observed additions/closures/edits—not thousands of supposedly new jobs.
+   It does not reset an existing state branch. Subsequent runs compare against the baseline.
+4. Check the crawl and **Publish Pages** jobs. Normal manual refresh:
+   `gh workflow run daily.yml --ref main` (without bootstrap).
+5. **Only after the first GitHub collection succeeds**, disable/remove an existing Windows task
+   with `npm run schedule:remove` to avoid duplicate collection and competing publications.
+   Keep the local task until that success is verified; setup does not remove it automatically.
+
+**Failure safety and recovery**
+
+Missing state on a scheduled run, invalid JSON/state shape, any failed search page, empty index,
+coverage that remains inconsistent after bounded reconciliation, or any missing/failed description
+causes a nonzero exit. Strict runs do not write partial checkpoints.
+No failed collection is pushed. Concurrent source/state pushes reject the atomic publication of
+**both** branches; rerun from current `main`, rather than overwriting another writer's work.
+
+Inspect the Actions logs and run summary for the first failing step. The last published site and
+remote state remain available after a failed collection. A timeout discards that runner's partial
+work; retry later, or deliberately adjust pacing/timeout after investigating. Corrupt state must
+be repaired from a known-good state-branch commit; bootstrap cannot bypass corruption. If the
+state branch was accidentally deleted, recover its history rather than casually bootstrapping a
+new comparison series. There is no fallback to a runner's stale local cache.
+
+Successful persistence explicitly invokes the reusable Pages workflow because pushes made with
+`GITHUB_TOKEN` do **not** trigger another push workflow. If deployment alone fails, the new state
+and generated data are already durable: rerun **Publish Pages** without recrawling.
+
+**Limits of daily observation**
+
+The search endpoint is live, not an atomic snapshot. Collection uses its supported **Latest**
+ordering (`sort_by=timestamp`), verified against the public careers frontend and the API's
+`sortBy` acknowledgement on September 5, 2026—not the previously used relevance ordering.
+Strict collection checks the acknowledgement, reported count, full unique-ID coverage, and
+fresh first/last windows before accepting an index. If counts, boundaries, or coverage shift,
+it makes at most **three independent passes**: normal 10-row windows first, then overlapping
+5-row offsets to reconcile boundary duplicates. Each retry starts a new ID set; it never unions
+different incomplete passes into a supposedly complete baseline. The accepted pass must still
+contain exactly as many unique jobs as the API reports. `last-run.json` records the successful
+ordering, pass count, request count, and coverage.
+
+Latest ordering improves repeatability but is not a guaranteed unique tie-breaker, and the
+observed `postedTs` fields are not perfectly ordered. Coverage and boundary checks cannot prove
+there was no same-count change inside the source during a crawl. Persistent duplicate/shifted
+windows still fail safely; reconciliation also increases runtime and request volume. Hosted runner
+IPs may be rate-limited or blocked; the workflow cannot guarantee a daily successful refresh.
+Changes between successful snapshots can be missed (including a role opened and closed between
+runs). “Edited” covers the crawler's tracked fields, including the full-description hash; taxonomy
+changes can also change derived tracked fields such as organisation and seniority. Run/history
+dates are UTC even though the scheduled launch time is described in KST.
+
+### Optional local Windows schedule
 
 The site is designed to be refreshed daily so it accumulates a change history.
 
@@ -167,6 +257,31 @@ Three things are worth knowing about how it is computed:
   to be part of them are reported as a separate *surface* figure, never folded into the cohort. That
   is the same rule that governs business-unit detection everywhere else on the site.
 
+### ISD's future inside Frontier
+
+Section 03 separates **what the adverts say** from **possible strategic interpretations**.
+It considers five possible sources of ISD's continuing relevance: production AI delivery,
+industry and business outcomes, reusable delivery assets, sustained adoption, and complex
+trusted implementation. These are hypotheses to examine, not an approved survival strategy.
+
+Each signal shows matching ISD adverts, a separately calculated FDE comparison, source
+passages and links, an interpretation, an alternative explanation or risk, and what to watch.
+Only Overview and Responsibilities passages are used, with a topic and action required in the
+same passage. Qualifications do not establish organisational intent. Shared wording is
+deduplicated in examples, while counts remain per advert. Percentages use readable adverts
+in each unit; no readable evidence is `n/a`, not zero demand.
+
+The initial published preview uses the existing, truncated overview excerpts and is labelled
+**Limited or mixed source text**. A full batch or rebuild from the raw cache uses complete
+descriptions. No matching passage means no observed support, not that the capability is absent.
+Classification and passage matching remain heuristic; open the cited advert before relying
+on the interpretation.
+
+The feature cannot reveal leadership's private intent, budgets, margins, headcount plans or
+whether ISD will survive, shrink, merge or replace another unit. FDE overlap is not evidence of
+replacement. Establishing a formal ISD/FDE operating model needs independent evidence beyond
+job adverts.
+
 ### How "business purpose" is derived
 
 Each posting carries structured fields the site reads directly — profession, discipline, role type
@@ -211,8 +326,9 @@ These caveats are printed in the site's colophon too, so the numbers are never r
 
 | Command | Does |
 | --- | --- |
-| `npm run batch` | Incremental daily batch (full crawl on first run). |
-| `npm run batch:full` | Force a re-fetch of every detail record. |
+| `npm run batch` | Local incremental batch; up to 700 outstanding descriptions by default. |
+| `npm run batch:full` | Refresh cached descriptions too; set `MSJOBS_DETAIL_BUDGET=0` to remove the cap. |
+| `node --test test/automation.test.mjs` | Offline automation/strict-crawl tests using disposable local fixture repositories. |
 | `npm run rebuild` | Recompute the analysis and brief from cached data, no network. |
 | `npm run serve` | Serve the dashboard on `http://localhost:4173`. |
 | `npm run fonts` | Re-vendor the Newsreader / Source Serif 4 / IBM Plex Sans webfonts into `docs/fonts`. |
@@ -236,7 +352,9 @@ npm run batch
 ```
 
 If more than 2 % of index pages fail, the batch **aborts without writing** rather than concluding
-that the missing jobs were closed.
+that the missing jobs were closed, and exits nonzero. Hosted strict mode is more conservative:
+**any** failed index page, inconsistent coverage, or incomplete description collection aborts
+before canonical writes. Local incremental mode still checkpoints partial detail progress.
 
 ---
 
@@ -254,15 +372,18 @@ src/
   frontier.mjs      the Frontier / ISD deep dive in section 03
   skills.mjs        the requirements market in section 05
   daily.mjs         batch orchestrator
+  automation.mjs    durable state restore and atomic state/site publication
   rebuild.mjs       recompute from cache, no network
   schedule.mjs      Windows Scheduled Task install/remove
   server.mjs        static file server
   store.mjs         atomic JSON reads/writes
 docs/               the published site (vanilla HTML/CSS/JS, no build step, no CDN)
-data/              raw crawl cache + logs  (local only, git-ignored)
+data/               raw crawl state + local logs (git-ignored on main)
+.github/workflows/  scheduled collection and explicit Pages deployment
 ```
 
-`data/` is the durable local record. `docs/` is what gets committed and served —
+`data/` is the local record; hosted runs persist the four named state files on `crawl-state`.
+`docs/` is what gets committed on `main` and served —
 including `docs/data/stats.json` and `docs/data/jobs.min.json`, the two files the browser reads.
 
 No runtime or build dependencies: Node's standard library only.
@@ -271,21 +392,20 @@ No runtime or build dependencies: Node's standard library only.
 
 ## Publishing
 
-`docs/` is a self-contained static site, so GitHub Pages can serve it directly
-(**Settings → Pages → Source: `main` branch, `/docs` folder**).
-
-The crawler cannot run on Pages — the origin blocks datacenter traffic — so the batch runs on your
-machine and publishes the result:
+`docs/` is a self-contained static site. Set **Settings → Pages → Source: GitHub Actions**.
+`.github/workflows/pages.yml` uploads `docs/` and deploys it with the `github-pages` environment,
+`pages:write`, and `id-token:write`; it checks out the latest `main`. It runs after successful
+hosted collection, on human pushes changing `docs/**` or that workflow, and via manual dispatch:
 
 ```powershell
-npm run batch
-git add docs
-git commit -m "data: daily batch"
-git push
+gh workflow run pages.yml --ref main
 ```
 
-To make the scheduled task publish automatically, append those three lines to
-`scripts/run-daily.cmd` after the batch command.
+Pages serves files; it does not execute the crawler. Collection runs separately in Actions or on
+your machine. Local `npm run batch`, `npm run rebuild`, and `npm run serve` remain supported.
+If publishing locally generated data to `main`, be aware it does **not** update `crawl-state`;
+the next hosted crawl will compare against its previous hosted snapshot. Prefer one publishing
+owner rather than mixing a Windows auto-push task with the hosted workflow.
 
 ---
 

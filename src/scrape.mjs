@@ -39,6 +39,80 @@ const MAX_INDEX_FAILURE_RATE = 0.02;
 
 export class IncompleteIndexError extends Error {}
 
+const MAX_INDEX_PASSES = 3;
+const pageIds = (page) => page.positions.map((p) => String(p.id)).sort().join(',');
+
+function validateSearchPage(page) {
+  if (!Number.isSafeInteger(page?.total) || page.total <= 0 || !Array.isArray(page.positions) || !page.positions.length) {
+    throw new IncompleteIndexError('Invalid or empty search index; refusing to infer closures.');
+  }
+  if (page.sortBy !== 'timestamp') {
+    throw new IncompleteIndexError('Search did not acknowledge the supported timestamp (Latest) ordering.');
+  }
+  if (page.positions.some((p) => !p || !['string', 'number'].includes(typeof p.id) || !String(p.id).trim())) {
+    throw new IncompleteIndexError('Search returned an invalid position ID.');
+  }
+}
+
+/**
+ * Retry a fresh snapshot with overlapping windows when live pagination shifts.
+ * Never union different passes: same-count churn could otherwise mask missing jobs.
+ */
+async function fetchCompleteSummaries(fetchPage, maxPasses = MAX_INDEX_PASSES) {
+  if (!Number.isInteger(maxPasses) || maxPasses < 1 || maxPasses > MAX_INDEX_PASSES) {
+    throw new Error(`Index passes must be between 1 and ${MAX_INDEX_PASSES}.`);
+  }
+  let reason;
+  let requests = 0;
+  const fetchLatest = async (start) => {
+    requests++;
+    const page = await fetchPage(start, { sortBy: 'timestamp' });
+    validateSearchPage(page);
+    return page;
+  };
+  for (let pass = 1; pass <= maxPasses; pass++) {
+    const firstPage = await fetchLatest(0);
+    const total = firstPage.total;
+    const stride = pass === 1 ? PAGE_SIZE : Math.max(1, Math.floor(PAGE_SIZE / 2));
+    const offsets = [];
+    for (let start = stride; start < total; start += stride) offsets.push(start);
+    console.log(`  Latest index pass ${pass}/${maxPasses}: ${total} reported, ${stride}-row stride`);
+    const bar = progressBar('search windows');
+    bar(1, offsets.length + 1);
+    const { results, errors } = await pool(
+      offsets, CONCURRENCY, fetchLatest, (done) => bar(done + 1, offsets.length + 1)
+    );
+    if (errors.length) {
+      throw new IncompleteIndexError(
+        `${errors.length}/${offsets.length + 1} search pages failed; refusing partial index publication.`
+      );
+    }
+    const pages = [firstPage, ...results];
+    const byId = new Map();
+    for (const page of pages) for (const summary of page.positions) byId.set(String(summary.id), summary);
+    if (pages.some((page) => page.total !== total)) {
+      reason = 'Reported count changed during enumeration.';
+    } else if (byId.size !== total) {
+      reason = `Search returned ${byId.size} unique jobs for ${total} reported jobs.`;
+    } else {
+      const firstCheck = await fetchLatest(0);
+      const lastCheck = offsets.length ? await fetchLatest(offsets.at(-1)) : firstCheck;
+      if (firstCheck.total === total && lastCheck.total === total &&
+          pageIds(firstCheck) === pageIds(firstPage) && pageIds(lastCheck) === pageIds(pages.at(-1))) {
+        return {
+          total, summaries: [...byId.values()], filterDef: firstPage.filterDef, pageErrors: 0,
+          index: { status: 'complete', sortBy: 'timestamp', passes: pass, requests, uniqueCount: byId.size, reportedTotal: total },
+        };
+      }
+      reason = 'Index boundaries changed during enumeration.';
+    }
+    console.warn(`  ! ${reason} ${pass < maxPasses ? 'Restarting with overlapping windows.' : ''}`);
+  }
+  throw new IncompleteIndexError(
+    `${reason} Incomplete after ${maxPasses} independent passes; previous state retained, no closures inferred.`
+  );
+}
+
 function progressBar(label) {
   let last = -1;
   const t0 = Date.now();
@@ -54,8 +128,9 @@ function progressBar(label) {
 }
 
 /** Walk every page of the public search endpoint. */
-export async function fetchAllSummaries() {
-  const firstPage = await fetchSearchPage(0);
+export async function fetchAllSummaries(opts = {}, fetchPage = fetchSearchPage) {
+  if (opts.strict) return fetchCompleteSummaries(fetchPage, opts.maxIndexPasses);
+  const firstPage = await fetchPage(0);
   const total = firstPage.total;
   const pages = Math.ceil(total / PAGE_SIZE);
   console.log(`  reported open positions: ${total} (${pages} pages)`);
@@ -68,7 +143,7 @@ export async function fetchAllSummaries() {
   const { results, errors } = await pool(
     offsets,
     CONCURRENCY,
-    async (start) => (await fetchSearchPage(start)).positions,
+    async (start) => (await fetchPage(start)).positions,
     (done) => bar(done + 1, pages)
   );
 
@@ -228,10 +303,13 @@ function diffRecord(before, after) {
  *   limit        cap the number of jobs processed (trial runs)
  *   onCheckpoint called with the in-progress job list so partial work survives
  */
-export async function syncJobs(existing, opts = {}) {
+export async function syncJobs(existing, opts = {}, dependencies = {}) {
+  if (opts.strict && (!opts.full || opts.limit || (opts.budget ?? DETAIL_BUDGET) !== 0)) {
+    throw new Error('Strict collection requires --full, no limit, and MSJOBS_DETAIL_BUDGET=0.');
+  }
   const startedAt = new Date().toISOString();
   console.log('> Fetching search index...');
-  let { total, summaries, pageErrors } = await fetchAllSummaries();
+  let { total, summaries, pageErrors, index } = await fetchAllSummaries(opts, dependencies.fetchPage);
 
   if (opts.limit) summaries = summaries.slice(0, opts.limit);
 
@@ -248,7 +326,7 @@ export async function syncJobs(existing, opts = {}) {
 
   // Persist the index immediately: the dashboard can render from summary-level
   // fields alone while detail records backfill in the background.
-  if (opts.onCheckpoint) await opts.onCheckpoint([...jobs.values(), ...carryClosed(existing, liveIds)]);
+  if (!opts.strict && opts.onCheckpoint) await opts.onCheckpoint([...jobs.values(), ...carryClosed(existing, liveIds)]);
 
   const staleDetail = summaries.filter((s) => {
     const prev = existing.get(String(s.id));
@@ -280,7 +358,13 @@ export async function syncJobs(existing, opts = {}) {
     const { errors } = await pool(
       needsDetail,
       CONCURRENCY,
-      (s) => fetchPositionDetails(s.id),
+      async (s) => {
+        const detail = await (dependencies.fetchDetail ?? fetchPositionDetails)(s.id);
+        if (opts.strict && (!detail || typeof detail.jobDescription !== 'string' || !detail.jobDescription.trim())) {
+          throw new Error(`Missing description for ${s.id}`);
+        }
+        return detail;
+      },
       async (done, totalItems, index, detail) => {
         if (detail) {
           const s = needsDetail[index];
@@ -289,13 +373,16 @@ export async function syncJobs(existing, opts = {}) {
           fetched++;
         }
         bar(done, totalItems);
-        if (opts.onCheckpoint && done % CHECKPOINT_EVERY === 0) {
+        if (!opts.strict && opts.onCheckpoint && done % CHECKPOINT_EVERY === 0) {
           await opts.onCheckpoint([...jobs.values(), ...carryClosed(existing, liveIds)]);
         }
       }
     );
     detailErrors = errors.length;
     if (detailErrors) console.warn(`  ! ${detailErrors} detail fetch(es) failed`);
+  }
+  if (opts.strict && (detailErrors || fetched !== summaries.length)) {
+    throw new Error(`Incomplete detail collection: ${fetched}/${summaries.length} fetched, ${detailErrors} errors.`);
   }
 
   // Classify additions and modifications now that details have landed.
@@ -346,6 +433,7 @@ export async function syncJobs(existing, opts = {}) {
       finishedAt: new Date().toISOString(),
       date: startedAt.slice(0, 10),
       mode: opts.full ? 'full' : 'incremental',
+      index,
       reportedTotal: total,
       openCount: liveIds.size,
       detailsFetched: fetched,

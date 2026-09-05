@@ -530,6 +530,55 @@ table {
 
 /* ============================================================ cells row === */
 
+.strategy {
+  margin-block: var(--space-lg);
+  padding-block: var(--space-md);
+  border-block: var(--rule-hair) solid var(--color-rule-strong);
+}
+
+.strategy h3 {
+  margin-bottom: var(--space-xs);
+}
+
+.strategy > .prose,
+.strategy > .cell__note,
+.strategy .tablewrap {
+  margin-bottom: var(--space-sm);
+}
+
+.strategy__detail {
+  border-top: var(--rule-hair) solid var(--color-rule);
+  padding-block: var(--space-xs);
+}
+
+.strategy__detail summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.strategy__detail[open] summary {
+  margin-bottom: var(--space-xs);
+}
+
+.strategy__source {
+  margin-top: var(--space-sm);
+  padding-left: var(--space-xs);
+  border-left: 2px solid var(--color-rule-strong);
+  max-width: var(--measure);
+  overflow-wrap: anywhere;
+}
+
+.strategy__source blockquote {
+  margin: 0 0 var(--space-2xs);
+  font-size: var(--text-sm);
+}
+
+.strategy__limits li {
+  margin-top: var(--space-xs);
+  max-width: var(--measure);
+  font-size: var(--text-sm);
+}
+
 .cells {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));

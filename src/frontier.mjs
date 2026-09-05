@@ -28,6 +28,7 @@ import {
   stripBoilerplate,
   toPlainText,
 } from './taxonomy.mjs';
+import { buildISDStrategy } from './isd-strategy.mjs';
 
 const pct = (n, d) => (d ? +((n / d) * 100).toFixed(1) : 0);
 const plural = (n, s, p) => `${n.toLocaleString('en-US')} ${n === 1 ? s : p}`;
@@ -345,6 +346,7 @@ export function buildFrontier(allJobs) {
       cohortSize: 0,
       empty: true,
       note: 'No advert in this batch identifies itself as part of the Frontier organisation.',
+      strategy: buildISDStrategy(allJobs),
     };
   }
 
@@ -653,12 +655,12 @@ export function buildFrontier(allJobs) {
     deliveryToDemand !== null
       ? `Composition is ${deliveryToDemand}:1 delivery-shaped to demand-shaped \u2014 ${deliveryCount} architect, consultant, engineering and delivery-management roles against ${plural(demandCount, 'selling role', 'selling roles')}. ${
           deliveryToDemand >= 2
-            ? 'Frontier is being staffed to execute work that has already been sold, not to go and sell it.'
+            ? 'The open postings lean toward delivery work; they do not establish whether that work has already been sold.'
             : deliveryToDemand >= 1
               ? 'Delivery and demand capacity are being added roughly in step.'
               : 'The cohort is weighted toward creating demand rather than delivering against it.'
         }`
-      : `All ${deliveryCount} delivery-shaped roles in the cohort are matched by no selling role at all \u2014 nothing here is being hired to generate demand.`,
+      : `${deliveryCount} delivery-shaped roles in the cohort are matched by no classified selling role. This does not show whether existing staff or other teams generate demand.`,
 
     topArchetypes.length
       ? `The shape of the hire is ${topArchetypes
@@ -666,13 +668,13 @@ export function buildFrontier(allJobs) {
           .join(', ')}. ${
           leadershipCount
             ? `${plural(leadershipCount, 'posting carries', 'postings carry')} a manager, director or VP title, which is management scaffolding rather than billable capacity.`
-            : 'No management title is open, so this is capacity rather than restructuring.'
+            : 'No management title is open in this snapshot; restructuring cannot be assessed from that absence.'
         }`
       : '',
 
     `${newness.cohort60}% of the cohort was created in the last 60 days, against ${newness.book60}% of the whole open book. ${
       newness.cohort60 >= newness.book60 * 1.3
-        ? 'This organisation is being stood up, not maintained \u2014 most of what it is advertising did not exist a quarter ago.'
+        ? 'The open-posting mix is newer than the company baseline. Reposting, replacement hiring and different closing speeds could also explain this; it is not proof of organisational growth.'
         : 'Its hiring is no newer than the company\u2019s as a whole.'
     }`,
 
@@ -686,7 +688,7 @@ export function buildFrontier(allJobs) {
       ? `Direction of travel by vertical: ${risingIndustry.label} takes ${risingIndustry.index}\u00d7 its baseline share of the cohort's last ${momentum.windowDays} days${
           fadingIndustry ? `, while ${fadingIndustry.label} takes ${fadingIndustry.index}\u00d7` : ''
         }. On a cohort this size, read that as a lean, not a trend.`
-      : 'No vertical is materially over-represented in the cohort\u2019s recent postings \u2014 the industry mix is holding steady.',
+      : 'No vertical meets the reporting threshold for recent over-representation. This is not evidence that the industry mix is unchanged.',
 
     risingArchetype
       ? `By role shape, ${risingArchetype.label} is over-represented in the last ${momentum.windowDays} days at ${risingArchetype.index}\u00d7 baseline \u2014 the clearest near-term signal of what the organisation thinks it is short of.`
@@ -762,5 +764,6 @@ export function buildFrontier(allJobs) {
     contrast,
     pipeline,
     reading,
+    strategy: buildISDStrategy(allJobs),
   };
 }

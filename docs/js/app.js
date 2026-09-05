@@ -683,9 +683,65 @@ const liftNote = (index) => {
   return `${n}\u00d7 the rest of the book`;
 };
 
+function renderISDStrategy(strategy) {
+  if (!strategy) return;
+  $('isd-strategy-summary').textContent = `${strategy.scope} ${strategy.summary}`;
+  $('isd-strategy-coverage').textContent =
+    `${strategy.evidenceMode}. Readable text: ${strategy.isdReadable}/${strategy.isdCount} ISD adverts, ` +
+    `${strategy.fdeReadable}/${strategy.fdeCount} FDE adverts. Percentages use readable adverts in each unit; ` +
+    'n/a means no readable evidence, not zero demand. Units and text matches require source review.';
+  $('isd-strategy-frontier').textContent = strategy.frontierReading;
+  $('isd-strategy-method').textContent = strategy.method;
+  const comparison = $('isd-strategy-comparison');
+  const signals = $('isd-strategy-signals');
+  const unknowns = $('isd-strategy-unknowns');
+  clear(comparison);
+  clear(signals);
+  clear(unknowns);
+  for (const signal of strategy.signals) {
+    const row = el('tr');
+    const heading = el('th', null, signal.label);
+    heading.scope = 'row';
+    row.appendChild(heading);
+    row.appendChild(el('td', null, signal.share === null ? 'n/a' : `${signal.count} (${signal.share}%)`));
+    row.appendChild(el('td', null, signal.fdeShare === null ? 'n/a' : `${signal.fdeCount} (${signal.fdeShare}%)`));
+    row.appendChild(el('td', null, signal.evidenceLevel));
+    comparison.appendChild(row);
+
+    const detail = el('details', 'strategy__detail');
+    detail.appendChild(el('summary', null, `${signal.label} — evidence and interpretation`));
+    const appendNote = (label, text) => {
+      const p = el('p', 'prose');
+      p.appendChild(el('strong', null, `${label}: `));
+      p.appendChild(document.createTextNode(text));
+      detail.appendChild(p);
+    };
+    appendNote('Observed text', `${signal.count} matching ISD adverts; ${signal.distinctPassages} distinct passages. Shared wording is not independent confirmation.`);
+    appendNote('Hypothesis', signal.inference);
+    appendNote('Alternative / risk', signal.risk);
+    appendNote('What to watch', signal.watch);
+    for (const evidence of signal.evidence) {
+      const source = el('div', 'strategy__source');
+      source.appendChild(el('blockquote', null, evidence.excerpt));
+      const a = el('a', null, evidence.title || evidence.id);
+      if (/^https?:\/\//i.test(evidence.url || '')) {
+        a.href = evidence.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+      source.appendChild(a);
+      source.appendChild(el('p', 'cell__note', `${evidence.section} · ${evidence.observedAt ? `captured ${stamp(evidence.observedAt)}` : 'capture time unavailable'}`));
+      detail.appendChild(source);
+    }
+    signals.appendChild(detail);
+  }
+  for (const text of strategy.unknowns) unknowns.appendChild(el('li', null, text));
+}
+
 function renderFrontier(fr) {
   const section = document.getElementById('s03');
   if (!section) return;
+  renderISDStrategy(fr?.strategy);
 
   if (!fr || fr.empty) {
     $('fr-standfirst').textContent =

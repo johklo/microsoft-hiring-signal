@@ -11,6 +11,8 @@ function parseArgs(argv) {
   const opts = { full: false, limit: 0 };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--full') opts.full = true;
+    else if (argv[i] === '--strict') opts.strict = true;
+    else if (argv[i] === '--baseline') opts.baseline = true;
     else if (argv[i] === '--limit') opts.limit = Number(argv[++i]) || 0;
   }
   return opts;
@@ -58,6 +60,14 @@ export async function runBatch(opts = {}) {
   const t0 = Date.now();
 
   const previous = readJson(FILES.jobs, []);
+  const changes = readJson(FILES.changes, []);
+  const priorHistory = readJson(FILES.history, []);
+  if (opts.baseline && (previous.length || changes.length || priorHistory.length)) {
+    throw new Error('Baseline requires empty state; refusing to reset an existing comparison history.');
+  }
+  if (opts.strict && !opts.baseline && !previous.length) {
+    throw new Error('Strict collection requires restored state or explicit --baseline.');
+  }
   const existing = new Map(previous.map((j) => [String(j.id), j]));
   const detailed = previous.filter((j) => j.hasDetail).length;
 
@@ -71,26 +81,31 @@ export async function runBatch(opts = {}) {
     result = await syncJobs(existing, {
       full: opts.full,
       limit: opts.limit,
+      strict: opts.strict,
       // Persist partial progress so a WAF block never discards fetched work.
-      onCheckpoint: (partial) => writeJson(FILES.jobs, partial),
+      onCheckpoint: opts.strict ? undefined : (partial) => writeJson(FILES.jobs, partial),
     });
   } catch (err) {
     if (err instanceof IncompleteIndexError) {
       console.error(`\n! Aborted: ${err.message}\n  Existing data left untouched.`);
-      return { aborted: true, reason: err.message };
+      throw err;
     }
     throw err;
   }
 
   const { jobs, run } = result;
+  run.status = opts.baseline ? 'baseline' : 'success';
+  if (opts.baseline) {
+    run.added = [];
+    run.addedCount = 0;
+  }
   const allJobs = [...jobs.values()];
   writeJson(FILES.jobs, allJobs);
 
-  const changes = readJson(FILES.changes, []);
   changes.unshift(run);
   writeJson(FILES.changes, changes.slice(0, CHANGELOG_RUNS), true);
 
-  const history = readJson(FILES.history, []).filter((h) => h.date !== run.date);
+  const history = priorHistory.filter((h) => h.date !== run.date);
   history.push(historyEntry(run, allJobs));
   history.sort((a, b) => a.date.localeCompare(b.date));
   writeJson(FILES.history, history, true);
@@ -98,6 +113,7 @@ export async function runBatch(opts = {}) {
   rebuildDerived(allJobs, changes, history);
 
   const summary = {
+    status: run.status,
     finishedAt: run.finishedAt,
     durationSec: +((Date.now() - t0) / 1000).toFixed(1),
     mode: run.mode,
@@ -108,6 +124,7 @@ export async function runBatch(opts = {}) {
     detailsFetched: run.detailsFetched,
     missingDetail: run.missingDetail,
     errors: run.errors,
+    index: run.index,
   };
   writeJson(FILES.runLog, summary, true);
 

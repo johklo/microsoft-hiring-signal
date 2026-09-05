@@ -126,16 +126,17 @@ async function getJson(url) {
   throw lastErr;
 }
 
-/** Fetch one page of the public job search. `start` is a 0-based row offset. */
-export async function fetchSearchPage(start) {
+/** `timestamp` is the public careers site's "Latest" ordering. */
+export async function fetchSearchPage(start, { sortBy = 'timestamp' } = {}) {
   const url =
     `${API_BASE}/search?domain=${DOMAIN}&query=&location=&start=${start}` +
-    `&num=${PAGE_SIZE}&sort_by=relevance&hl=en`;
+    `&num=${PAGE_SIZE}&sort_by=${encodeURIComponent(sortBy)}&hl=en`;
   const body = await getJson(url);
   return {
     total: body?.data?.count ?? 0,
     positions: body?.data?.positions ?? [],
     filterDef: body?.data?.filterDef ?? null,
+    sortBy: body?.data?.sortBy ?? null,
   };
 }
 

@@ -1,0 +1,76 @@
+name: Daily crawl
+
+on:
+  schedule:
+    - cron: '0 22 * * *' # 07:00 Asia/Seoul the following calendar day
+  workflow_dispatch:
+    inputs:
+      bootstrap:
+        description: 'Allow an initial baseline ONLY if crawl-state does not exist'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: write
+    env:
+      MSJOBS_DETAIL_BUDGET: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Validate automation and strategy
+        run: node --test test/automation.test.mjs test/isd-strategy.test.mjs
+      - name: Restore durable comparison state
+        id: restore
+        env:
+          BOOTSTRAP: ${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap }}
+        shell: bash
+        run: |
+          args=()
+          if [[ "$BOOTSTRAP" == "true" ]]; then args+=(--bootstrap); fi
+          node src/automation.mjs restore "${args[@]}"
+      - name: Collect complete index and descriptions
+        env:
+          BASELINE: ${{ steps.restore.outputs.baseline }}
+        shell: bash
+        run: |
+          args=(--full --strict)
+          if [[ "$BASELINE" == "true" ]]; then args+=(--baseline); fi
+          node src/daily.mjs "${args[@]}"
+      - name: Atomically persist state and generated site
+        run: node src/automation.mjs publish
+      - name: Record outcome
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        shell: bash
+        run: |
+          echo "## Daily crawl: $JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$JOB_STATUS" == "success" ]]; then
+            echo 'State and site were published atomically. Pages deployment follows.' >> "$GITHUB_STEP_SUMMARY"
+            cat data/last-run.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Collection/publication failed. Previous remote state and site are retained; inspect the first failing step and rerun.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+  pages:
+    needs: crawl
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
