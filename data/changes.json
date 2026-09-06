@@ -1,5 +1,390 @@
 [
   {
+    "startedAt": "2026-09-05T23:25:43.166Z",
+    "finishedAt": "2026-09-06T00:30:08.646Z",
+    "date": "2026-09-05",
+    "mode": "full",
+    "index": {
+      "status": "complete",
+      "sortBy": "timestamp",
+      "passes": 1,
+      "requests": 226,
+      "uniqueCount": 2233,
+      "reportedTotal": 2233
+    },
+    "reportedTotal": 2233,
+    "openCount": 2233,
+    "detailsFetched": 2233,
+    "missingDetail": 0,
+    "addedCount": 0,
+    "removedCount": 19,
+    "updatedCount": 20,
+    "errors": {
+      "searchPages": 0,
+      "details": 0,
+      "wafBlocks": 10
+    },
+    "added": [],
+    "removed": [
+      {
+        "id": "1970393556933205",
+        "jobId": "200043501",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556933205"
+      },
+      {
+        "id": "1970393556961334",
+        "jobId": "200048343",
+        "title": "Senior Software Engineer - Backend",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556961334"
+      },
+      {
+        "id": "1970393556946208",
+        "jobId": "200045768",
+        "title": "Technology Consulting IC4",
+        "profession": "Consulting Services",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556946208"
+      },
+      {
+        "id": "1970393556943999",
+        "jobId": "200045342",
+        "title": "Data Center Technician",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943999"
+      },
+      {
+        "id": "1970393556980068",
+        "jobId": "200050799",
+        "title": "Data Center Logistics Technician",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980068"
+      },
+      {
+        "id": "1970393556943170",
+        "jobId": "200045017",
+        "title": "Senior Incident Response Engineer",
+        "profession": "Technical Support",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943170"
+      },
+      {
+        "id": "1970393556971552",
+        "jobId": "200049315",
+        "title": "Senior Azure ACE Engineer",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556971552"
+      },
+      {
+        "id": "1970393556946115",
+        "jobId": "200045742",
+        "title": "Cloud Solution Architect - Security",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556946115"
+      },
+      {
+        "id": "1970393556962963",
+        "jobId": "200049065",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962963"
+      },
+      {
+        "id": "1970393556982274",
+        "jobId": "200052137",
+        "title": "Technical Support Engineering",
+        "profession": "Technical Support",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982274"
+      },
+      {
+        "id": "1970393556980413",
+        "jobId": "200051070",
+        "title": "Technical Support Engineer - Azure AI",
+        "profession": "Technical Support",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980413"
+      },
+      {
+        "id": "1970393556943705",
+        "jobId": "200045198",
+        "title": "Consultant",
+        "profession": "Consulting Services",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943705"
+      },
+      {
+        "id": "1970393556943987",
+        "jobId": "200045333",
+        "title": "Senior Consultant",
+        "profession": "Consulting Services",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943987"
+      },
+      {
+        "id": "1970393556943525",
+        "jobId": "200045133",
+        "title": "Consultant",
+        "profession": "Consulting Services",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943525"
+      },
+      {
+        "id": "1970393556956195",
+        "jobId": "200046901",
+        "title": "Construction Metro Director, Denmark",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956195"
+      },
+      {
+        "id": "1970393556959450",
+        "jobId": "200047766",
+        "title": "Strategic Account Director - Regional Global Enterprise",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556959450"
+      },
+      {
+        "id": "1970393556961482",
+        "jobId": "200048456",
+        "title": "Service Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556961482"
+      },
+      {
+        "id": "1970393556946172",
+        "jobId": "200045761",
+        "title": "Senior Software Engineer - FDE - Security Check (SC) Clearance",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556946172"
+      },
+      {
+        "id": "1970393556944430",
+        "jobId": "200045395",
+        "title": "Principal Software Engineering Manager - SXG",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556944430"
+      }
+    ],
+    "updated": [
+      {
+        "id": "1970393556941071",
+        "jobId": "200044512",
+        "title": "Principal Silicon Engineer",
+        "changed": {
+          "title": {
+            "from": "Principal Silicon Egineer",
+            "to": "Principal Silicon Engineer"
+          }
+        }
+      },
+      {
+        "id": "1970393556959513",
+        "jobId": "200047777",
+        "title": "Logistics Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "0e9c27d53796a398",
+            "to": "905a11c577ec30cc"
+          }
+        }
+      },
+      {
+        "id": "1970393556984631",
+        "jobId": "200053050",
+        "title": "Security Sales Specialist",
+        "changed": {
+          "descriptionHash": {
+            "from": "42b823e9d648d3f7",
+            "to": "f3d0d0f4747266f3"
+          }
+        }
+      },
+      {
+        "id": "1970393556911582",
+        "jobId": "200041071",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "20c0e6ee0c4ae344",
+            "to": "e4de1448ad8d8cc3"
+          }
+        }
+      },
+      {
+        "id": "1970393556971998",
+        "jobId": "200049416",
+        "title": "Critical Environment Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "55b8c2c694a1312c",
+            "to": "03d22a63f81bbff9"
+          }
+        }
+      },
+      {
+        "id": "1970393556985634",
+        "jobId": "200053292",
+        "title": "Software Engineer II & Senior Software Engineer - Microsoft (Entra)",
+        "changed": {
+          "descriptionHash": {
+            "from": "c867418d183b5b13",
+            "to": "8f5baf73b441071a"
+          }
+        }
+      },
+      {
+        "id": "1970393556985444",
+        "jobId": "200053225",
+        "title": "Applied AI Innovation Architect (Cloud Solutions)",
+        "changed": {
+          "descriptionHash": {
+            "from": "e3a92323726de149",
+            "to": "eddbccf5b8f02a47"
+          }
+        }
+      },
+      {
+        "id": "1970393556939831",
+        "jobId": "200044345",
+        "title": "Data Center Technician (Shift pattern)",
+        "changed": {
+          "descriptionHash": {
+            "from": "f49268d64f56468d",
+            "to": "eba4e980e686d620"
+          }
+        }
+      },
+      {
+        "id": "1970393556945114",
+        "jobId": "200045508",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "e64ef20851b9f924",
+            "to": "92faffe15f458ea1"
+          }
+        }
+      },
+      {
+        "id": "1970393556982338",
+        "jobId": "200052164",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "b9a452c2ac8717b1",
+            "to": "3347b90f2a8a3709"
+          }
+        }
+      },
+      {
+        "id": "1970393556978290",
+        "jobId": "200050145",
+        "title": "Critical Environment Technician (shift)",
+        "changed": {
+          "descriptionHash": {
+            "from": "3a74b0d3c0d99afd",
+            "to": "16f1e98467341823"
+          }
+        }
+      },
+      {
+        "id": "1970393556980516",
+        "jobId": "200051158",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "2e1ee061e5ddeaca",
+            "to": "423595be86f6dcf9"
+          }
+        }
+      },
+      {
+        "id": "1970393556971992",
+        "jobId": "200049415",
+        "title": "CE Technician - Electrician (Kriittisen ympäristön teknikko) - sähköasentaja",
+        "changed": {
+          "descriptionHash": {
+            "from": "98c3667c5e38a748",
+            "to": "88442d281b4354db"
+          }
+        }
+      },
+      {
+        "id": "1970393556972407",
+        "jobId": "200049593",
+        "title": "Commissioning Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "dea21bbb315fceac",
+            "to": "cc436f00ae5e4f44"
+          }
+        }
+      },
+      {
+        "id": "1970393556962560",
+        "jobId": "200048895",
+        "title": "Critical Environment  Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "7dfd53333b21e99a",
+            "to": "392452fd4e1ffa31"
+          }
+        }
+      },
+      {
+        "id": "1970393556962561",
+        "jobId": "200048894",
+        "title": "Logistics Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "18c396a99fe7986f",
+            "to": "2dec70ad87aba5a6"
+          }
+        }
+      },
+      {
+        "id": "1970393556961701",
+        "jobId": "200048580",
+        "title": "Critical Environment Field Service Engineer",
+        "changed": {
+          "descriptionHash": {
+            "from": "13a065540eaee438",
+            "to": "903f7b03803ecd16"
+          }
+        }
+      },
+      {
+        "id": "1970393556958553",
+        "jobId": "200047590",
+        "title": "Contracts Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "d938bb37dd57168c",
+            "to": "fbaad37e0044e29a"
+          }
+        }
+      },
+      {
+        "id": "1970393556959514",
+        "jobId": "200047774",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "6e10e57e0ab6a6f8",
+            "to": "8d04232c0d5b1b01"
+          }
+        }
+      },
+      {
+        "id": "1970393556917675",
+        "jobId": "200041811",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "28e60d3a9776efec",
+            "to": "3fdd4b860e2a0b3c"
+          }
+        }
+      }
+    ],
+    "status": "success"
+  },
+  {
     "startedAt": "2026-09-05T11:05:51.358Z",
     "finishedAt": "2026-09-05T12:01:37.314Z",
     "date": "2026-09-05",
