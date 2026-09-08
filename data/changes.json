@@ -1,5 +1,1464 @@
 [
   {
+    "startedAt": "2026-09-07T23:50:14.404Z",
+    "finishedAt": "2026-09-08T00:49:07.990Z",
+    "date": "2026-09-07",
+    "mode": "full",
+    "index": {
+      "status": "complete",
+      "sortBy": "timestamp",
+      "passes": 1,
+      "requests": 221,
+      "uniqueCount": 2182,
+      "reportedTotal": 2182
+    },
+    "reportedTotal": 2182,
+    "openCount": 2182,
+    "detailsFetched": 2182,
+    "missingDetail": 0,
+    "addedCount": 71,
+    "removedCount": 76,
+    "updatedCount": 12,
+    "errors": {
+      "searchPages": 0,
+      "details": 0,
+      "wafBlocks": 7
+    },
+    "added": [
+      {
+        "id": "1970393556990381",
+        "jobId": "200054002",
+        "title": "Principal AI Optimization Software Engineer Lead",
+        "profession": "Software Engineering",
+        "locations": [
+          "Israel, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990381"
+      },
+      {
+        "id": "1970393556990383",
+        "jobId": "200054003",
+        "title": "Senior/Principal AI Optimization Software Engineer - Multiple roles",
+        "profession": "Software Engineering",
+        "locations": [
+          "Israel, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990383"
+      },
+      {
+        "id": "1970393556984020",
+        "jobId": "200052810",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "Canada, British Columbia, Vancouver"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984020"
+      },
+      {
+        "id": "1970393556982314",
+        "jobId": "200052150",
+        "title": "Technical Support Engineering",
+        "profession": "Technical Support",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982314"
+      },
+      {
+        "id": "1970393556988939",
+        "jobId": "200053830",
+        "title": "Critical Environment Industrial Controls Systems Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "Finland, Uusimaa, Helsinki"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988939"
+      },
+      {
+        "id": "1970393556986839",
+        "jobId": "200053473",
+        "title": "Senior Data Center IT Support Technician",
+        "profession": "Data Center",
+        "locations": [
+          "Ireland, Dublin, Dublin"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556986839"
+      },
+      {
+        "id": "1970393556958708",
+        "jobId": "200047637",
+        "title": "Cloud Solution Architect - App & Data Modernization",
+        "profession": "Customer Success",
+        "locations": [
+          "United Kingdom, Multiple Locations, Multiple Locations",
+          "Netherlands, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556958708"
+      },
+      {
+        "id": "1970393556984672",
+        "jobId": "200053055",
+        "title": "Digital Solution Engineer - Apps & Innovation (Italian Speaking)",
+        "profession": "Digital Sales and Solutions",
+        "locations": [
+          "Ireland, Dublin, Dublin",
+          "Spain, Barcelona, Barcelona"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984672"
+      },
+      {
+        "id": "1970393556943170",
+        "jobId": "200045017",
+        "title": "Senior Incident Response Engineer",
+        "profession": "Technical Support",
+        "locations": [
+          "Romania, Bucharest, Bucharest",
+          "Jordan, Amman, Amman"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943170"
+      },
+      {
+        "id": "1970393556983757",
+        "jobId": "200052724",
+        "title": "Solution Engineering- AI Biz Solution -Copilot",
+        "profession": "Technology Sales",
+        "locations": [
+          "United Arab Emirates, Dubai, Dubai"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983757"
+      },
+      {
+        "id": "1970393556972661",
+        "jobId": "200049736",
+        "title": "Frontier Offers Architect",
+        "profession": "Consulting Services",
+        "locations": [
+          "Singapore, Singapore, Singapore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972661"
+      },
+      {
+        "id": "1970393556988809",
+        "jobId": "200053794",
+        "title": "Digital Enterprise Solution Sales Specialist - Security - Spanish Speaking",
+        "profession": "Digital Sales and Solutions",
+        "locations": [
+          "Ireland, Dublin, Dublin"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988809"
+      },
+      {
+        "id": "1970393556982781",
+        "jobId": "200052397",
+        "title": "Technical Support Engineer - Azure Developer Services",
+        "profession": "Technical Support",
+        "locations": [
+          "Portugal, Lisbon, Lisbon"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982781"
+      },
+      {
+        "id": "1970393556990333",
+        "jobId": "200053982",
+        "title": "SOC Debug Verification Engineer II",
+        "profession": "Hardware Engineering",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990333"
+      },
+      {
+        "id": "1970393556972065",
+        "jobId": "200049450",
+        "title": "Technical Support Advisor - Power Apps",
+        "profession": "Technical Support",
+        "locations": [
+          "Romania, Bucharest, Bucharest"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972065"
+      },
+      {
+        "id": "1970393556988786",
+        "jobId": "200053776",
+        "title": "Project Manager",
+        "profession": "Consulting Services",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988786"
+      },
+      {
+        "id": "1970393556972697",
+        "jobId": "200049772",
+        "title": "Data Center Technicians Intern",
+        "profession": "Data Center",
+        "locations": [
+          "Italy, Milano, Milan"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972697"
+      },
+      {
+        "id": "1970393556972700",
+        "jobId": "200049777",
+        "title": "Logistics Technician Intern",
+        "profession": "Data Center",
+        "locations": [
+          "Italy, Milano, Milan"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972700"
+      },
+      {
+        "id": "1970393556988812",
+        "jobId": "200053787",
+        "title": "Critical Environment Technician Intern",
+        "profession": "Data Center",
+        "locations": [
+          "Italy, Milano, Milan"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988812"
+      },
+      {
+        "id": "1970393556989113",
+        "jobId": "200053894",
+        "title": "Security Research Manager",
+        "profession": "Security Engineering",
+        "locations": [
+          "Czech Republic, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556989113"
+      },
+      {
+        "id": "1970393556990210",
+        "jobId": "200053958",
+        "title": "Senior Frontend Software Engineer - Commercial Marketplace",
+        "profession": "Software Engineering",
+        "locations": [
+          "Israel, Tel Aviv, Herzliya",
+          "Israel, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990210"
+      },
+      {
+        "id": "1970393556984645",
+        "jobId": "200053049",
+        "title": "Account Technology Strategist",
+        "profession": "Technology Sales",
+        "locations": [
+          "Sweden, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984645"
+      },
+      {
+        "id": "1970393556986831",
+        "jobId": "200053425",
+        "title": "Metro Contracts Manager",
+        "profession": "Supply Chain",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556986831"
+      },
+      {
+        "id": "1970393556990350",
+        "jobId": "200053989",
+        "title": "Services Sales Operations Manager",
+        "profession": "Business Operations",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990350"
+      },
+      {
+        "id": "1970393556983009",
+        "jobId": "200052468",
+        "title": "Data Center Inventory & Asset Technician Manager",
+        "profession": "Data Center",
+        "locations": [
+          "Germany, Hessen, Frankfurt"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983009"
+      },
+      {
+        "id": "1970393556985473",
+        "jobId": "200053239",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Karnataka, Bangalore",
+          "India, Telangana, Hyderabad",
+          "India, Uttar Pradesh, Noida"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556985473"
+      },
+      {
+        "id": "1970393556986176",
+        "jobId": "200053364",
+        "title": "Principal Software Engineer - Identity",
+        "profession": "Software Engineering",
+        "locations": [
+          "Ireland, Dublin, Dublin"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556986176"
+      },
+      {
+        "id": "1970393556985265",
+        "jobId": "200053209",
+        "title": "Partner Development Manager- Channel",
+        "profession": "Sales",
+        "locations": [
+          "China, Beijing, Beijing",
+          "China, Guangdong, Shenzhen",
+          "China, Shanghai, Shanghai",
+          "Hong Kong SAR, Hong Kong Island, Hong Kong"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556985265"
+      },
+      {
+        "id": "1970393556988819",
+        "jobId": "200053789",
+        "title": "Logistics Technician",
+        "profession": "Data Center",
+        "locations": [
+          "Germany, Hessen, Frankfurt"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988819"
+      },
+      {
+        "id": "1970393556982613",
+        "jobId": "200052283",
+        "title": "Technical Support Engineering",
+        "profession": "Technical Support",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982613"
+      },
+      {
+        "id": "1970393556982783",
+        "jobId": "200052400",
+        "title": "Technical Support Engineering",
+        "profession": "Technical Support",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982783"
+      },
+      {
+        "id": "1970393556962718",
+        "jobId": "200048955",
+        "title": "Senior Logistics Technician",
+        "profession": "Data Center",
+        "locations": [
+          "Spain, Madrid, Madrid"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962718"
+      },
+      {
+        "id": "1970393556990338",
+        "jobId": "200053983",
+        "title": "Strategic Account Technology Strategist (S-ATS) - Financial Services, Insurance",
+        "profession": "Technology Sales",
+        "locations": [
+          "Switzerland, Zürich, Zürich"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990338"
+      },
+      {
+        "id": "1970393556979553",
+        "jobId": "200050518",
+        "title": "Principal Data Scientist - FDE",
+        "profession": "Research, Applied, & Data Sciences",
+        "locations": [
+          "United Kingdom, Berkshire, Reading"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556979553"
+      },
+      {
+        "id": "1970393556990312",
+        "jobId": "200053975",
+        "title": "Service Account Executive WhiteSpace / WinBack Account",
+        "profession": "Sales",
+        "locations": [
+          "France, Hauts-de-Seine, Issy Les Moulineaux"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990312"
+      },
+      {
+        "id": "1970393556982312",
+        "jobId": "200052148",
+        "title": "Technical Support Engineering",
+        "profession": "Technical Support",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982312"
+      },
+      {
+        "id": "1970393556928651",
+        "jobId": "200043130",
+        "title": "Principal Physical Design Engineer",
+        "profession": "Hardware Engineering",
+        "locations": [
+          "India, Karnataka, Bangalore",
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928651"
+      },
+      {
+        "id": "1970393556988912",
+        "jobId": "200053820",
+        "title": "Solution Area Specialists",
+        "profession": "Sales",
+        "locations": [
+          "India, Maharashtra, Mumbai"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988912"
+      },
+      {
+        "id": "1970393556962688",
+        "jobId": "200048935",
+        "title": "Project Site Planner (Scheduler) - Zaragoza",
+        "profession": "Program Management",
+        "locations": [
+          "Spain, Zaragoza, Zaragoza"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962688"
+      },
+      {
+        "id": "1970393556985448",
+        "jobId": "200053229",
+        "title": "Sr Partner Development Manager- Telco",
+        "profession": "Sales",
+        "locations": [
+          "South Africa, Gauteng, Johannesburg"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556985448"
+      },
+      {
+        "id": "1970393556960326",
+        "jobId": "200047960",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Uttar Pradesh, Noida"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556960326"
+      },
+      {
+        "id": "1970393556957816",
+        "jobId": "200047342",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556957816"
+      },
+      {
+        "id": "1970393556982361",
+        "jobId": "200052169",
+        "title": "Logistics Technician",
+        "profession": "Data Center",
+        "locations": [
+          "Japan, Tokyo-to, Tokyo"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982361"
+      },
+      {
+        "id": "1970393556984522",
+        "jobId": "200053025",
+        "title": "Principal Data Scientist",
+        "profession": "Research, Applied, & Data Sciences",
+        "locations": [
+          "India, Karnataka, Bangalore",
+          "India, Telangana, Hyderabad",
+          "India, Uttar Pradesh, Noida"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984522"
+      },
+      {
+        "id": "1970393556866482",
+        "jobId": "200037336",
+        "title": "Senior Researcher - AI Computer Architecture",
+        "profession": "Research, Applied, & Data Sciences",
+        "locations": [
+          "United Kingdom, Cambridgeshire, Cambridge"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556866482"
+      },
+      {
+        "id": "1970393556630075",
+        "jobId": "200009743",
+        "title": "Principal Architect - Data AI",
+        "profession": "Consulting Services",
+        "locations": [
+          "India, Telangana, Hyderabad",
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556630075"
+      },
+      {
+        "id": "1970393556971805",
+        "jobId": "200049379",
+        "title": "Data&AI Cloud Solution Architect",
+        "profession": "Customer Success",
+        "locations": [
+          "Finland, Uusimaa, Espoo"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556971805"
+      },
+      {
+        "id": "1970393556980411",
+        "jobId": "200051068",
+        "title": "Senior Solution Engineer - AI Business Solution & Business Process",
+        "profession": "Digital Sales and Solutions",
+        "locations": [
+          "Japan, Tokyo-to, Tokyo"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980411"
+      },
+      {
+        "id": "1970393556938683",
+        "jobId": "200043916",
+        "title": "Architect Data & AI",
+        "profession": "Consulting Services",
+        "locations": [
+          "India, Telangana, Hyderabad",
+          "India, Karnataka, Bangalore",
+          "India, Uttar Pradesh, Noida"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556938683"
+      },
+      {
+        "id": "1970393556869811",
+        "jobId": "200038474",
+        "title": "ROP-Software engineer II",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556869811"
+      },
+      {
+        "id": "1970393556984849",
+        "jobId": "200053149",
+        "title": "Customer Experience Engineering IC4",
+        "profession": "Program Management",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984849"
+      },
+      {
+        "id": "1970393556913319",
+        "jobId": "200041360",
+        "title": "Software Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556913319"
+      },
+      {
+        "id": "1970393556867988",
+        "jobId": "200037880",
+        "title": "Senior Security Engineer",
+        "profession": "Security Engineering",
+        "locations": [
+          "United Kingdom, Cambridgeshire, Cambridge"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556867988"
+      },
+      {
+        "id": "1970393556971410",
+        "jobId": "200049221",
+        "title": "Software Engineer - II - Windows Systems",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556971410"
+      },
+      {
+        "id": "1970393556988936",
+        "jobId": "200053829",
+        "title": "Data Center Inventory & Asset Technician Manager (DIAM)",
+        "profession": "Data Center",
+        "locations": [
+          "Australia, New South Wales, Sydney"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988936"
+      },
+      {
+        "id": "1970393556988025",
+        "jobId": "200053556",
+        "title": "Data Center Project Manager",
+        "profession": "Data Center",
+        "locations": [
+          "Hong Kong SAR, Hong Kong Island, Hong Kong"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988025"
+      },
+      {
+        "id": "1970393556986822",
+        "jobId": "200053434",
+        "title": "Physical Security Engineer",
+        "profession": "Security Engineering",
+        "locations": [
+          "Australia, Victoria, Melbourne",
+          "Australia, New South Wales, Sydney"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556986822"
+      },
+      {
+        "id": "1970393556942129",
+        "jobId": "200044882",
+        "title": "Senior Incident Manager",
+        "profession": "Software Engineering",
+        "locations": [
+          "Australia, Victoria, Melbourne",
+          "Australia, New South Wales, Sydney",
+          "Singapore, Singapore, Singapore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556942129"
+      },
+      {
+        "id": "1970393556988098",
+        "jobId": "200053589",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988098"
+      },
+      {
+        "id": "1970393556747930",
+        "jobId": "200023235",
+        "title": "Research Fellow",
+        "profession": "Research, Applied, & Data Sciences",
+        "locations": [
+          "India, Karnataka, Bangalore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556747930"
+      },
+      {
+        "id": "1970393556988726",
+        "jobId": "200053755",
+        "title": "Enterprise Transformation Lead",
+        "profession": "Business Operations",
+        "locations": [
+          "Japan, Tokyo-to, Tokyo"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988726"
+      },
+      {
+        "id": "1970393556959731",
+        "jobId": "200047836",
+        "title": "Senior Cloud Network Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556959731"
+      },
+      {
+        "id": "1970393556953320",
+        "jobId": "200046402",
+        "title": "Industry Architect, Material Sciences and Manufacturing",
+        "profession": "Consulting Services",
+        "locations": [
+          "Singapore, Singapore, Singapore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556953320"
+      },
+      {
+        "id": "1970393556943689",
+        "jobId": "200045189",
+        "title": "Technology Consultant",
+        "profession": "Consulting Services",
+        "locations": [
+          "India, Telangana, Hyderabad",
+          "India, Karnataka, Bangalore",
+          "India, Uttar Pradesh, Noida"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943689"
+      },
+      {
+        "id": "1970393556990266",
+        "jobId": "200053965",
+        "title": "Partner Solution Sales Lead - Cloud & AI",
+        "profession": "Sales",
+        "locations": [
+          "Japan, Tokyo-to, Tokyo"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556990266"
+      },
+      {
+        "id": "1970393556983456",
+        "jobId": "200052696",
+        "title": "Customer Success Account Mgmt",
+        "profession": "Customer Success",
+        "locations": [
+          "Saudi Arabia, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983456"
+      },
+      {
+        "id": "1970393556986786",
+        "jobId": "200053409",
+        "title": "Software Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "Australia, New South Wales, Sydney",
+          "Australia, Victoria, Melbourne"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556986786"
+      },
+      {
+        "id": "1970393556988243",
+        "jobId": "200053681",
+        "title": "Vendor Digital Sales - Area Leader",
+        "profession": "Sales",
+        "locations": [
+          "Singapore, Singapore, Singapore"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988243"
+      },
+      {
+        "id": "1970393556986844",
+        "jobId": "200053476",
+        "title": "Datacenter Security Operations Manager - Tokyo",
+        "profession": "Governance, Risk, & Compliance",
+        "locations": [
+          "Japan, Tokyo-to, Tokyo"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556986844"
+      },
+      {
+        "id": "1970393556952566",
+        "jobId": "200046276",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "Australia, New South Wales, Sydney",
+          "Australia, Victoria, Melbourne"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556952566"
+      },
+      {
+        "id": "1970393556988744",
+        "jobId": "200053765",
+        "title": "Business Manager, OU STU - SME&C Asia",
+        "profession": "Business Operations",
+        "locations": [
+          "Australia, New South Wales, Sydney"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988744"
+      }
+    ],
+    "removed": [
+      {
+        "id": "1970393556928578",
+        "jobId": "200043123",
+        "title": "Principal Product Manager",
+        "profession": "Product Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928578"
+      },
+      {
+        "id": "1970393556875419",
+        "jobId": "200040449",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556875419"
+      },
+      {
+        "id": "1970393556980412",
+        "jobId": "200051069",
+        "title": "Software Engineer 2",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980412"
+      },
+      {
+        "id": "1970393556984702",
+        "jobId": "200053058",
+        "title": "Software Engineer 2",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984702"
+      },
+      {
+        "id": "1970393556958685",
+        "jobId": "200047616",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556958685"
+      },
+      {
+        "id": "1970393556928841",
+        "jobId": "200043202",
+        "title": "Software Engineer - FDE",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928841"
+      },
+      {
+        "id": "1970393556979048",
+        "jobId": "200050371",
+        "title": "Governance Risk and Compliance Lead",
+        "profession": "Business Operations",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556979048"
+      },
+      {
+        "id": "1970393556883368",
+        "jobId": "200040757",
+        "title": "Director Solution Go-to-Market, Lead",
+        "profession": "Marketing",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556883368"
+      },
+      {
+        "id": "1970393556769526",
+        "jobId": "200028729",
+        "title": "Sr Product Manager",
+        "profession": "Product Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556769526"
+      },
+      {
+        "id": "1970393556756430",
+        "jobId": "200028120",
+        "title": "Principal Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556756430"
+      },
+      {
+        "id": "1970393556927669",
+        "jobId": "200042964",
+        "title": "Cloud Network Engineering IC3",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556927669"
+      },
+      {
+        "id": "1970393556972254",
+        "jobId": "200049555",
+        "title": "Group Software Engineering Manager",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972254"
+      },
+      {
+        "id": "1970393556985444",
+        "jobId": "200053225",
+        "title": "Applied AI Innovation Architect (Cloud Solutions)",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556985444"
+      },
+      {
+        "id": "1970393556983853",
+        "jobId": "200052765",
+        "title": "Digital Solution Area Specialists - Security",
+        "profession": "Digital Sales and Solutions",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983853"
+      },
+      {
+        "id": "1970393556961703",
+        "jobId": "200048579",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556961703"
+      },
+      {
+        "id": "1970393556962633",
+        "jobId": "200048913",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962633"
+      },
+      {
+        "id": "1970393556982308",
+        "jobId": "200052145",
+        "title": "Technical Support Engineering - Networking",
+        "profession": "Technical Support",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982308"
+      },
+      {
+        "id": "1970393556956530",
+        "jobId": "200047081",
+        "title": "Director of AI Supercomputing Delivery",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956530"
+      },
+      {
+        "id": "1970393556983260",
+        "jobId": "200052651",
+        "title": "Construction Project Engineer",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983260"
+      },
+      {
+        "id": "1970393556983261",
+        "jobId": "200052653",
+        "title": "Construction Project Engineer",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983261"
+      },
+      {
+        "id": "1970393556922928",
+        "jobId": "200042198",
+        "title": "Software Engineer II - Compromise & Fraud Protection",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556922928"
+      },
+      {
+        "id": "1970393556981471",
+        "jobId": "200051648",
+        "title": "Executive Business Administrator",
+        "profession": "Administration",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556981471"
+      },
+      {
+        "id": "1970393556972335",
+        "jobId": "200049581",
+        "title": "Customer Advisor",
+        "profession": "Retail",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972335"
+      },
+      {
+        "id": "1970393556980087",
+        "jobId": "200050788",
+        "title": "Data Platform Solution Engineer",
+        "profession": "Technology Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980087"
+      },
+      {
+        "id": "1970393556978275",
+        "jobId": "200050139",
+        "title": "Customer Success Account Manager",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978275"
+      },
+      {
+        "id": "1970393556956416",
+        "jobId": "200046999",
+        "title": "Metro Construction Director",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956416"
+      },
+      {
+        "id": "1970393556978488",
+        "jobId": "200050220",
+        "title": "Senior Applied Scientist",
+        "profession": "Research, Applied, & Data Sciences",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978488"
+      },
+      {
+        "id": "1970393556978876",
+        "jobId": "200050321",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978876"
+      },
+      {
+        "id": "1970393556978176",
+        "jobId": "200050074",
+        "title": "Senior Data Center Technician",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978176"
+      },
+      {
+        "id": "1970393556981824",
+        "jobId": "200051806",
+        "title": "Senior Supply Chain Program Manager",
+        "profession": "Supply Chain",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556981824"
+      },
+      {
+        "id": "1970393556972433",
+        "jobId": "200049599",
+        "title": "Senior Demand Planning Manager - CTJ - Top Secret",
+        "profession": "Supply Chain",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972433"
+      },
+      {
+        "id": "1970393556979403",
+        "jobId": "200050452",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556979403"
+      },
+      {
+        "id": "1970393556981744",
+        "jobId": "200051789",
+        "title": "UK Residency Programme - Optical Communications Researcher",
+        "profession": "Research, Applied, & Data Sciences",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556981744"
+      },
+      {
+        "id": "1970393556982382",
+        "jobId": "200052174",
+        "title": "Sourcing and Category Management -  Contracts Manager",
+        "profession": "Supply Chain",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982382"
+      },
+      {
+        "id": "1970393556927110",
+        "jobId": "200042845",
+        "title": "Senior E2E Program Manager",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556927110"
+      },
+      {
+        "id": "1970393556980963",
+        "jobId": "200051319",
+        "title": "Strategic Account Executive",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980963"
+      },
+      {
+        "id": "1970393556980187",
+        "jobId": "200050867",
+        "title": "Senior Digital Solution Area Specialist-Security",
+        "profession": "Digital Sales and Solutions",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980187"
+      },
+      {
+        "id": "1970393556981121",
+        "jobId": "200051384",
+        "title": "Senior Business Program Manager-Azure Direct Cloud & AI Solution Advisors (CASA)",
+        "profession": "Business Operations",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556981121"
+      },
+      {
+        "id": "1970393556982693",
+        "jobId": "200052314",
+        "title": "Copilot Solution Engineer (Enterprise)",
+        "profession": "Technology Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982693"
+      },
+      {
+        "id": "1970393556978255",
+        "jobId": "200050128",
+        "title": "Creator & Community Manager",
+        "profession": "Marketing",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978255"
+      },
+      {
+        "id": "1970393556962689",
+        "jobId": "200048928",
+        "title": "Senior Finance Manager, AI Margin",
+        "profession": "Finance",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962689"
+      },
+      {
+        "id": "1970393556980676",
+        "jobId": "200051286",
+        "title": "Strategic Account Technology Strategist",
+        "profession": "Technology Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980676"
+      },
+      {
+        "id": "1970393556981109",
+        "jobId": "200051419",
+        "title": "Windows Specialist Manager",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556981109"
+      },
+      {
+        "id": "1970393556928903",
+        "jobId": "200043238",
+        "title": "Principal Hardware Engineer, DC/DC Power",
+        "profession": "Hardware Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928903"
+      },
+      {
+        "id": "1970393556956189",
+        "jobId": "200046894",
+        "title": "Metro Planning (Scheduler) Leader",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956189"
+      },
+      {
+        "id": "1970393556956155",
+        "jobId": "200046884",
+        "title": "Metro Planning (Scheduler) Leader - Vaasa",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956155"
+      },
+      {
+        "id": "1970393556956142",
+        "jobId": "200046879",
+        "title": "Project Site Planner (Scheduler) - Vaasa",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956142"
+      },
+      {
+        "id": "1970393556956140",
+        "jobId": "200046874",
+        "title": "Project Site Planner (Scheduler) - Helsinki",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956140"
+      },
+      {
+        "id": "1970393556952487",
+        "jobId": "200046244",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556952487"
+      },
+      {
+        "id": "1970393556978923",
+        "jobId": "200050326",
+        "title": "Software Engineer II",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978923"
+      },
+      {
+        "id": "1970393556979998",
+        "jobId": "200050765",
+        "title": "Copilot Solution Engineering",
+        "profession": "Technology Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556979998"
+      },
+      {
+        "id": "1970393556953835",
+        "jobId": "200046559",
+        "title": "Senior Finance Manager, ENG Decision Support",
+        "profession": "Finance",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556953835"
+      },
+      {
+        "id": "1970393556956204",
+        "jobId": "200046903",
+        "title": "Metro Planning (Scheduler) Leader",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556956204"
+      },
+      {
+        "id": "1970393556950092",
+        "jobId": "200045956",
+        "title": "Digital Copilot Solution Engineer",
+        "profession": "Digital Sales and Solutions",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556950092"
+      },
+      {
+        "id": "1970393556961947",
+        "jobId": "200048639",
+        "title": "Sales Director, Financial Services",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556961947"
+      },
+      {
+        "id": "1970393556961256",
+        "jobId": "200048305",
+        "title": "Executive Assistant, Germany Area Delivery Leadership Team",
+        "profession": "Administration",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556961256"
+      },
+      {
+        "id": "1970393556971820",
+        "jobId": "200049382",
+        "title": "Senior Solution Engineer - Azure Cloud Services",
+        "profession": "Technology Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556971820"
+      },
+      {
+        "id": "1970393556962928",
+        "jobId": "200049043",
+        "title": "ITIM Manager",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962928"
+      },
+      {
+        "id": "1970393556962101",
+        "jobId": "200048740",
+        "title": "Principal Azure Storage Validation Architect",
+        "profession": "Hardware Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962101"
+      },
+      {
+        "id": "1970393556972022",
+        "jobId": "200049430",
+        "title": "Datacenter Program Manager - Compliance",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972022"
+      },
+      {
+        "id": "1970393556972058",
+        "jobId": "200049443",
+        "title": "Senior Mechanical Engineer",
+        "profession": "Hardware Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972058"
+      },
+      {
+        "id": "1970393556960947",
+        "jobId": "200048292",
+        "title": "Principal Software Engineer - Networking & Storage Systems",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556960947"
+      },
+      {
+        "id": "1970393556960972",
+        "jobId": "200048294",
+        "title": "Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556960972"
+      },
+      {
+        "id": "1970393556950415",
+        "jobId": "200045983",
+        "title": "Customer Success Account Mgmt IC1",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556950415"
+      },
+      {
+        "id": "1970393556962368",
+        "jobId": "200048872",
+        "title": "Digital Solution Engineer",
+        "profession": "Digital Sales and Solutions",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962368"
+      },
+      {
+        "id": "1970393556952424",
+        "jobId": "200046225",
+        "title": "Strategic Account Executive",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556952424"
+      },
+      {
+        "id": "1970393556955677",
+        "jobId": "200046713",
+        "title": "Service Engineer 2",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556955677"
+      },
+      {
+        "id": "1970393556955699",
+        "jobId": "200046744",
+        "title": "Service Engineer 2",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556955699"
+      },
+      {
+        "id": "1970393556957376",
+        "jobId": "200047140",
+        "title": "Data Center Technician",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556957376"
+      },
+      {
+        "id": "1970393556925789",
+        "jobId": "200042615",
+        "title": "Technical Support Advisory",
+        "profession": "Technical Support",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556925789"
+      },
+      {
+        "id": "1970393556938797",
+        "jobId": "200043984",
+        "title": "Logistics Technician",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556938797"
+      },
+      {
+        "id": "1970393556925303",
+        "jobId": "200042509",
+        "title": "Partner Development Manager ISV - ASEAN",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556925303"
+      },
+      {
+        "id": "1970393556889278",
+        "jobId": "200040860",
+        "title": "Data Center Inventory & Asset Technician Manager (DIAM)",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556889278"
+      },
+      {
+        "id": "1970393556856308",
+        "jobId": "200034063",
+        "title": "Senior Software Engineer - Azure Hyper Networking",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556856308"
+      },
+      {
+        "id": "1970393556873977",
+        "jobId": "200039902",
+        "title": "Data Center Inventory & Asset Technician Manager (DIAM)",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556873977"
+      },
+      {
+        "id": "1970393556861119",
+        "jobId": "200035727",
+        "title": "AI Business Solutions Workforce Specialist  (M365, Copilot & AI Agent solution, 大手エンタープライズ企業担当）",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556861119"
+      }
+    ],
+    "updated": [
+      {
+        "id": "1970393556938766",
+        "jobId": "200043965",
+        "title": "Senior Sales Specialist - Windows & Device Sales (UAE/Turkiye))",
+        "changed": {
+          "title": {
+            "from": "Senior Sales Specialist - Windows & Device Sales (UAE)",
+            "to": "Senior Sales Specialist - Windows & Device Sales (UAE/Turkiye))"
+          },
+          "locations": {
+            "from": [
+              "United Arab Emirates, Multiple Locations, Multiple Locations"
+            ],
+            "to": [
+              "United Arab Emirates, Multiple Locations, Multiple Locations",
+              "Türkiye, Istanbul, Istanbul"
+            ]
+          }
+        }
+      },
+      {
+        "id": "1970393556960737",
+        "jobId": "200048279",
+        "title": "Senior Digital Solution Area Specialist - German Speaking",
+        "changed": {
+          "title": {
+            "from": "Senior Digital Solution Area Specialist",
+            "to": "Senior Digital Solution Area Specialist - German Speaking"
+          }
+        }
+      },
+      {
+        "id": "1970393556985301",
+        "jobId": "200053214",
+        "title": "Cloud & AI Platform Sales Specialist",
+        "changed": {
+          "title": {
+            "from": "Solution Area Specialists IC5",
+            "to": "Cloud & AI Platform Sales Specialist"
+          },
+          "descriptionHash": {
+            "from": "652a1643ad658906",
+            "to": "b28527dc6df7788e"
+          }
+        }
+      },
+      {
+        "id": "1970393556979290",
+        "jobId": "200050438",
+        "title": "AI Workforce Activation GTM",
+        "changed": {
+          "title": {
+            "from": "Field Product Marketing",
+            "to": "AI Workforce Activation GTM"
+          }
+        }
+      },
+      {
+        "id": "1970393556986900",
+        "jobId": "200053497",
+        "title": "Manager, Cloud Solution Architecture (Security)",
+        "changed": {
+          "title": {
+            "from": "Security Customer Success Manager",
+            "to": "Manager, Cloud Solution Architecture (Security)"
+          },
+          "descriptionHash": {
+            "from": "9a92e1d7093eba30",
+            "to": "2563e09b885a223b"
+          }
+        }
+      },
+      {
+        "id": "1970393556978005",
+        "jobId": "200049945",
+        "title": "Sr. Technical Support Engineer, Global English / Mandarin / Korean",
+        "changed": {
+          "title": {
+            "from": "Sr. Technical Support Engineer, Global English / Mandalin / Korean",
+            "to": "Sr. Technical Support Engineer, Global English / Mandarin / Korean"
+          },
+          "descriptionHash": {
+            "from": "3554ecd81160d5d7",
+            "to": "1846cc42cc7c31c8"
+          }
+        }
+      },
+      {
+        "id": "1970393556980924",
+        "jobId": "200051301",
+        "title": "Sourcing and Category Management -  EMEA Metro Contracts Leader / Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "cc6dd124bc066df5",
+            "to": "c944bd08b56fc071"
+          }
+        }
+      },
+      {
+        "id": "1970393556978384",
+        "jobId": "200050166",
+        "title": "Campus Procurement Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "f90c8bf6d7298027",
+            "to": "b490cf71f868dd23"
+          }
+        }
+      },
+      {
+        "id": "1970393556959514",
+        "jobId": "200047774",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "8d04232c0d5b1b01",
+            "to": "6e10e57e0ab6a6f8"
+          }
+        }
+      },
+      {
+        "id": "1970393556917675",
+        "jobId": "200041811",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "3fdd4b860e2a0b3c",
+            "to": "28e60d3a9776efec"
+          }
+        }
+      },
+      {
+        "id": "1970393556927704",
+        "jobId": "200042982",
+        "title": "Datacenter Security Operations Manager - Osaka",
+        "changed": {
+          "title": {
+            "from": "Datacenter Security Operations Manager",
+            "to": "Datacenter Security Operations Manager - Osaka"
+          },
+          "locations": {
+            "from": [
+              "Japan, Osaka-fu, Osaka",
+              "Japan, Tokyo-to, Tokyo"
+            ],
+            "to": [
+              "Japan, Osaka-fu, Osaka"
+            ]
+          }
+        }
+      },
+      {
+        "id": "1970393556868214",
+        "jobId": "200037955",
+        "title": "Critical Environment Program Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "68d9da25e0c71d70",
+            "to": "775e1023af39e8a8"
+          }
+        }
+      }
+    ],
+    "status": "success"
+  },
+  {
     "startedAt": "2026-09-06T23:18:35.133Z",
     "finishedAt": "2026-09-07T00:29:18.063Z",
     "date": "2026-09-06",
