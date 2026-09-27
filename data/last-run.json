@@ -1,18 +1,18 @@
 {
   "status": "success",
-  "finishedAt": "2026-09-20T00:53:57.854Z",
-  "durationSec": 4315.9,
+  "finishedAt": "2026-09-27T01:31:05.783Z",
+  "durationSec": 5570.6,
   "mode": "full",
   "openCount": 2375,
-  "added": 751,
-  "removed": 604,
-  "updated": 40,
+  "added": 683,
+  "removed": 683,
+  "updated": 90,
   "detailsFetched": 2375,
   "missingDetail": 0,
   "errors": {
     "searchPages": 0,
     "details": 0,
-    "wafBlocks": 12
+    "wafBlocks": 26
   },
   "index": {
     "status": "complete",
