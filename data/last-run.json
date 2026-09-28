@@ -1,25 +1,25 @@
 {
   "status": "success",
-  "finishedAt": "2026-09-27T01:31:05.783Z",
-  "durationSec": 5570.6,
+  "finishedAt": "2026-09-28T01:29:05.331Z",
+  "durationSec": 5134.1,
   "mode": "full",
-  "openCount": 2375,
-  "added": 683,
-  "removed": 683,
-  "updated": 90,
-  "detailsFetched": 2375,
+  "openCount": 2324,
+  "added": 4,
+  "removed": 55,
+  "updated": 11,
+  "detailsFetched": 2324,
   "missingDetail": 0,
   "errors": {
     "searchPages": 0,
     "details": 0,
-    "wafBlocks": 26
+    "wafBlocks": 22
   },
   "index": {
     "status": "complete",
     "sortBy": "timestamp",
     "passes": 1,
-    "requests": 240,
-    "uniqueCount": 2375,
-    "reportedTotal": 2375
+    "requests": 235,
+    "uniqueCount": 2324,
+    "reportedTotal": 2324
   }
 }

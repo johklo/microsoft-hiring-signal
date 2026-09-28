@@ -1,5 +1,585 @@
 [
   {
+    "startedAt": "2026-09-28T00:03:38.679Z",
+    "finishedAt": "2026-09-28T01:29:05.331Z",
+    "date": "2026-09-28",
+    "mode": "full",
+    "index": {
+      "status": "complete",
+      "sortBy": "timestamp",
+      "passes": 1,
+      "requests": 235,
+      "uniqueCount": 2324,
+      "reportedTotal": 2324
+    },
+    "reportedTotal": 2324,
+    "openCount": 2324,
+    "detailsFetched": 2324,
+    "missingDetail": 0,
+    "addedCount": 4,
+    "removedCount": 55,
+    "updatedCount": 11,
+    "errors": {
+      "searchPages": 0,
+      "details": 0,
+      "wafBlocks": 22
+    },
+    "added": [
+      {
+        "id": "1970393556999996",
+        "jobId": "200056189",
+        "title": "Strategy & Transformation Manager",
+        "profession": "Business Development & Ventures",
+        "locations": [
+          "United States, Multiple Locations, Multiple Locations"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556999996"
+      },
+      {
+        "id": "1970393556940748",
+        "jobId": "200044504",
+        "title": "Aramco Strategic Account Director",
+        "profession": "Sales",
+        "locations": [
+          "Saudi Arabia, Eastern Province, Dhahran",
+          "Saudi Arabia, Eastern Province, Dammam"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556940748"
+      },
+      {
+        "id": "1970393557004838",
+        "jobId": "200057345",
+        "title": "Principal Software Engineer",
+        "profession": "Software Engineering",
+        "locations": [
+          "India, Telangana, Hyderabad"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557004838"
+      },
+      {
+        "id": "1970393556991369",
+        "jobId": "200054249",
+        "title": "Senior Finance Manager",
+        "profession": "Finance",
+        "locations": [
+          "United States, Washington, Redmond"
+        ],
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556991369"
+      }
+    ],
+    "removed": [
+      {
+        "id": "1970393557002035",
+        "jobId": "200056847",
+        "title": "Principal Cloud Solution Architect, Cloud and Agentic AI Solutions",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557002035"
+      },
+      {
+        "id": "1970393557000845",
+        "jobId": "200056508",
+        "title": "Software Engineer 2 - Backend",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557000845"
+      },
+      {
+        "id": "1970393556928899",
+        "jobId": "200043236",
+        "title": "Senior Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928899"
+      },
+      {
+        "id": "1970393556922499",
+        "jobId": "200042139",
+        "title": "Senior Project Manager",
+        "profession": "Consulting Services",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556922499"
+      },
+      {
+        "id": "1970393556999798",
+        "jobId": "200056110",
+        "title": "Senior Software Engineer - Distributed Systems",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556999798"
+      },
+      {
+        "id": "1970393557001309",
+        "jobId": "200056604",
+        "title": "Principal Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557001309"
+      },
+      {
+        "id": "1970393556989062",
+        "jobId": "200053862",
+        "title": "Senior Industry Advisory Manufacturing and Mobility",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556989062"
+      },
+      {
+        "id": "1970393556998370",
+        "jobId": "200055638",
+        "title": "Solution Area Specialist - Cloud & AI",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556998370"
+      },
+      {
+        "id": "1970393556984937",
+        "jobId": "200053190",
+        "title": "Head of Internal Audit, MIPSL and Audit Program Management",
+        "profession": "Governance, Risk, & Compliance",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556984937"
+      },
+      {
+        "id": "1970393556863192",
+        "jobId": "200036515",
+        "title": "Software Engineering",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556863192"
+      },
+      {
+        "id": "1970393557002129",
+        "jobId": "200056890",
+        "title": "Account Technology - Manufacturing",
+        "profession": "Technology Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557002129"
+      },
+      {
+        "id": "1970393557001878",
+        "jobId": "200056772",
+        "title": "Construction Project Manager, Data Center",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557001878"
+      },
+      {
+        "id": "1970393557002317",
+        "jobId": "200056992",
+        "title": "Customer Success Account Manager, Microsoft Elevate",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557002317"
+      },
+      {
+        "id": "1970393556859720",
+        "jobId": "200035184",
+        "title": "Senior Service Engineer - CTJ - Top Secret",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556859720"
+      },
+      {
+        "id": "1970393556995499",
+        "jobId": "200055484",
+        "title": "Senior Finance Manager",
+        "profession": "Finance",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556995499"
+      },
+      {
+        "id": "1970393556994717",
+        "jobId": "200055187",
+        "title": "Senior Data Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556994717"
+      },
+      {
+        "id": "1970393556962089",
+        "jobId": "200048731",
+        "title": "Principal Service Engineer - Security Focused",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556962089"
+      },
+      {
+        "id": "1970393556999288",
+        "jobId": "200055952",
+        "title": "Partner Development Manager (PDM) - Partner Sales Leader/ Latam",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556999288"
+      },
+      {
+        "id": "1970393557002235",
+        "jobId": "200056943",
+        "title": "Technical Support Engineer (SharePoint)",
+        "profession": "Technical Support",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393557002235"
+      },
+      {
+        "id": "1970393556994835",
+        "jobId": "200055300",
+        "title": "Campus LLE Procurement Execution Manager",
+        "profession": "Supply Chain",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556994835"
+      },
+      {
+        "id": "1970393556991479",
+        "jobId": "200054317",
+        "title": "Group Finance Manager - AI margin FP&A",
+        "profession": "Finance",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556991479"
+      },
+      {
+        "id": "1970393556999983",
+        "jobId": "200056179",
+        "title": "Technical Solution Manager - Security Strategy",
+        "profession": "Business Operations",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556999983"
+      },
+      {
+        "id": "1970393556982164",
+        "jobId": "200052038",
+        "title": "Principal Software Engineer",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982164"
+      },
+      {
+        "id": "1970393556980987",
+        "jobId": "200051325",
+        "title": "Program Manager - Fabric Customer Advisory Team",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980987"
+      },
+      {
+        "id": "1970393556972911",
+        "jobId": "200049851",
+        "title": "Senior Solution Area Specialist - Cloud & AI",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556972911"
+      },
+      {
+        "id": "1970393556943987",
+        "jobId": "200045333",
+        "title": "Senior Consultant",
+        "profession": "Consulting Services",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556943987"
+      },
+      {
+        "id": "1970393556999181",
+        "jobId": "200055890",
+        "title": "SAP Cloud Solution Architect",
+        "profession": "Customer Success",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556999181"
+      },
+      {
+        "id": "1970393556988259",
+        "jobId": "200053686",
+        "title": "Data Center Inventory & Asset Technician Manager",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988259"
+      },
+      {
+        "id": "1970393556991986",
+        "jobId": "200054536",
+        "title": "Principal Web Technology Lead",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556991986"
+      },
+      {
+        "id": "1970393556998528",
+        "jobId": "200055723",
+        "title": "Senior Lease Delivery Program Manager",
+        "profession": "Program Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556998528"
+      },
+      {
+        "id": "1970393556998407",
+        "jobId": "200055649",
+        "title": "Senior Software Engineer - Data",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556998407"
+      },
+      {
+        "id": "1970393556944792",
+        "jobId": "200045469",
+        "title": "Senior Product Designer",
+        "profession": "Design & Creative",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556944792"
+      },
+      {
+        "id": "1970393556988885",
+        "jobId": "200053809",
+        "title": "Services Account Manager",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556988885"
+      },
+      {
+        "id": "1970393556982122",
+        "jobId": "200051993",
+        "title": "Data Center Technicians Manager",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982122"
+      },
+      {
+        "id": "1970393556992086",
+        "jobId": "200054609",
+        "title": "Senior Product Manager",
+        "profession": "Product Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556992086"
+      },
+      {
+        "id": "1970393556983009",
+        "jobId": "200052468",
+        "title": "Data Center Inventory & Asset Technician Manager",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983009"
+      },
+      {
+        "id": "1970393556852883",
+        "jobId": "200033241",
+        "title": "Principal Applied Scientist - Auction & Bidding",
+        "profession": "Research, Applied, & Data Sciences",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556852883"
+      },
+      {
+        "id": "1970393556979250",
+        "jobId": "200050436",
+        "title": "Senior Backend Software Engineer, Dataverse",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556979250"
+      },
+      {
+        "id": "1970393556981449",
+        "jobId": "200051640",
+        "title": "Pre-Construction Manager, Data Center (AMERS)",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556981449"
+      },
+      {
+        "id": "1970393556978354",
+        "jobId": "200050160",
+        "title": "Senior Product Manager- M365 Messaging",
+        "profession": "Product Management",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978354"
+      },
+      {
+        "id": "1970393556983192",
+        "jobId": "200052624",
+        "title": "Principal Data Scientist",
+        "profession": "Research, Applied, & Data Sciences",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983192"
+      },
+      {
+        "id": "1970393556982596",
+        "jobId": "200052245",
+        "title": "Senior Applied Scientist",
+        "profession": "Research, Applied, & Data Sciences",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556982596"
+      },
+      {
+        "id": "1970393556983250",
+        "jobId": "200052645",
+        "title": "Executive Communications Leader, AI Experiences",
+        "profession": "Communications",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983250"
+      },
+      {
+        "id": "1970393556955416",
+        "jobId": "200046607",
+        "title": "Principal Data Science Manager",
+        "profession": "Research, Applied, & Data Sciences",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556955416"
+      },
+      {
+        "id": "1970393556983826",
+        "jobId": "200052760",
+        "title": "Partner Solution Sales",
+        "profession": "Sales",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556983826"
+      },
+      {
+        "id": "1970393556979685",
+        "jobId": "200050521",
+        "title": "Program Manager, Competition & Market Regulation",
+        "profession": "Business Operations",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556979685"
+      },
+      {
+        "id": "1970393556978538",
+        "jobId": "200050243",
+        "title": "Program Manager, AI Transformation & Continuous Improvement, Vendor Operations",
+        "profession": "Business Operations",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978538"
+      },
+      {
+        "id": "1970393556980924",
+        "jobId": "200051301",
+        "title": "Sourcing and Category Management -  EMEA Metro Contracts Leader / Manager",
+        "profession": "Supply Chain",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556980924"
+      },
+      {
+        "id": "1970393556958687",
+        "jobId": "200047617",
+        "title": "Sub-Regional Cost Lead",
+        "profession": "Real Estate, Facilities, & Construction",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556958687"
+      },
+      {
+        "id": "1970393556978139",
+        "jobId": "200050058",
+        "title": "Principal Silicon Engineer - Storage",
+        "profession": "Hardware Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556978139"
+      },
+      {
+        "id": "1970393556971318",
+        "jobId": "200049142",
+        "title": "Critical Environment Technician",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556971318"
+      },
+      {
+        "id": "1970393556928892",
+        "jobId": "200043231",
+        "title": "Critical Environment Electrical Engineer",
+        "profession": "Hardware Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928892"
+      },
+      {
+        "id": "1970393556928782",
+        "jobId": "200043182",
+        "title": "Critical Environment Mechanical Engineer",
+        "profession": "Hardware Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928782"
+      },
+      {
+        "id": "1970393556928781",
+        "jobId": "200043181",
+        "title": "Critical Environment Program Manager",
+        "profession": "Data Center",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556928781"
+      },
+      {
+        "id": "1970393556627523",
+        "jobId": "200007626",
+        "title": "Data Infrastructure",
+        "profession": "Software Engineering",
+        "url": "https://apply.careers.microsoft.com/careers/job/1970393556627523"
+      }
+    ],
+    "updated": [
+      {
+        "id": "1970393556978280",
+        "jobId": "200050140",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "6c172917778be559",
+            "to": "6504f76dd1d266a5"
+          }
+        }
+      },
+      {
+        "id": "1970393556990380",
+        "jobId": "200054000",
+        "title": "Construction Project Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "2211c9d9309bf966",
+            "to": "e4ccaa70a20b6d44"
+          }
+        }
+      },
+      {
+        "id": "1970393557004572",
+        "jobId": "200057245",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "e4de1448ad8d8cc3",
+            "to": "20c0e6ee0c4ae344"
+          }
+        }
+      },
+      {
+        "id": "1970393556957128",
+        "jobId": "200047127",
+        "title": "Solution Engineer - Data",
+        "changed": {
+          "descriptionHash": {
+            "from": "7b3e9860700cd7ce",
+            "to": "eb2663e328c9a0af"
+          }
+        }
+      },
+      {
+        "id": "1970393556992610",
+        "jobId": "200054982",
+        "title": "Software Engineer and Senior Software Engineer",
+        "changed": {
+          "descriptionHash": {
+            "from": "084276c481673385",
+            "to": "b2214efc7b9c8d8c"
+          }
+        }
+      },
+      {
+        "id": "1970393557001288",
+        "jobId": "200056592",
+        "title": "Data Center Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "92faffe15f458ea1",
+            "to": "e64ef20851b9f924"
+          }
+        }
+      },
+      {
+        "id": "1970393557000874",
+        "jobId": "200056562",
+        "title": "Senior/Principal Optical Packaging Engineer",
+        "changed": {
+          "descriptionHash": {
+            "from": "d3d087d4d5dd596d",
+            "to": "90244d0a8cabac9b"
+          }
+        }
+      },
+      {
+        "id": "1970393556990627",
+        "jobId": "200054108",
+        "title": "Critical Environment Technician (Shifts)",
+        "changed": {
+          "descriptionHash": {
+            "from": "81bfba9d8815fb82",
+            "to": "3a9e7ed7ae96b072"
+          }
+        }
+      },
+      {
+        "id": "1970393556990848",
+        "jobId": "200054147",
+        "title": "Logistics / Warehouse Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "73ba707858464920",
+            "to": "47fd108258660b01"
+          }
+        }
+      },
+      {
+        "id": "1970393556978284",
+        "jobId": "200050141",
+        "title": "Shift Critical Environment Technician",
+        "changed": {
+          "descriptionHash": {
+            "from": "0694e92c73dc7c7e",
+            "to": "ddef255acc76e59b"
+          }
+        }
+      },
+      {
+        "id": "1970393556657727",
+        "jobId": "200020203",
+        "title": "Senior Construction Project Manager",
+        "changed": {
+          "descriptionHash": {
+            "from": "d26442120ecaedf9",
+            "to": "52e0514f8fcf1d08"
+          }
+        }
+      }
+    ],
+    "status": "success"
+  },
+  {
     "startedAt": "2026-09-26T23:58:22.334Z",
     "finishedAt": "2026-09-27T01:31:05.783Z",
     "date": "2026-09-26",
